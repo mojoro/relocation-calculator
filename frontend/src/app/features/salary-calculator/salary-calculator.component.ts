@@ -1,9 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { SalaryFormComponent } from './salary-form.component';
 
 @Component({
   selector: 'reloc-salary-calculator',
   standalone: true,
+  imports: [SalaryFormComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div class="p-6"><h2 class="text-2xl font-semibold" style="color: var(--reloc-ref-color-text-primary)">Salary Calculator</h2><p class="mt-2" style="color: var(--reloc-ref-color-text-secondary)">Step 1: Enter your salary details</p></div>`,
+  template: `<reloc-salary-form />`,
 })
 export class SalaryCalculatorComponent {}
