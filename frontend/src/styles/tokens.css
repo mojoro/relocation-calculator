@@ -1,0 +1,113 @@
+/* Design Token System
+ * Three-tier architecture mirroring Europace's --xp-* pattern:
+ *   --reloc-sys-*  → System primitives (raw values)
+ *   --reloc-ref-*  → Semantic references (purpose-based aliases)
+ *   --reloc-comp-* → Component-specific tokens (used sparingly)
+ */
+
+:root {
+  /* ═══ System Primitives ═══ */
+
+  /* Colors — Teal palette (primary) */
+  --reloc-sys-color-teal-50: #f0fdfa;
+  --reloc-sys-color-teal-100: #ccfbf1;
+  --reloc-sys-color-teal-200: #99f6e4;
+  --reloc-sys-color-teal-300: #5eead4;
+  --reloc-sys-color-teal-400: #2dd4bf;
+  --reloc-sys-color-teal-500: #14b8a6;
+  --reloc-sys-color-teal-600: #0d9488;
+  --reloc-sys-color-teal-700: #0f766e;
+  --reloc-sys-color-teal-800: #115e59;
+  --reloc-sys-color-teal-900: #134e4a;
+
+  /* Colors — Neutral palette */
+  --reloc-sys-color-neutral-50: #f9fafb;
+  --reloc-sys-color-neutral-100: #f3f4f6;
+  --reloc-sys-color-neutral-200: #e5e7eb;
+  --reloc-sys-color-neutral-300: #d1d5db;
+  --reloc-sys-color-neutral-400: #9ca3af;
+  --reloc-sys-color-neutral-500: #6b7280;
+  --reloc-sys-color-neutral-600: #4b5563;
+  --reloc-sys-color-neutral-700: #374151;
+  --reloc-sys-color-neutral-800: #1f2937;
+  --reloc-sys-color-neutral-900: #111827;
+
+  /* Colors — Semantic */
+  --reloc-sys-color-error-500: #ef4444;
+  --reloc-sys-color-error-600: #dc2626;
+  --reloc-sys-color-success-500: #22c55e;
+  --reloc-sys-color-success-600: #16a34a;
+  --reloc-sys-color-warning-500: #f59e0b;
+
+  /* Typography */
+  --reloc-sys-font-family-display: 'Inter', system-ui, sans-serif;
+  --reloc-sys-font-family-content: 'Inter', system-ui, sans-serif;
+  --reloc-sys-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --reloc-sys-font-size-xs: 0.75rem;
+  --reloc-sys-font-size-sm: 0.875rem;
+  --reloc-sys-font-size-base: 1rem;
+  --reloc-sys-font-size-lg: 1.125rem;
+  --reloc-sys-font-size-xl: 1.25rem;
+  --reloc-sys-font-size-2xl: 1.5rem;
+  --reloc-sys-font-size-3xl: 1.875rem;
+
+  /* Spacing */
+  --reloc-sys-spacing-1: 4px;
+  --reloc-sys-spacing-2: 8px;
+  --reloc-sys-spacing-3: 12px;
+  --reloc-sys-spacing-4: 16px;
+  --reloc-sys-spacing-5: 20px;
+  --reloc-sys-spacing-6: 24px;
+  --reloc-sys-spacing-8: 32px;
+  --reloc-sys-spacing-10: 40px;
+  --reloc-sys-spacing-12: 48px;
+
+  /* Radii */
+  --reloc-sys-radius-none: 0px;
+  --reloc-sys-radius-sm: 4px;
+  --reloc-sys-radius-md: 8px;
+  --reloc-sys-radius-lg: 12px;
+  --reloc-sys-radius-full: 9999px;
+
+  /* Shadows */
+  --reloc-sys-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --reloc-sys-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --reloc-sys-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* ═══ Semantic References ═══ */
+
+  /* Brand */
+  --reloc-ref-color-primary: var(--reloc-sys-color-teal-700);
+  --reloc-ref-color-primary-hover: var(--reloc-sys-color-teal-800);
+  --reloc-ref-color-primary-light: var(--reloc-sys-color-teal-50);
+  --reloc-ref-color-primary-surface: var(--reloc-sys-color-teal-100);
+
+  /* Text */
+  --reloc-ref-color-text-primary: var(--reloc-sys-color-neutral-900);
+  --reloc-ref-color-text-secondary: var(--reloc-sys-color-neutral-600);
+  --reloc-ref-color-text-muted: var(--reloc-sys-color-neutral-400);
+  --reloc-ref-color-text-inverse: var(--reloc-sys-color-neutral-50);
+
+  /* Surfaces */
+  --reloc-ref-color-bg-body: var(--reloc-sys-color-neutral-50);
+  --reloc-ref-color-bg-card: #ffffff;
+  --reloc-ref-color-bg-elevated: #ffffff;
+  --reloc-ref-color-border: var(--reloc-sys-color-neutral-200);
+  --reloc-ref-color-border-strong: var(--reloc-sys-color-neutral-300);
+
+  /* Feedback */
+  --reloc-ref-color-error: var(--reloc-sys-color-error-500);
+  --reloc-ref-color-success: var(--reloc-sys-color-success-500);
+  --reloc-ref-color-warning: var(--reloc-sys-color-warning-500);
+
+  /* Typography */
+  --reloc-ref-font-display: var(--reloc-sys-font-family-display);
+  --reloc-ref-font-content: var(--reloc-sys-font-family-content);
+
+  /* Layout */
+  --reloc-ref-radius-card: var(--reloc-sys-radius-lg);
+  --reloc-ref-radius-input: var(--reloc-sys-radius-md);
+  --reloc-ref-radius-button: var(--reloc-sys-radius-md);
+  --reloc-ref-shadow-card: var(--reloc-sys-shadow-md);
+}
