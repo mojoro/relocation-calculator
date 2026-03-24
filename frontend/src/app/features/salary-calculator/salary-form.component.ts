@@ -100,6 +100,7 @@ export class SalaryFormComponent implements OnInit {
       )
       .subscribe((response) => {
         this.result.set(response);
+        try { sessionStorage.setItem('reloc_net_monthly', response.netMonthly.toString()); } catch {}
         this.isCalculating.set(false);
       });
 
