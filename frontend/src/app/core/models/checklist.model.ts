@@ -39,7 +39,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'visa-application',
       title: 'Apply for visa at German embassy',
-      description: 'Submit your visa application with all required documents. Processing takes 4-12 weeks.',
+      description:
+        'Submit your visa application with all required documents. Processing takes 4-12 weeks.',
       category: 'Pre-Arrival',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -47,7 +48,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'health-insurance',
       title: 'Arrange health insurance',
-      description: 'Public (gesetzliche) or private (private) Krankenversicherung. Required for visa and Anmeldung.',
+      description:
+        'Public (gesetzliche) or private (private) Krankenversicherung. Required for visa and Anmeldung.',
       category: 'Pre-Arrival',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -79,7 +81,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'find-housing',
       title: 'Find temporary or permanent housing',
-      description: 'You need an address for Anmeldung. A Wohnungsgeberbestätigung from your landlord is required.',
+      description:
+        'You need an address for Anmeldung. A Wohnungsgeberbestätigung from your landlord is required.',
       category: 'Pre-Arrival',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -88,7 +91,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'anmeldung',
       title: 'Register address (Anmeldung)',
-      description: 'Must be done within 14 days of moving in. Book appointment at Bürgeramt online.',
+      description:
+        'Must be done within 14 days of moving in. Book appointment at Bürgeramt online.',
       category: 'First Week',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -96,7 +100,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'bank-account',
       title: 'Open a German bank account',
-      description: 'N26, Deutsche Bank, or Sparkasse. You need your Anmeldung confirmation and passport.',
+      description:
+        'N26, Deutsche Bank, or Sparkasse. You need your Anmeldung confirmation and passport.',
       category: 'First Week',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -104,7 +109,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'tax-id',
       title: 'Receive tax ID (Steueridentifikationsnummer)',
-      description: 'Sent automatically by mail 2-4 weeks after Anmeldung. Needed for salary payments.',
+      description:
+        'Sent automatically by mail 2-4 weeks after Anmeldung. Needed for salary payments.',
       category: 'First Week',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -145,7 +151,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'phone-contract',
       title: 'Get a German phone number',
-      description: 'Prepaid SIM (Aldi Talk, Lebara) or contract (O2, Telekom). Need passport and Anmeldung.',
+      description:
+        'Prepaid SIM (Aldi Talk, Lebara) or contract (O2, Telekom). Need passport and Anmeldung.',
       category: 'First Month',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,
@@ -154,7 +161,8 @@ export function getDefaultChecklist(): ChecklistItem[] {
     {
       id: 'german-classes',
       title: 'Enroll in German language classes',
-      description: 'VHS (Volkshochschule) offers affordable courses. A1-B1 is enough for daily life.',
+      description:
+        'VHS (Volkshochschule) offers affordable courses. A1-B1 is enough for daily life.',
       category: 'Settling In',
       visaTypes: ['eu-blue-card', 'freelance', 'job-seeker'],
       completed: false,

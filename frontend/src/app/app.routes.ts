@@ -10,28 +10,28 @@ export const routes: Routes = [
     path: 'salary',
     loadComponent: () =>
       import('./features/salary-calculator/salary-calculator.component').then(
-        (m) => m.SalaryCalculatorComponent
+        (m) => m.SalaryCalculatorComponent,
       ),
   },
   {
     path: 'costs',
     loadComponent: () =>
       import('./features/cost-estimator/cost-estimator.component').then(
-        (m) => m.CostEstimatorComponent
+        (m) => m.CostEstimatorComponent,
       ),
   },
   {
     path: 'neighborhoods',
     loadComponent: () =>
       import('./features/neighborhood-explorer/neighborhood-explorer.component').then(
-        (m) => m.NeighborhoodExplorerComponent
+        (m) => m.NeighborhoodExplorerComponent,
       ),
   },
   {
     path: 'checklist',
     loadComponent: () =>
       import('./features/visa-checklist/visa-checklist.component').then(
-        (m) => m.VisaChecklistComponent
+        (m) => m.VisaChecklistComponent,
       ),
   },
 ];

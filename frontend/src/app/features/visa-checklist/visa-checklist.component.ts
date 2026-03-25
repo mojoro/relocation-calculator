@@ -1,9 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  signal,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import {
   VisaType,
   ChecklistItem,
@@ -44,9 +39,7 @@ export class VisaChecklistComponent {
     return groups;
   });
 
-  readonly completedCount = computed(
-    () => this.filteredItems().filter((i) => i.completed).length
-  );
+  readonly completedCount = computed(() => this.filteredItems().filter((i) => i.completed).length);
   readonly totalCount = computed(() => this.filteredItems().length);
   readonly progressPercent = computed(() => {
     const total = this.totalCount();
@@ -59,9 +52,7 @@ export class VisaChecklistComponent {
 
   toggleItem(id: string): void {
     this.checklist.update((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      )
+      items.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)),
     );
   }
 }

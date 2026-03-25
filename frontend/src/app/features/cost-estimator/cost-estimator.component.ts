@@ -10,12 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, switchMap, tap, catchError, EMPTY, combineLatest } from 'rxjs';
 import { CostEstimationService } from '../../core/services/cost-estimation.service';
-import {
-  CostEstimate,
-  Bezirk,
-  BEZIRK_OPTIONS,
-  ApiError,
-} from '../../core/models/cost.model';
+import { CostEstimate, Bezirk, BEZIRK_OPTIONS, ApiError } from '../../core/models/cost.model';
 import { CostBreakdownComponent } from './cost-breakdown.component';
 
 @Component({
@@ -42,9 +37,7 @@ export class CostEstimatorComponent {
   readonly error = signal<ApiError | null>(null);
 
   /** Net monthly salary from Step 1, stored in sessionStorage */
-  readonly netMonthlySalary = signal<number | null>(
-    this.loadNetSalary()
-  );
+  readonly netMonthlySalary = signal<number | null>(this.loadNetSalary());
 
   readonly affordabilityRatio = computed(() => {
     const net = this.netMonthlySalary();
@@ -64,10 +57,7 @@ export class CostEstimatorComponent {
 
   constructor() {
     // Auto-fetch when form changes
-    combineLatest([
-      this.form.controls.bezirk.valueChanges,
-      this.form.controls.rooms.valueChanges,
-    ])
+    combineLatest([this.form.controls.bezirk.valueChanges, this.form.controls.rooms.valueChanges])
       .pipe(
         debounceTime(200),
         tap(() => {
@@ -81,10 +71,10 @@ export class CostEstimatorComponent {
               this.isLoading.set(false);
               this.result.set(null);
               return EMPTY;
-            })
-          )
+            }),
+          ),
         ),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((estimate) => {
         this.result.set(estimate);

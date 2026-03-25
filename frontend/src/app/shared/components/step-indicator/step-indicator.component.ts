@@ -28,7 +28,13 @@ export interface WizardStep {
                 [style]="getStepStyle(i)"
               >
                 @if (i < currentIndex() || (i <= maxVisitedIndex() && i !== currentIndex())) {
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                  <svg
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="3"
+                  >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 } @else {
@@ -39,17 +45,21 @@ export interface WizardStep {
               <!-- Label -->
               <span
                 class="hidden text-xs font-medium sm:block"
-                [style]="i <= currentIndex() || i <= maxVisitedIndex()
-                  ? 'color: var(--reloc-ref-color-primary)'
-                  : 'color: var(--reloc-ref-color-text-muted)'"
+                [style]="
+                  i <= currentIndex() || i <= maxVisitedIndex()
+                    ? 'color: var(--reloc-ref-color-primary)'
+                    : 'color: var(--reloc-ref-color-text-muted)'
+                "
               >
                 {{ step.label }}
               </span>
               <span
                 class="block text-xs font-medium sm:hidden"
-                [style]="i <= currentIndex() || i <= maxVisitedIndex()
-                  ? 'color: var(--reloc-ref-color-primary)'
-                  : 'color: var(--reloc-ref-color-text-muted)'"
+                [style]="
+                  i <= currentIndex() || i <= maxVisitedIndex()
+                    ? 'color: var(--reloc-ref-color-primary)'
+                    : 'color: var(--reloc-ref-color-text-muted)'
+                "
               >
                 {{ step.shortLabel }}
               </span>
@@ -59,9 +69,11 @@ export interface WizardStep {
             @if (i < steps().length - 1) {
               <div
                 class="mx-1 hidden h-0.5 flex-1 sm:block"
-                [style]="i < currentIndex() || i < maxVisitedIndex()
-                  ? 'background-color: var(--reloc-ref-color-primary)'
-                  : 'background-color: var(--reloc-ref-color-border)'"
+                [style]="
+                  i < currentIndex() || i < maxVisitedIndex()
+                    ? 'background-color: var(--reloc-ref-color-primary)'
+                    : 'background-color: var(--reloc-ref-color-border)'
+                "
               ></div>
             }
           </li>
@@ -86,7 +98,11 @@ export class StepIndicatorComponent {
     const idx = this.currentIndex();
     if (idx > this._maxVisited) {
       this._maxVisited = idx;
-      try { sessionStorage.setItem('reloc_max_step', String(this._maxVisited)); } catch { /* ignore */ }
+      try {
+        sessionStorage.setItem('reloc_max_step', String(this._maxVisited));
+      } catch {
+        /* ignore */
+      }
     }
     return this._maxVisited;
   });
@@ -95,7 +111,9 @@ export class StepIndicatorComponent {
     try {
       const saved = sessionStorage.getItem('reloc_max_step');
       if (saved) this._maxVisited = parseInt(saved, 10) || 0;
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   getStepStyle(index: number): string {

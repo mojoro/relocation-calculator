@@ -2,7 +2,12 @@
 // Kotlin mirror: shared/api-contracts/costs.kt
 // Any field changes must be mirrored in both files.
 import type { Bezirk } from '../../../../../shared/api-contracts/costs';
-export type { Bezirk, CostEstimateQuery, CostEstimate, NeighborhoodProfile } from '../../../../../shared/api-contracts/costs';
+export type {
+  Bezirk,
+  CostEstimateQuery,
+  CostEstimate,
+  NeighborhoodProfile,
+} from '../../../../../shared/api-contracts/costs';
 
 export type { ApiError } from './api-error.model';
 

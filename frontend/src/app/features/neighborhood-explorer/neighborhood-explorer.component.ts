@@ -20,28 +20,41 @@ import { NeighborhoodCardComponent } from './neighborhood-card.component';
   template: `
     <div class="space-y-6">
       <div>
-        <h2 class="text-2xl font-semibold"
-            style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)">
+        <h2
+          class="text-2xl font-semibold"
+          style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)"
+        >
           Neighborhood Explorer
         </h2>
         <p class="mt-1 text-sm" style="color: var(--reloc-ref-color-text-secondary)">
-          Explore Berlin's 12 districts to find the right neighborhood for your lifestyle and budget.
+          Explore Berlin's 12 districts to find the right neighborhood for your lifestyle and
+          budget.
         </p>
       </div>
 
       @if (isLoading()) {
-        <div class="flex items-center justify-center rounded-lg border p-12"
-             style="border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)">
-          <div class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-               style="border-color: var(--reloc-ref-color-primary); border-top-color: transparent"></div>
-          <span class="ml-3 text-sm" style="color: var(--reloc-ref-color-text-secondary)">Loading neighborhoods...</span>
+        <div
+          class="flex items-center justify-center rounded-lg border p-12"
+          style="border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)"
+        >
+          <div
+            class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+            style="border-color: var(--reloc-ref-color-primary); border-top-color: transparent"
+          ></div>
+          <span class="ml-3 text-sm" style="color: var(--reloc-ref-color-text-secondary)"
+            >Loading neighborhoods...</span
+          >
         </div>
       }
 
       @if (error(); as err) {
-        <div class="rounded-lg border p-4"
-             style="border-color: var(--reloc-ref-color-error); background-color: #fef2f2">
-          <p class="text-sm font-medium" style="color: var(--reloc-ref-color-error)">{{ err.message }}</p>
+        <div
+          class="rounded-lg border p-4"
+          style="border-color: var(--reloc-ref-color-error); background-color: #fef2f2"
+        >
+          <p class="text-sm font-medium" style="color: var(--reloc-ref-color-error)">
+            {{ err.message }}
+          </p>
           <p class="mt-2 text-xs" style="color: var(--reloc-ref-color-text-muted)">
             Showing static neighborhood data instead.
           </p>
@@ -76,7 +89,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
           // Fall back to static data (already set as default)
           return EMPTY;
         }),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((profiles) => {
         this.neighborhoods.set(profiles);
@@ -92,56 +105,96 @@ export class NeighborhoodExplorerComponent implements OnInit {
         displayName: 'Mitte',
         vibe: 'The historic and governmental heart of Berlin. Tourist-heavy but culturally rich.',
         commuteMinutes: 0,
-        highlights: ['Museum Island & Brandenburg Gate', 'Excellent transit connections', 'International dining scene', 'Expensive but central'],
+        highlights: [
+          'Museum Island & Brandenburg Gate',
+          'Excellent transit connections',
+          'International dining scene',
+          'Expensive but central',
+        ],
       },
       {
         bezirk: 'friedrichshain-kreuzberg',
         displayName: 'Friedrichshain-Kreuzberg',
         vibe: "Berlin's creative and nightlife epicenter. Diverse, vibrant, sometimes chaotic.",
         commuteMinutes: 10,
-        highlights: ['Best nightlife in Berlin', 'Multicultural food scene', 'Strong startup community', 'Highly competitive rental market'],
+        highlights: [
+          'Best nightlife in Berlin',
+          'Multicultural food scene',
+          'Strong startup community',
+          'Highly competitive rental market',
+        ],
       },
       {
         bezirk: 'pankow',
         displayName: 'Pankow',
         vibe: 'Family-friendly with a village feel. Prenzlauer Berg is the gentrified gem within.',
         commuteMinutes: 15,
-        highlights: ['Café culture and boutiques', 'Mauerpark flea market', 'Excellent schools', 'More affordable than Mitte'],
+        highlights: [
+          'Café culture and boutiques',
+          'Mauerpark flea market',
+          'Excellent schools',
+          'More affordable than Mitte',
+        ],
       },
       {
         bezirk: 'charlottenburg-wilmersdorf',
         displayName: 'Charlottenburg-Wilmersdorf',
         vibe: 'Old West Berlin elegance. Upscale, quiet, with grand architecture.',
         commuteMinutes: 15,
-        highlights: ['Kurfürstendamm shopping', 'Charlottenburg Palace', 'Strong expat community', 'Quieter residential atmosphere'],
+        highlights: [
+          'Kurfürstendamm shopping',
+          'Charlottenburg Palace',
+          'Strong expat community',
+          'Quieter residential atmosphere',
+        ],
       },
       {
         bezirk: 'neukoelln',
         displayName: 'Neukölln',
         vibe: 'Rapidly gentrifying but still gritty. Art galleries meet döner shops.',
         commuteMinutes: 15,
-        highlights: ['Thriving art and music scene', 'Incredible food diversity', 'Tempelhofer Feld access', 'More affordable than Kreuzberg'],
+        highlights: [
+          'Thriving art and music scene',
+          'Incredible food diversity',
+          'Tempelhofer Feld access',
+          'More affordable than Kreuzberg',
+        ],
       },
       {
         bezirk: 'tempelhof-schoeneberg',
         displayName: 'Tempelhof-Schöneberg',
         vibe: 'Diverse and welcoming. Historic LGBTQ+ neighborhood with great parks.',
         commuteMinutes: 15,
-        highlights: ['Tempelhofer Feld', 'Vibrant LGBTQ+ scene', 'Good mix of cultures', 'Excellent U-Bahn connections'],
+        highlights: [
+          'Tempelhofer Feld',
+          'Vibrant LGBTQ+ scene',
+          'Good mix of cultures',
+          'Excellent U-Bahn connections',
+        ],
       },
       {
         bezirk: 'steglitz-zehlendorf',
         displayName: 'Steglitz-Zehlendorf',
         vibe: 'Leafy, suburban, and academic. Home to Freie Universität.',
         commuteMinutes: 25,
-        highlights: ['Botanical Garden', 'Lakes for swimming', 'University atmosphere', 'Safe and family-friendly'],
+        highlights: [
+          'Botanical Garden',
+          'Lakes for swimming',
+          'University atmosphere',
+          'Safe and family-friendly',
+        ],
       },
       {
         bezirk: 'treptow-koepenick',
         displayName: 'Treptow-Köpenick',
         vibe: "Berlin's green lung. Lakes, forests, and a small-town feel.",
         commuteMinutes: 25,
-        highlights: ['Müggelsee lake', 'Treptower Park', 'Outdoor activities', 'Affordable with nature access'],
+        highlights: [
+          'Müggelsee lake',
+          'Treptower Park',
+          'Outdoor activities',
+          'Affordable with nature access',
+        ],
       },
       {
         bezirk: 'lichtenberg',
@@ -155,21 +208,36 @@ export class NeighborhoodExplorerComponent implements OnInit {
         displayName: 'Spandau',
         vibe: 'A city within a city. Affordable, green, and feels separate from Berlin.',
         commuteMinutes: 35,
-        highlights: ['Most affordable rents', 'Spandau Citadel', 'Rivers and forests', 'Longer commute'],
+        highlights: [
+          'Most affordable rents',
+          'Spandau Citadel',
+          'Rivers and forests',
+          'Longer commute',
+        ],
       },
       {
         bezirk: 'marzahn-hellersdorf',
         displayName: 'Marzahn-Hellersdorf',
         vibe: 'East Berlin Plattenbau district being reinvented. Surprisingly green.',
         commuteMinutes: 35,
-        highlights: ['Gardens of the World', 'Lowest rents in Berlin', 'Large apartments', 'Improving transit'],
+        highlights: [
+          'Gardens of the World',
+          'Lowest rents in Berlin',
+          'Large apartments',
+          'Improving transit',
+        ],
       },
       {
         bezirk: 'reinickendorf',
         displayName: 'Reinickendorf',
         vibe: 'Quiet northern district. Lakes, forests, and old Berlin charm.',
         commuteMinutes: 30,
-        highlights: ['Tegeler See', 'Tegel redevelopment', 'French Quarter', 'Affordable with good amenities'],
+        highlights: [
+          'Tegeler See',
+          'Tegel redevelopment',
+          'French Quarter',
+          'Affordable with good amenities',
+        ],
       },
     ];
   }

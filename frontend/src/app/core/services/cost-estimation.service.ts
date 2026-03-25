@@ -10,10 +10,9 @@ export class CostEstimationService {
   private readonly baseUrl = environment.apiBaseUrl;
 
   estimateCosts(bezirk: string, rooms: number): Observable<CostEstimate> {
-    return this.http.get<CostEstimate>(
-      `${this.baseUrl}/costs/estimate`,
-      { params: { bezirk, rooms: rooms.toString() } }
-    );
+    return this.http.get<CostEstimate>(`${this.baseUrl}/costs/estimate`, {
+      params: { bezirk, rooms: rooms.toString() },
+    });
   }
 
   getAllNeighborhoods(): Observable<NeighborhoodProfile[]> {

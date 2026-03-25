@@ -1,10 +1,17 @@
 <div class="space-y-6">
   <!-- Selection Card -->
-  <div class="rounded-lg border p-6"
-       style="background-color: var(--reloc-ref-color-bg-card); border-color: var(--reloc-ref-color-border); box-shadow: var(--reloc-ref-shadow-card)">
-
-    <h2 class="mb-1 text-2xl font-semibold"
-        style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)">
+  <div
+    class="rounded-lg border p-6"
+    style="
+      background-color: var(--reloc-ref-color-bg-card);
+      border-color: var(--reloc-ref-color-border);
+      box-shadow: var(--reloc-ref-shadow-card);
+    "
+  >
+    <h2
+      class="mb-1 text-2xl font-semibold"
+      style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)"
+    >
       Cost Estimator
     </h2>
     <p class="mb-6 text-sm" style="color: var(--reloc-ref-color-text-secondary)">
@@ -14,15 +21,22 @@
     <form [formGroup]="form" class="space-y-5">
       <!-- Bezirk Selection -->
       <div>
-        <label for="bezirk" class="mb-1.5 block text-sm font-medium"
-               style="color: var(--reloc-ref-color-text-primary)">
+        <label
+          for="bezirk"
+          class="mb-1.5 block text-sm font-medium"
+          style="color: var(--reloc-ref-color-text-primary)"
+        >
           District (Bezirk)
         </label>
         <select
           id="bezirk"
           formControlName="bezirk"
           class="w-full rounded-md border px-3 py-2.5 text-sm outline-none"
-          style="border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card); color: var(--reloc-ref-color-text-primary)"
+          style="
+            border-color: var(--reloc-ref-color-border);
+            background-color: var(--reloc-ref-color-bg-card);
+            color: var(--reloc-ref-color-text-primary);
+          "
         >
           @for (option of bezirkOptions; track option.value) {
             <option [value]="option.value">{{ option.label }}</option>
@@ -32,17 +46,21 @@
 
       <!-- Room Count -->
       <div>
-        <label class="mb-2 block text-sm font-medium"
-               style="color: var(--reloc-ref-color-text-primary)">
+        <label
+          class="mb-2 block text-sm font-medium"
+          style="color: var(--reloc-ref-color-text-primary)"
+        >
           Number of Rooms
         </label>
         <div class="flex gap-2">
           @for (room of roomOptions; track room) {
             <label
               class="flex h-10 w-14 cursor-pointer items-center justify-center rounded-md border text-sm font-medium transition-colors"
-              [style]="form.controls.rooms.value === room
-                ? 'border-color: var(--reloc-ref-color-primary); background-color: var(--reloc-ref-color-primary-light); color: var(--reloc-ref-color-primary)'
-                : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card); color: var(--reloc-ref-color-text-primary)'"
+              [style]="
+                form.controls.rooms.value === room
+                  ? 'border-color: var(--reloc-ref-color-primary); background-color: var(--reloc-ref-color-primary-light); color: var(--reloc-ref-color-primary)'
+                  : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card); color: var(--reloc-ref-color-text-primary)'
+              "
             >
               <input type="radio" formControlName="rooms" [value]="room" class="sr-only" />
               {{ room }}
@@ -55,19 +73,32 @@
 
   <!-- Loading -->
   @if (isLoading()) {
-    <div class="flex items-center justify-center rounded-lg border p-8"
-         style="border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)">
-      <div class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-           style="border-color: var(--reloc-ref-color-primary); border-top-color: transparent"></div>
-      <span class="ml-3 text-sm" style="color: var(--reloc-ref-color-text-secondary)">Estimating costs...</span>
+    <div
+      class="flex items-center justify-center rounded-lg border p-8"
+      style="
+        border-color: var(--reloc-ref-color-border);
+        background-color: var(--reloc-ref-color-bg-card);
+      "
+    >
+      <div
+        class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+        style="border-color: var(--reloc-ref-color-primary); border-top-color: transparent"
+      ></div>
+      <span class="ml-3 text-sm" style="color: var(--reloc-ref-color-text-secondary)"
+        >Estimating costs...</span
+      >
     </div>
   }
 
   <!-- Error -->
   @if (error(); as err) {
-    <div class="rounded-lg border p-4"
-         style="border-color: var(--reloc-ref-color-error); background-color: #fef2f2">
-      <p class="text-sm font-medium" style="color: var(--reloc-ref-color-error)">{{ err.message }}</p>
+    <div
+      class="rounded-lg border p-4"
+      style="border-color: var(--reloc-ref-color-error); background-color: #fef2f2"
+    >
+      <p class="text-sm font-medium" style="color: var(--reloc-ref-color-error)">
+        {{ err.message }}
+      </p>
     </div>
   }
 

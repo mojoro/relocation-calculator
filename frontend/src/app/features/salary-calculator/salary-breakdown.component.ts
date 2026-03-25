@@ -22,6 +22,8 @@ export class SalaryBreakdownComponent {
   /** Computed: social insurance subtotal */
   readonly socialInsuranceTotal = computed(() => {
     const r = this.result();
-    return r.healthInsurance + r.pensionInsurance + r.unemploymentInsurance + r.nursingCareInsurance;
+    return (
+      r.healthInsurance + r.pensionInsurance + r.unemploymentInsurance + r.nursingCareInsurance
+    );
   });
 }

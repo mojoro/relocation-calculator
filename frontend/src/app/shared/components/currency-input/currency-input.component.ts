@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  signal,
-  forwardRef,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, signal, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
@@ -27,7 +21,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       <span
         class="absolute left-3 top-1/2 -translate-y-1/2 text-sm"
         style="color: var(--reloc-ref-color-text-muted)"
-      >&#8364;</span>
+        >&#8364;</span
+      >
       <input
         type="text"
         [id]="inputId()"

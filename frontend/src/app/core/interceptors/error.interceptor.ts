@@ -24,11 +24,14 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       console.error(`[HTTP Error] ${error.status} ${req.method} ${req.url}: ${message}`);
 
-      return throwError(() => ({
-        status: error.status,
-        message,
-        timestamp: new Date().toISOString(),
-      } as ApiError));
-    })
+      return throwError(
+        () =>
+          ({
+            status: error.status,
+            message,
+            timestamp: new Date().toISOString(),
+          }) as ApiError,
+      );
+    }),
   );
 };

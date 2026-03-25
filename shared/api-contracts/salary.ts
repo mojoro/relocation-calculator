@@ -24,7 +24,7 @@ export interface SalaryRequest {
   hasChildren: boolean;
   /** Number of children (relevant for nursing care insurance) */
   childCount: number;
-  respondentAge: number | null;
+  respondentAge: number;
 }
 
 /** Response from POST /api/v1/salary/calculate */

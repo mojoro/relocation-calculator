@@ -8,12 +8,7 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, filter, switchMap, tap, catchError } from 'rxjs';
 import { EMPTY } from 'rxjs';
 import { SalaryCalculationService } from '../../core/services/salary-calculation.service';
@@ -56,9 +51,9 @@ export class SalaryFormComponent implements OnInit {
       validators: [Validators.min(0), Validators.max(10)],
     }),
     respondentAge: new FormControl<number>(18, {
-      nonNullable: true, 
-      validators: [Validators.min(18), Validators.max(125)]
-    })
+      nonNullable: true,
+      validators: [Validators.min(18), Validators.max(125)],
+    }),
   });
 
   /** State signals */
@@ -79,7 +74,9 @@ export class SalaryFormComponent implements OnInit {
         this.salaryForm.patchValue(values, { emitEvent: false });
         hasRestored = true;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
 
     // Auto-calculate when form changes (debounced)
     this.salaryForm.valueChanges
@@ -99,7 +96,7 @@ export class SalaryFormComponent implements OnInit {
               churchTax: formValue.churchTax,
               hasChildren: formValue.hasChildren,
               childCount: formValue.hasChildren ? formValue.childCount : 0,
-              respondentAge: formValue.respondentAge
+              respondentAge: formValue.respondentAge,
             })
             .pipe(
               catchError((err: ApiError) => {
@@ -107,22 +104,31 @@ export class SalaryFormComponent implements OnInit {
                 this.isCalculating.set(false);
                 this.result.set(null);
                 return EMPTY;
-              })
+              }),
             );
         }),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((response) => {
         this.result.set(response);
         try {
           sessionStorage.setItem('reloc_net_monthly', response.netMonthly.toString());
-          sessionStorage.setItem('reloc_salary_form', JSON.stringify(this.salaryForm.getRawValue()));
-        } catch { /* ignore */ }
+          sessionStorage.setItem(
+            'reloc_salary_form',
+            JSON.stringify(this.salaryForm.getRawValue()),
+          );
+        } catch {
+          /* ignore */
+        }
         this.isCalculating.set(false);
       });
 
     // Trigger calculation if form was restored from sessionStorage
-    if (hasRestored && this.salaryForm.valid && this.salaryForm.controls.grossAnnual.value !== null) {
+    if (
+      hasRestored &&
+      this.salaryForm.valid &&
+      this.salaryForm.controls.grossAnnual.value !== null
+    ) {
       this.salaryForm.updateValueAndValidity();
     }
 

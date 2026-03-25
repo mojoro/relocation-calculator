@@ -18,5 +18,6 @@ data class SalaryRequest(
         val hasChildren: Boolean = false,
         @field:Min(value = 0, message = "Child count must be non-negative") val childCount: Int = 0,
         @field:Min(value = 18, message = "Individual must be a legal adult")
+        @field:Max(value = 125, message = "Individual seems unrealistically old")
         val respondentAge: Int = 18,
 )
