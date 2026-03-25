@@ -69,8 +69,8 @@ class TaxCalculationService {
         /** Nursing care insurance (Pflegeversicherung) -- base employee share: 1.7% */
         const val NURSING_CARE_BASE_RATE = 0.017
 
-        /** Additional nursing care surcharge for childless over 23: 0.6% */
-        const val NURSING_CARE_CHILDLESS_SURCHARGE = 0.006
+        /** 0.3% employee share of 0.6% total childless surcharge (2025 Pflegeversicherung reform - equal employer/employee split) */
+        const val NURSING_CARE_CHILDLESS_SURCHARGE = 0.003
 
         // ==================================================
         // 2025 Social Insurance Contribution Ceilings
@@ -97,14 +97,16 @@ class TaxCalculationService {
     }
 
     fun calculate(request: SalaryRequest): SalaryResponse {
-        val grossAnnual = request.grossAnnual.toDouble()
+        val grossAnnualInt = requireNotNull(request.grossAnnual) { "grossAnnual must not be null" }
+        val taxClass = requireNotNull(request.taxClass) { "taxClass must not be null" }
+        val grossAnnual = grossAnnualInt.toDouble()
         val grossMonthly = grossAnnual / 12.0
 
         // Calculate taxable income based on tax class
-        val taxableIncome = calculateTaxableIncome(grossAnnual, request.taxClass)
+        val taxableIncome = calculateTaxableIncome(grossAnnual, taxClass)
 
         // Annual income tax
-        val annualIncomeTax = calculateIncomeTax(taxableIncome, request.taxClass)
+        val annualIncomeTax = calculateIncomeTax(taxableIncome, taxClass)
         val monthlyIncomeTax = annualIncomeTax / 12.0
 
         // Solidarity surcharge

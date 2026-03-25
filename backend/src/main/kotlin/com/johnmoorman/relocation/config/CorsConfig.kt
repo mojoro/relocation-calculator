@@ -14,10 +14,11 @@ class CorsConfig {
         val config = CorsConfiguration().apply {
             allowedOrigins = listOf(
                 "http://localhost:4200",
-                "http://localhost:4000"
+                "http://localhost:4000",
+                "https://relocation-calculator.vercel.app" // TODO: update with real production URL
             )
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            allowedHeaders = listOf("*")
+            allowedHeaders = listOf("Content-Type", "Accept", "Authorization", "X-Requested-With")
             allowCredentials = true
             maxAge = 3600
         }

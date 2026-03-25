@@ -22,12 +22,12 @@ class CostController(private val costService: CostEstimationService) {
     fun estimateCosts(
         @RequestParam bezirk: String,
         @RequestParam(defaultValue = "2") rooms: Int
-    ): ResponseEntity<CostEstimate> {
+    ): ResponseEntity<*> {
         return try {
             val estimate = costService.estimateCosts(bezirk, rooms)
             ResponseEntity.ok(estimate)
         } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest().build()
+            ResponseEntity.badRequest().body(mapOf("error" to "Invalid bezirk: ${e.message}"))
         }
     }
 
@@ -37,12 +37,12 @@ class CostController(private val costService: CostEstimationService) {
     }
 
     @GetMapping("/neighborhoods/{bezirk}")
-    fun getNeighborhood(@PathVariable bezirk: String): ResponseEntity<NeighborhoodProfile> {
+    fun getNeighborhood(@PathVariable bezirk: String): ResponseEntity<*> {
         return try {
             val profile = costService.getNeighborhoodProfile(bezirk)
             ResponseEntity.ok(profile)
         } catch (e: IllegalArgumentException) {
-            ResponseEntity.notFound().build()
+            ResponseEntity.status(404).body(mapOf("error" to "Neighborhood not found for bezirk: $bezirk"))
         }
     }
 }

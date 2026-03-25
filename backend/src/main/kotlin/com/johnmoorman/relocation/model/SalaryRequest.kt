@@ -10,12 +10,12 @@ import jakarta.validation.constraints.NotNull
  */
 data class SalaryRequest(
     @field:NotNull(message = "Gross annual salary is required")
-    @field:Min(value = 0, message = "Salary must be non-negative")
-    @field:Max(value = 10_000_000, message = "Salary exceeds maximum")
-    val grossAnnual: Int,
+    @field:Min(value = 1, message = "Salary must be at least 1")
+    @field:Max(value = 10_000_000, message = "Salary seems unrealistically high")
+    val grossAnnual: Int?,
 
     @field:NotNull(message = "Tax class is required")
-    val taxClass: TaxClass,
+    val taxClass: TaxClass?,
 
     val churchTax: Boolean = false,
     val hasChildren: Boolean = false,

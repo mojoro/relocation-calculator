@@ -248,6 +248,5 @@ class CostEstimationService {
 
     fun getAllProfiles(): List<NeighborhoodProfile> = profiles.values.toList()
 
-    private fun roundTwo(value: Double): Double =
-        (value * 100.0).toLong() / 100.0
+    private fun roundTwo(value: Double): Double = kotlin.math.round(value * 100.0) / 100.0
 }
