@@ -55,6 +55,10 @@ export class SalaryFormComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.min(0), Validators.max(10)],
     }),
+    respondentAge: new FormControl<number>(18, {
+      nonNullable: true, 
+      validators: [Validators.min(18), Validators.max(125)]
+    })
   });
 
   /** State signals */
@@ -95,6 +99,7 @@ export class SalaryFormComponent implements OnInit {
               churchTax: formValue.churchTax,
               hasChildren: formValue.hasChildren,
               childCount: formValue.hasChildren ? formValue.childCount : 0,
+              respondentAge: formValue.respondentAge
             })
             .pipe(
               catchError((err: ApiError) => {

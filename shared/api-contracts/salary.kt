@@ -21,7 +21,8 @@ data class SalaryRequest(
     val taxClass: TaxClass,
     val churchTax: Boolean = false,
     val hasChildren: Boolean = false,
-    val childCount: Int = 0
+    val childCount: Int = 0,
+    val respondentAge: Int = 18
 )
 
 /** Response from POST /api/v1/salary/calculate */

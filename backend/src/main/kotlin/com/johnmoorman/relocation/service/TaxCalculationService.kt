@@ -3,10 +3,10 @@ package com.johnmoorman.relocation.service
 import com.johnmoorman.relocation.model.SalaryRequest
 import com.johnmoorman.relocation.model.SalaryResponse
 import com.johnmoorman.relocation.model.TaxClass
-import org.springframework.stereotype.Service
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import org.springframework.stereotype.Service
 
 /**
  * Calculates German net salary from gross salary.
@@ -17,9 +17,9 @@ import kotlin.math.roundToInt
  * - Solidarity surcharge (Solidaritaetszuschlag) -- only above threshold
  * - Church tax (Kirchensteuer) -- 8% or 9% of income tax depending on state
  *
- * IMPORTANT: This is a simplified model for demonstration purposes.
- * It is directionally accurate but NOT suitable for actual tax filing.
- * Real tax calculation requires the official BMF tax algorithm.
+ * IMPORTANT: This is a simplified model for demonstration purposes. It is directionally accurate
+ * but NOT suitable for actual tax filing. Real tax calculation requires the official BMF tax
+ * algorithm.
  */
 @Service
 class TaxCalculationService {
@@ -57,7 +57,9 @@ class TaxCalculationService {
         // 2025 Social Insurance Rates (Employee Share)
         // ==================================================
 
-        /** Health insurance (Krankenversicherung) -- employee share: 7.3% + avg supplementary ~0.85% */
+        /**
+         * Health insurance (Krankenversicherung) -- employee share: 7.3% + avg supplementary ~0.85%
+         */
         const val HEALTH_INSURANCE_RATE = 0.0815
 
         /** Pension insurance (Rentenversicherung) -- employee share: 9.3% */
@@ -69,8 +71,12 @@ class TaxCalculationService {
         /** Nursing care insurance (Pflegeversicherung) -- base employee share: 1.7% */
         const val NURSING_CARE_BASE_RATE = 0.017
 
-        /** 0.3% employee share of 0.6% total childless surcharge (2025 Pflegeversicherung reform - equal employer/employee split) */
+        /**
+         * 0.3% employee share of 0.6% total childless surcharge (2025 Pflegeversicherung reform -
+         * equal employer/employee split)
+         */
         const val NURSING_CARE_CHILDLESS_SURCHARGE = 0.003
+        const val CHILDLESS_EXEMPTION_AGE = 23
 
         // ==================================================
         // 2025 Social Insurance Contribution Ceilings
@@ -79,7 +85,10 @@ class TaxCalculationService {
         /** Annual ceiling for health/nursing (Beitragsbemessungsgrenze Krankenversicherung) */
         const val HEALTH_CEILING_ANNUAL = 66_150
 
-        /** Annual ceiling for pension/unemployment (Beitragsbemessungsgrenze Rentenversicherung West) */
+        /**
+         * Annual ceiling for pension/unemployment (Beitragsbemessungsgrenze Rentenversicherung
+         * West)
+         */
         const val PENSION_CEILING_ANNUAL = 96_600
 
         // ==================================================
@@ -114,9 +123,10 @@ class TaxCalculationService {
         val monthlySoli = annualSoli / 12.0
 
         // Church tax
-        val monthlyChurchTax = if (request.churchTax) {
-            (annualIncomeTax * CHURCH_TAX_RATE) / 12.0
-        } else null
+        val monthlyChurchTax =
+                if (request.churchTax) {
+                    (annualIncomeTax * CHURCH_TAX_RATE) / 12.0
+                } else null
 
         // Social insurance (calculated on monthly gross, capped at ceilings)
         val healthBase = min(grossMonthly, HEALTH_CEILING_ANNUAL / 12.0)
@@ -126,50 +136,59 @@ class TaxCalculationService {
         val monthlyPension = pensionBase * PENSION_INSURANCE_RATE
         val monthlyUnemployment = pensionBase * UNEMPLOYMENT_INSURANCE_RATE
 
-        val nursingRate = if (!request.hasChildren || request.childCount == 0) {
-            NURSING_CARE_BASE_RATE + NURSING_CARE_CHILDLESS_SURCHARGE
-        } else {
-            // Reduced rate for parents: base rate minus 0.25% per child (up to 5)
-            val childDiscount = min(request.childCount, 5) * 0.0025
-            max(NURSING_CARE_BASE_RATE - childDiscount, 0.01)
-        }
+        val nursingRate =
+                if ((!request.hasChildren || request.childCount == 0) &&
+                                request.respondentAge > CHILDLESS_EXEMPTION_AGE
+                ) {
+                    NURSING_CARE_BASE_RATE + NURSING_CARE_CHILDLESS_SURCHARGE
+                } else {
+                    // Reduced rate for parents: base rate minus 0.25% per child (up to 5)
+                    val childDiscount = min(request.childCount, 5) * 0.0025
+                    max(NURSING_CARE_BASE_RATE - childDiscount, 0.01)
+                }
         val monthlyNursing = healthBase * nursingRate
 
         // Total deductions
-        val totalDeductions = monthlyIncomeTax + monthlySoli +
-            (monthlyChurchTax ?: 0.0) +
-            monthlyHealth + monthlyPension + monthlyUnemployment + monthlyNursing
+        val totalDeductions =
+                monthlyIncomeTax +
+                        monthlySoli +
+                        (monthlyChurchTax ?: 0.0) +
+                        monthlyHealth +
+                        monthlyPension +
+                        monthlyUnemployment +
+                        monthlyNursing
 
         val netMonthly = grossMonthly - totalDeductions
 
         return SalaryResponse(
-            grossMonthly = roundToTwoDecimals(grossMonthly),
-            netMonthly = roundToTwoDecimals(netMonthly),
-            incomeTax = roundToTwoDecimals(monthlyIncomeTax),
-            solidaritySurcharge = roundToTwoDecimals(monthlySoli),
-            healthInsurance = roundToTwoDecimals(monthlyHealth),
-            pensionInsurance = roundToTwoDecimals(monthlyPension),
-            unemploymentInsurance = roundToTwoDecimals(monthlyUnemployment),
-            nursingCareInsurance = roundToTwoDecimals(monthlyNursing),
-            churchTaxAmount = monthlyChurchTax?.let { roundToTwoDecimals(it) },
-            totalDeductions = roundToTwoDecimals(totalDeductions)
+                grossMonthly = roundToTwoDecimals(grossMonthly),
+                netMonthly = roundToTwoDecimals(netMonthly),
+                incomeTax = roundToTwoDecimals(monthlyIncomeTax),
+                solidaritySurcharge = roundToTwoDecimals(monthlySoli),
+                healthInsurance = roundToTwoDecimals(monthlyHealth),
+                pensionInsurance = roundToTwoDecimals(monthlyPension),
+                unemploymentInsurance = roundToTwoDecimals(monthlyUnemployment),
+                nursingCareInsurance = roundToTwoDecimals(monthlyNursing),
+                churchTaxAmount = monthlyChurchTax?.let { roundToTwoDecimals(it) },
+                totalDeductions = roundToTwoDecimals(totalDeductions)
         )
     }
 
     /**
-     * Calculates taxable income by applying the Grundfreibetrag and
-     * tax-class-specific allowances.
+     * Calculates taxable income by applying the Grundfreibetrag and tax-class-specific allowances.
      */
     private fun calculateTaxableIncome(grossAnnual: Double, taxClass: TaxClass): Double {
         // Simplified: apply allowances based on tax class
-        val allowance = when (taxClass) {
-            TaxClass.I -> GRUNDFREIBETRAG.toDouble()
-            TaxClass.II -> GRUNDFREIBETRAG + 4_260.0  // Entlastungsbetrag fuer Alleinerziehende
-            TaxClass.III -> GRUNDFREIBETRAG * 2.0      // Double allowance for married
-            TaxClass.IV -> GRUNDFREIBETRAG.toDouble()   // Same as Class I
-            TaxClass.V -> 0.0                           // No allowance (partner gets double)
-            TaxClass.VI -> 0.0                          // No allowance (secondary job)
-        }
+        val allowance =
+                when (taxClass) {
+                    TaxClass.I -> GRUNDFREIBETRAG.toDouble()
+                    TaxClass.II ->
+                            GRUNDFREIBETRAG + 4_260.0 // Entlastungsbetrag fuer Alleinerziehende
+                    TaxClass.III -> GRUNDFREIBETRAG * 2.0 // Double allowance for married
+                    TaxClass.IV -> GRUNDFREIBETRAG.toDouble() // Same as Class I
+                    TaxClass.V -> 0.0 // No allowance (partner gets double)
+                    TaxClass.VI -> 0.0 // No allowance (secondary job)
+                }
         return max(grossAnnual - allowance, 0.0)
     }
 
@@ -185,11 +204,12 @@ class TaxCalculationService {
      */
     private fun calculateIncomeTax(taxableIncome: Double, taxClass: TaxClass): Double {
         // For tax class III, use splitting method (Ehegattensplitting)
-        val incomeForCalculation = if (taxClass == TaxClass.III) {
-            taxableIncome / 2.0
-        } else {
-            taxableIncome
-        }
+        val incomeForCalculation =
+                if (taxClass == TaxClass.III) {
+                    taxableIncome / 2.0
+                } else {
+                    taxableIncome
+                }
 
         val tax = calculateProgressiveTax(incomeForCalculation)
 
@@ -197,9 +217,7 @@ class TaxCalculationService {
         return if (taxClass == TaxClass.III) tax * 2.0 else tax
     }
 
-    /**
-     * Implements the four-zone progressive income tax formula.
-     */
+    /** Implements the four-zone progressive income tax formula. */
     private fun calculateProgressiveTax(taxableIncome: Double): Double {
         if (taxableIncome <= GRUNDFREIBETRAG) return 0.0
 
@@ -225,9 +243,8 @@ class TaxCalculationService {
     }
 
     /**
-     * Calculates the solidarity surcharge.
-     * Applied at 5.5% of income tax, but only if income tax exceeds the threshold.
-     * Below the threshold: 0. In a transitional zone: gradually phased in.
+     * Calculates the solidarity surcharge. Applied at 5.5% of income tax, but only if income tax
+     * exceeds the threshold. Below the threshold: 0. In a transitional zone: gradually phased in.
      */
     private fun calculateSoli(annualIncomeTax: Double): Double {
         if (annualIncomeTax <= SOLI_THRESHOLD) return 0.0
