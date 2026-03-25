@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { SalaryResponse } from '../../core/models/salary.model';
 
 @Component({
   selector: 'reloc-salary-breakdown',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CurrencyPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './salary-breakdown.component.html',
 })

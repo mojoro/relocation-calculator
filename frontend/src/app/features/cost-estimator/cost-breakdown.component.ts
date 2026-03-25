@@ -1,10 +1,10 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { CommonModule, CurrencyPipe, PercentPipe } from '@angular/common';
+import { CurrencyPipe, PercentPipe } from '@angular/common';
 
 @Component({
   selector: 'reloc-cost-breakdown',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, PercentPipe],
+  imports: [CurrencyPipe, PercentPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cost-breakdown.component.html',
 })

@@ -7,7 +7,6 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, switchMap, tap, catchError, EMPTY, combineLatest } from 'rxjs';
 import { CostEstimationService } from '../../core/services/cost-estimation.service';
@@ -22,7 +21,7 @@ import { CostBreakdownComponent } from './cost-breakdown.component';
 @Component({
   selector: 'reloc-cost-estimator',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CostBreakdownComponent],
+  imports: [ReactiveFormsModule, CostBreakdownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cost-estimator.component.html',
 })
@@ -94,6 +93,7 @@ export class CostEstimatorComponent {
 
     // Trigger initial fetch
     this.form.controls.bezirk.updateValueAndValidity();
+    this.form.controls.rooms.updateValueAndValidity();
   }
 
   private loadNetSalary(): number | null {

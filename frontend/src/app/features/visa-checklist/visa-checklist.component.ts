@@ -4,7 +4,6 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   VisaType,
   ChecklistItem,
@@ -15,7 +14,7 @@ import {
 @Component({
   selector: 'reloc-visa-checklist',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './visa-checklist.component.html',
 })

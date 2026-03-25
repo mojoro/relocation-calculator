@@ -2,7 +2,6 @@ import {
   Component,
   ChangeDetectionStrategy,
   input,
-  output,
   signal,
   forwardRef,
 } from '@angular/core';
@@ -43,7 +42,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   `,
 })
 export class CurrencyInputComponent implements ControlValueAccessor {
-  readonly inputId = input<string>('');
+  readonly inputId = input.required<string>();
   readonly placeholder = input<string>('0');
 
   readonly displayValue = signal('');

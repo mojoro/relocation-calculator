@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -8,6 +8,7 @@ import { StepIndicatorComponent, WizardStep } from './shared/components/step-ind
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, StepIndicatorComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="min-h-screen" style="background-color: var(--reloc-ref-color-bg-body)">
       <header class="border-b px-6 py-4" style="background-color: var(--reloc-ref-color-bg-card); border-color: var(--reloc-ref-color-border)">

@@ -7,7 +7,6 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import { catchError, EMPTY } from 'rxjs';
 import { CostEstimationService } from '../../core/services/cost-estimation.service';
 import { NeighborhoodProfile, ApiError } from '../../core/models/cost.model';
@@ -16,7 +15,7 @@ import { NeighborhoodCardComponent } from './neighborhood-card.component';
 @Component({
   selector: 'reloc-neighborhood-explorer',
   standalone: true,
-  imports: [CommonModule, NeighborhoodCardComponent],
+  imports: [NeighborhoodCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6">
