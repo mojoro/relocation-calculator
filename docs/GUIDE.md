@@ -15,9 +15,10 @@
 2. [Architecture Overview](#2-architecture-overview)
 3. [Request Lifecycle (End-to-End Walkthrough)](#3-request-lifecycle-end-to-end-walkthrough)
 4. [Technology Rationale](#4-technology-rationale)
-5. [Jargon Glossary](#5-jargon-glossary)
-6. [Tutorial Index (Learning Path)](#6-tutorial-index-learning-path)
-7. [Interview Preparation](#7-interview-preparation)
+5. [Best Practices](#5-best-practices)
+6. [Jargon Glossary](#6-jargon-glossary)
+7. [Tutorial Index (Learning Path)](#7-tutorial-index-learning-path)
+8. [Interview Preparation](#8-interview-preparation)
 
 ---
 
@@ -63,8 +64,9 @@ Browser ──→ Angular (localhost:4200) ──HTTP──→ Spring Boot (loca
                 │   ├── isCalculating: signal<boolean>   │   ├── Social insurance contributions
                 │   └── error: signal<ApiError>          │   └── Soli, church tax, nursing care
                 │                                       │
-                ├── HttpClient + Interceptors            ├── CostEstimationService (planned)
+                ├── HttpClient + Interceptors            ├── CostEstimationService
                 │   ├── SalaryCalculationService         │   └── Berlin Bezirk cost data
+                │   └── CostEstimationService            │
                 │   └── errorInterceptor (global)       │
                 │                                       ├── Jackson (JSON serialization)
                 ├── Design Tokens (CSS)                 │   └── Kotlin data classes ↔ JSON
@@ -83,11 +85,18 @@ The Angular app uses a **feature-based folder structure**:
 frontend/src/app/
 ├── core/                           # Singletons — services, interceptors, models
 │   ├── services/
-│   │   └── salary-calculation.service.ts
+│   │   ├── salary-calculation.service.ts
+│   │   └── cost-estimation.service.ts
 │   ├── interceptors/
 │   │   └── error.interceptor.ts
 │   └── models/
-│       └── salary.model.ts
+│       ├── salary.model.ts
+│       ├── cost.model.ts
+│       └── api-error.model.ts
+├── shared/                         # Shared components
+│   └── components/
+│       ├── step-indicator/         # Wizard navigation with visited-step tracking
+│       └── currency-input/         # Formatted EUR currency input
 ├── features/                       # Each feature is a lazy-loaded route
 │   ├── salary-calculator/          # Step 1: Salary input + net breakdown
 │   │   ├── salary-calculator.component.ts    (container)
@@ -96,9 +105,14 @@ frontend/src/app/
 │   │   ├── salary-breakdown.component.ts     (presentational — displays result)
 │   │   └── salary-breakdown.component.html
 │   ├── cost-estimator/             # Step 2: Cost of living by Bezirk
+│   │   ├── cost-estimator.component.ts       (container + form)
+│   │   └── cost-breakdown.component.ts       (presentational)
 │   ├── neighborhood-explorer/      # Step 3: Neighborhood profiles
+│   │   └── neighborhood-explorer.component.ts
 │   └── visa-checklist/             # Step 4: Relocation admin checklist
-├── app.config.ts                   # Providers: router, HTTP, interceptors
+│       ├── visa-checklist.component.ts
+│       └── visa-checklist.component.html
+├── app.config.ts                   # Providers: router, HTTP, interceptors, German locale
 ├── app.routes.ts                   # Lazy-loaded routes for each step
 └── app.ts                          # Root component (shell + navigation)
 ```
@@ -115,15 +129,20 @@ Key architectural decisions:
 backend/src/main/kotlin/com/johnmoorman/relocation/
 ├── RelocationApplication.kt        # @SpringBootApplication — the entry point
 ├── controller/
-│   └── SalaryController.kt         # REST endpoint: POST /api/v1/salary/calculate
+│   ├── SalaryController.kt         # REST endpoint: POST /api/v1/salary/calculate
+│   └── CostController.kt           # REST endpoint: GET /api/v1/costs/estimate
 ├── service/
-│   └── TaxCalculationService.kt    # German tax calculation business logic
+│   ├── TaxCalculationService.kt    # German tax calculation business logic
+│   └── CostEstimationService.kt    # Berlin living cost estimation
 ├── model/
 │   ├── SalaryRequest.kt            # Kotlin data class (mirrors TypeScript interface)
 │   ├── SalaryResponse.kt           # Kotlin data class (mirrors TypeScript interface)
+│   ├── CostEstimate.kt             # Kotlin data class for cost breakdown
+│   ├── Neighborhood.kt             # Kotlin data class for Bezirk profiles
 │   └── TaxClass.kt                 # Enum: I, II, III, IV, V, VI
 └── config/
-    └── CorsConfig.kt               # Allows Angular dev server to call the API
+    ├── CorsConfig.kt               # Allows Angular dev server to call the API
+    └── GlobalExceptionHandler.kt   # @RestControllerAdvice for structured error responses
 ```
 
 Key architectural decisions:
@@ -233,6 +252,7 @@ Back in the browser, the `subscribe()` callback fires:
 ```typescript
 .subscribe((response) => {
     this.result.set(response);      // Signal update
+    sessionStorage.setItem(…);      // Persist for back-navigation
     this.isCalculating.set(false);  // Signal update
 });
 ```
@@ -273,7 +293,21 @@ Every technology in this project was chosen deliberately. This table explains wh
 
 ---
 
-## 5. Jargon Glossary
+## 5. Best Practices
+
+The [[best-practices]] document collects the coding standards enforced throughout this project: which Angular APIs to use (and which to avoid), Spring Boot patterns that keep the backend testable and correct, and integration rules that keep the TypeScript/Kotlin contract in sync.
+
+Key rules at a glance:
+
+- **Angular**: `ChangeDetectionStrategy.OnPush` on every component; `@if`/`@for` over `*ngIf`/`*ngFor`; `signal()` for state, `toSignal()` to bridge RxJS; `input.required<T>()` over `@Input()`; `takeUntilDestroyed` on every manual subscription; `<button>` for every click handler
+- **Kotlin**: constructor injection only; `data class` for all API models; `@RestControllerAdvice` for structured error bodies; `@Valid` on every `@RequestBody`; `kotlin.math.round()` for monetary values
+- **Integration**: shared contracts updated in lockstep; all `HttpClient` calls typed; three signals (`isLoading`, `result`, `error`) on every API call; backend URL from `environment.ts`, never hardcoded
+
+See [[best-practices]] for the full reference with code examples.
+
+---
+
+## 6. Jargon Glossary
 
 Every technical term used in this project, from A to Z. Each entry either explains the term directly or links to a deeper concept page.
 
@@ -339,11 +373,11 @@ Every technical term used in this project, from A to Z. Each entry either explai
 
 ---
 
-## 6. Tutorial Index (Learning Path)
+## 7. Tutorial Index (Learning Path)
 
 Tutorials are ordered for progressive learning. Each one builds on earlier concepts — check the prerequisites column before jumping ahead.
 
-### Core Tutorials (Written)
+### Core Tutorials
 
 | # | Tutorial | What You'll Learn | Prerequisites |
 |---|---------|-------------------|---------------|
@@ -353,11 +387,6 @@ Tutorials are ordered for progressive learning. Each one builds on earlier conce
 | 04 | [[tutorials/04-reactive-forms]] | `FormGroup`, `FormControl`, `Validators`, `valueChanges` Observable, template-driven vs reactive forms, the Rechner's 88-validator pattern, auto-calculating forms | 01 |
 | 05 | [[tutorials/05-signals-and-state]] | `signal()`, `computed()`, `effect()`, `input.required()`, signals vs BehaviorSubject vs NgRx, `toSignal()` bridge, the spreadsheet mental model | 01, 04 |
 | 06 | [[tutorials/06-http-integration]] | `HttpClient` vs fetch, `Observable` vs `Promise`, services pattern, `switchMap` for cancellation, `errorInterceptor`, typed [[api-contracts]], end-to-end request flow | 03, 04, 05 |
-
-### Planned Tutorials
-
-| # | Tutorial | What You'll Learn | Prerequisites |
-|---|---------|-------------------|---------------|
 | 07 | [[tutorials/07-spring-services]] | Tax calculation domain logic in depth, [[dependency-injection]] in Spring, `@Service` lifecycle, testing services, the four-zone progressive tax formula | 03 |
 | 08 | [[tutorials/08-cost-estimation]] | GET endpoints, query parameters, component composition, reading data from multiple signals, comparing net salary vs costs | 06, 07 |
 | 09 | [[tutorials/09-wizard-navigation]] | Angular Router deep dive, `loadComponent` lazy loading, route guards, step indicator component, wizard state management | 01 |
@@ -377,7 +406,7 @@ Tutorials are ordered for progressive learning. Each one builds on earlier conce
 
 ---
 
-## 7. Interview Preparation
+## 8. Interview Preparation
 
 This section organizes the project's technical decisions into interview-ready talking points. Each topic includes what you should emphasize, questions to expect, and how to frame answers using concrete examples from this project.
 
@@ -464,6 +493,18 @@ Quick reference for finding anything in the codebase.
 | Tax calculation business logic | `backend/src/main/kotlin/.../service/TaxCalculationService.kt` |
 | Kotlin data classes (request/response) | `backend/src/main/kotlin/.../model/SalaryRequest.kt`, `SalaryResponse.kt` |
 | CORS configuration | `backend/src/main/kotlin/.../config/CorsConfig.kt` |
+| Global exception handler | `backend/src/main/kotlin/.../config/GlobalExceptionHandler.kt` |
+| REST cost controller | `backend/src/main/kotlin/.../controller/CostController.kt` |
+| Cost estimation service | `backend/src/main/kotlin/.../service/CostEstimationService.kt` |
+| Cost estimator form component | `frontend/src/app/features/cost-estimator/cost-estimator.component.ts` |
+| Cost breakdown display | `frontend/src/app/features/cost-estimator/cost-breakdown.component.ts` |
+| Neighborhood explorer | `frontend/src/app/features/neighborhood-explorer/neighborhood-explorer.component.ts` |
+| Visa checklist | `frontend/src/app/features/visa-checklist/visa-checklist.component.ts` |
+| Cost estimation HTTP service | `frontend/src/app/core/services/cost-estimation.service.ts` |
+| Cost model types | `frontend/src/app/core/models/cost.model.ts` |
+| API error model | `frontend/src/app/core/models/api-error.model.ts` |
+| Step indicator component | `frontend/src/app/shared/components/step-indicator/step-indicator.component.ts` |
+| Currency input component | `frontend/src/app/shared/components/currency-input/currency-input.component.ts` |
 | API contracts (source of truth) | `shared/api-contracts/salary.ts`, `salary.kt` |
 | Cost estimation contracts | `shared/api-contracts/costs.ts`, `costs.kt` |
 | Docker orchestration | `docker-compose.yml` |
