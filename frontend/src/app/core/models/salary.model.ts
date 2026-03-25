@@ -1,28 +1,6 @@
-export type TaxClass = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI';
+// Re-exported from shared/api-contracts/salary.ts — source of truth
+// Kotlin mirror: shared/api-contracts/salary.kt
+// Any field changes must be mirrored in both files.
+export type { TaxClass, SalaryRequest, SalaryResponse } from '../../../../../shared/api-contracts/salary';
 
-export interface SalaryRequest {
-  grossAnnual: number;
-  taxClass: TaxClass;
-  churchTax: boolean;
-  hasChildren: boolean;
-  childCount: number;
-}
-
-export interface SalaryResponse {
-  grossMonthly: number;
-  netMonthly: number;
-  incomeTax: number;
-  solidaritySurcharge: number;
-  healthInsurance: number;
-  pensionInsurance: number;
-  unemploymentInsurance: number;
-  nursingCareInsurance: number;
-  churchTaxAmount: number | null;
-  totalDeductions: number;
-}
-
-export interface ApiError {
-  status: number;
-  message: string;
-  timestamp: string;
-}
+export type { ApiError } from './api-error.model';

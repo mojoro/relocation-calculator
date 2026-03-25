@@ -1,5 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
+import { ApiError } from '../models/api-error.model';
 
 /**
  * Global HTTP error interceptor.
@@ -27,7 +28,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         status: error.status,
         message,
         timestamp: new Date().toISOString(),
-      }));
+      } as ApiError));
     })
   );
 };
