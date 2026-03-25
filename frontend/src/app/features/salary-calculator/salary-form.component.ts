@@ -8,7 +8,6 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormGroup,
@@ -24,7 +23,7 @@ import { SalaryBreakdownComponent } from './salary-breakdown.component';
 @Component({
   selector: 'reloc-salary-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SalaryBreakdownComponent],
+  imports: [ReactiveFormsModule, SalaryBreakdownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './salary-form.component.html',
 })
@@ -65,9 +64,19 @@ export class SalaryFormComponent implements OnInit {
 
   /** Derived state */
   readonly hasResult = computed(() => this.result() !== null);
-  readonly showChildCount = computed(() => this.salaryForm.controls.hasChildren.value);
 
   ngOnInit(): void {
+    // Restore saved form state before subscribing (avoids double-fire)
+    let hasRestored = false;
+    try {
+      const saved = sessionStorage.getItem('reloc_salary_form');
+      if (saved) {
+        const values = JSON.parse(saved);
+        this.salaryForm.patchValue(values, { emitEvent: false });
+        hasRestored = true;
+      }
+    } catch { /* ignore */ }
+
     // Auto-calculate when form changes (debounced)
     this.salaryForm.valueChanges
       .pipe(
@@ -100,9 +109,17 @@ export class SalaryFormComponent implements OnInit {
       )
       .subscribe((response) => {
         this.result.set(response);
-        try { sessionStorage.setItem('reloc_net_monthly', response.netMonthly.toString()); } catch {}
+        try {
+          sessionStorage.setItem('reloc_net_monthly', response.netMonthly.toString());
+          sessionStorage.setItem('reloc_salary_form', JSON.stringify(this.salaryForm.getRawValue()));
+        } catch { /* ignore */ }
         this.isCalculating.set(false);
       });
+
+    // Trigger calculation if form was restored from sessionStorage
+    if (hasRestored && this.salaryForm.valid && this.salaryForm.controls.grossAnnual.value !== null) {
+      this.salaryForm.updateValueAndValidity();
+    }
 
     // Reset child count when hasChildren is toggled off
     this.salaryForm.controls.hasChildren.valueChanges
