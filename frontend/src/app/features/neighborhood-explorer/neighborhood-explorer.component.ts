@@ -21,11 +21,11 @@ import { NeighborhoodCardComponent } from './neighborhood-card.component';
     <div class="space-y-6">
       <div>
         <h2
-          class="text-2xl font-semibold text-[--reloc-ref-color-text-primary] [font-family:var(--reloc-ref-font-display)]"
+          class="text-2xl font-semibold text-(--reloc-ref-color-text-primary) [font-family:var(--reloc-ref-font-display)]"
         >
           Neighborhood Explorer
         </h2>
-        <p class="mt-1 text-sm text-[--reloc-ref-color-text-secondary]">
+        <p class="mt-1 text-sm text-(--reloc-ref-color-text-secondary)">
           Explore Berlin's 12 districts to find the right neighborhood for your lifestyle and
           budget.
         </p>
@@ -33,12 +33,12 @@ import { NeighborhoodCardComponent } from './neighborhood-card.component';
 
       @if (isLoading()) {
         <div
-          class="flex items-center justify-center rounded-lg border p-12 border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]"
+          class="flex items-center justify-center rounded-lg border p-12 border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)"
         >
           <div
-            class="h-5 w-5 animate-spin rounded-full border-2 border-[--reloc-ref-color-primary] border-t-transparent"
+            class="h-5 w-5 animate-spin rounded-full border-2 border-(--reloc-ref-color-primary) border-t-transparent"
           ></div>
-          <span class="ml-3 text-sm text-[--reloc-ref-color-text-secondary]"
+          <span class="ml-3 text-sm text-(--reloc-ref-color-text-secondary)"
             >Loading neighborhoods...</span
           >
         </div>
@@ -46,12 +46,12 @@ import { NeighborhoodCardComponent } from './neighborhood-card.component';
 
       @if (error(); as err) {
         <div
-          class="rounded-lg border p-4 border-[--reloc-ref-color-error] bg-[#fef2f2]"
+          class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-[#fef2f2]"
         >
-          <p class="text-sm font-medium text-[--reloc-ref-color-error]">
+          <p class="text-sm font-medium text-(--reloc-ref-color-error)">
             {{ err.message }}
           </p>
-          <p class="mt-2 text-xs text-[--reloc-ref-color-text-muted]">
+          <p class="mt-2 text-xs text-(--reloc-ref-color-text-muted)">
             Showing static neighborhood data instead.
           </p>
         </div>

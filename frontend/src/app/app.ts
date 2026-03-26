@@ -13,12 +13,12 @@ import {
   imports: [RouterOutlet, StepIndicatorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="min-h-screen bg-[--reloc-ref-color-bg-body]">
+    <div class="min-h-screen bg-(--reloc-ref-color-bg-body)">
       <header
-        class="border-b px-6 py-4 flex justify-between items-center bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border]"
+        class="border-b px-6 py-4 flex justify-between items-center bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)"
       >
         <h1
-          class="text-xl font-semibold text-[--reloc-ref-color-primary] [font-family:var(--reloc-ref-font-display)]"
+          class="text-xl font-semibold text-(--reloc-ref-color-primary) [font-family:var(--reloc-ref-font-display)]"
         >
           Berlin Relocation Planner
         </h1>
