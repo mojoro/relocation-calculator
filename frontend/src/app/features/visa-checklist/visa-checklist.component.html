@@ -17,18 +17,16 @@
           (click)="selectVisaType(option.value)"
           class="rounded-lg border p-4 text-left transition-colors"
           [ngClass]="{
-            'border-(--reloc-ref-color-primary) bg-(--reloc-ref-color-primary-light)': selectedVisaType() === option.value,
-            'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)': selectedVisaType() !== option.value
+            'border-(--reloc-ref-color-primary) bg-(--reloc-ref-color-primary-light)':
+              selectedVisaType() === option.value,
+            'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card) hover:bg-(--reloc-ref-color-bg-elevated) cursor-pointer':
+              selectedVisaType() !== option.value,
           }"
         >
-          <span
-            class="block text-sm font-semibold text-(--reloc-ref-color-text-primary)"
-          >
+          <span class="block text-sm font-semibold text-(--reloc-ref-color-text-primary)">
             {{ option.label }}
           </span>
-          <span
-            class="mt-1 block text-xs leading-relaxed text-(--reloc-ref-color-text-muted)"
-          >
+          <span class="mt-1 block text-xs leading-relaxed text-(--reloc-ref-color-text-muted)">
             {{ option.description }}
           </span>
         </button>
@@ -59,7 +57,7 @@
   <!-- Checklist Groups -->
   @for (group of groupedItems(); track group.category) {
     <div
-      class="rounded-lg border bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
+      class="rounded-lg border overflow-hidden bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
     >
       <div class="border-b px-5 py-3 border-(--reloc-ref-color-border)">
         <h3
@@ -72,14 +70,15 @@
         @for (item of group.items; track item.id) {
           <button
             type="button"
-            class="w-full text-left flex cursor-pointer items-start gap-3 px-5 py-4 transition-colors hover:bg-gray-50"
+            class="w-full text-left flex cursor-pointer items-start gap-3 px-5 py-4 x- transition-colors hover:bg-(--reloc-ref-color-bg-elevated)"
             (click)="toggleItem(item.id)"
           >
             <div
               class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors"
               [ngClass]="{
                 'bg-(--reloc-ref-color-primary) border-(--reloc-ref-color-primary)': item.completed,
-                'bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border-strong)': !item.completed
+                'bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border-strong)':
+                  !item.completed,
               }"
             >
               @if (item.completed) {
@@ -99,14 +98,12 @@
                 class="text-sm font-medium"
                 [ngClass]="{
                   'text-(--reloc-ref-color-text-muted) line-through': item.completed,
-                  'text-(--reloc-ref-color-text-primary)': !item.completed
+                  'text-(--reloc-ref-color-text-primary)': !item.completed,
                 }"
               >
                 {{ item.title }}
               </span>
-              <p
-                class="mt-0.5 text-xs leading-relaxed text-(--reloc-ref-color-text-muted)"
-              >
+              <p class="mt-0.5 text-xs leading-relaxed text-(--reloc-ref-color-text-muted)">
                 {{ item.description }}
               </p>
             </div>
