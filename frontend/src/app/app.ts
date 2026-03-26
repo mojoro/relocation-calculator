@@ -13,17 +13,18 @@ import {
   imports: [RouterOutlet, StepIndicatorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="min-h-screen" style="background-color: var(--reloc-ref-color-bg-body)">
+    <div class="min-h-screen bg-[--reloc-ref-color-bg-body]">
       <header
-        class="border-b px-6 py-4"
-        style="background-color: var(--reloc-ref-color-bg-card); border-color: var(--reloc-ref-color-border)"
+        class="border-b px-6 py-4 flex justify-between items-center bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border]"
       >
         <h1
-          class="text-xl font-semibold"
-          style="color: var(--reloc-ref-color-primary); font-family: var(--reloc-ref-font-display)"
+          class="text-xl font-semibold text-[--reloc-ref-color-primary] [font-family:var(--reloc-ref-font-display)]"
         >
           Berlin Relocation Planner
         </h1>
+        <button class="cursor-pointer rounded-lg hover:bg">
+          <span class="material-symbols-outlined">light_mode</span>
+        </button>
       </header>
       <main class="mx-auto max-w-4xl px-4 py-8">
         <reloc-step-indicator [steps]="wizardSteps" [currentPath]="currentPath()" />

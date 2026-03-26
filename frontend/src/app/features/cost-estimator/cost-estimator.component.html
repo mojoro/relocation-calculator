@@ -1,20 +1,14 @@
 <div class="space-y-6">
   <!-- Selection Card -->
   <div
-    class="rounded-lg border p-6"
-    style="
-      background-color: var(--reloc-ref-color-bg-card);
-      border-color: var(--reloc-ref-color-border);
-      box-shadow: var(--reloc-ref-shadow-card);
-    "
+    class="rounded-lg border p-6 bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border] [box-shadow:var(--reloc-ref-shadow-card)]"
   >
     <h2
-      class="mb-1 text-2xl font-semibold"
-      style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)"
+      class="mb-1 text-2xl font-semibold text-[--reloc-ref-color-text-primary] [font-family:var(--reloc-ref-font-display)]"
     >
       Cost Estimator
     </h2>
-    <p class="mb-6 text-sm" style="color: var(--reloc-ref-color-text-secondary)">
+    <p class="mb-6 text-sm text-[--reloc-ref-color-text-secondary]">
       Select a Berlin district and apartment size to see estimated monthly living costs.
     </p>
 
@@ -23,20 +17,14 @@
       <div>
         <label
           for="bezirk"
-          class="mb-1.5 block text-sm font-medium"
-          style="color: var(--reloc-ref-color-text-primary)"
+          class="mb-1.5 block text-sm font-medium text-[--reloc-ref-color-text-primary]"
         >
           District (Bezirk)
         </label>
         <select
           id="bezirk"
           formControlName="bezirk"
-          class="w-full rounded-md border px-3 py-2.5 text-sm outline-none"
-          style="
-            border-color: var(--reloc-ref-color-border);
-            background-color: var(--reloc-ref-color-bg-card);
-            color: var(--reloc-ref-color-text-primary);
-          "
+          class="w-full rounded-md border px-3 py-2.5 text-sm outline-none border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card] text-[--reloc-ref-color-text-primary]"
         >
           @for (option of bezirkOptions; track option.value) {
             <option [value]="option.value">{{ option.label }}</option>
@@ -47,8 +35,7 @@
       <!-- Room Count -->
       <div>
         <label
-          class="mb-2 block text-sm font-medium"
-          style="color: var(--reloc-ref-color-text-primary)"
+          class="mb-2 block text-sm font-medium text-[--reloc-ref-color-text-primary]"
         >
           Number of Rooms
         </label>
@@ -74,17 +61,12 @@
   <!-- Loading -->
   @if (isLoading()) {
     <div
-      class="flex items-center justify-center rounded-lg border p-8"
-      style="
-        border-color: var(--reloc-ref-color-border);
-        background-color: var(--reloc-ref-color-bg-card);
-      "
+      class="flex items-center justify-center rounded-lg border p-8 border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]"
     >
       <div
-        class="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-        style="border-color: var(--reloc-ref-color-primary); border-top-color: transparent"
+        class="h-5 w-5 animate-spin rounded-full border-2 border-[--reloc-ref-color-primary] border-t-transparent"
       ></div>
-      <span class="ml-3 text-sm" style="color: var(--reloc-ref-color-text-secondary)"
+      <span class="ml-3 text-sm text-[--reloc-ref-color-text-secondary]"
         >Estimating costs...</span
       >
     </div>
@@ -93,10 +75,9 @@
   <!-- Error -->
   @if (error(); as err) {
     <div
-      class="rounded-lg border p-4"
-      style="border-color: var(--reloc-ref-color-error); background-color: #fef2f2"
+      class="rounded-lg border p-4 border-[--reloc-ref-color-error] bg-[#fef2f2]"
     >
-      <p class="text-sm font-medium" style="color: var(--reloc-ref-color-error)">
+      <p class="text-sm font-medium text-[--reloc-ref-color-error]">
         {{ err.message }}
       </p>
     </div>

@@ -7,20 +7,17 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="rounded-lg border p-5 transition-shadow hover:shadow-md"
-      style="background-color: var(--reloc-ref-color-bg-card); border-color: var(--reloc-ref-color-border)"
+      class="rounded-lg border p-5 transition-shadow hover:shadow-md bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border]"
     >
       <!-- Header -->
       <div class="mb-3 flex items-start justify-between">
         <h3
-          class="text-base font-semibold"
-          style="color: var(--reloc-ref-color-text-primary); font-family: var(--reloc-ref-font-display)"
+          class="text-base font-semibold text-[--reloc-ref-color-text-primary] [font-family:var(--reloc-ref-font-display)]"
         >
           {{ profile().displayName }}
         </h3>
         <span
-          class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium"
-          style="background-color: var(--reloc-ref-color-primary-light); color: var(--reloc-ref-color-primary)"
+          class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium bg-[--reloc-ref-color-primary-light] text-[--reloc-ref-color-primary]"
         >
           {{
             profile().commuteMinutes === 0
@@ -31,7 +28,7 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
       </div>
 
       <!-- Vibe -->
-      <p class="mb-3 text-sm leading-relaxed" style="color: var(--reloc-ref-color-text-secondary)">
+      <p class="mb-3 text-sm leading-relaxed text-[--reloc-ref-color-text-secondary]">
         {{ profile().vibe }}
       </p>
 
@@ -39,12 +36,10 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
       <ul class="space-y-1">
         @for (highlight of profile().highlights; track highlight) {
           <li
-            class="flex items-start gap-2 text-xs"
-            style="color: var(--reloc-ref-color-text-primary)"
+            class="flex items-start gap-2 text-xs text-[--reloc-ref-color-text-primary]"
           >
             <span
-              class="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full"
-              style="background-color: var(--reloc-ref-color-primary)"
+              class="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-[--reloc-ref-color-primary]"
             ></span>
             {{ highlight }}
           </li>

@@ -19,8 +19,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   template: `
     <div class="relative">
       <span
-        class="absolute left-3 top-1/2 -translate-y-1/2 text-sm"
-        style="color: var(--reloc-ref-color-text-muted)"
+        class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[--reloc-ref-color-text-muted]"
         >&#8364;</span
       >
       <input
@@ -30,8 +29,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         [value]="displayValue()"
         (input)="onInput($event)"
         (blur)="onBlur()"
-        class="w-full rounded-md border py-2.5 pl-8 pr-3 text-sm outline-none transition-colors focus:ring-2"
-        style="border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)"
+        class="w-full rounded-md border py-2.5 pl-8 pr-3 text-sm outline-none transition-colors focus:ring-2 border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]"
       />
     </div>
   `,
