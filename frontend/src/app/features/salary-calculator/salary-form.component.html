@@ -28,10 +28,16 @@
             max="125"
             formControlName="respondentAge"
             placeholder="18"
-            class="w-15 rounded-md border py-2.5 pl-2.5 pr-2.5 mr-1.5 text-sm outline-none transition-colors focus:ring-2"
+            class="w-15 rounded-md border py-2.5 pl-2.5 pr-2.5 mr-1.5 text-sm text-(--reloc-ref-color-text-primary) outline-none transition-colors focus:ring-2 placeholder:text-(--reloc-ref-color-text-muted)"
             [ngClass]="{
-              'border-(--reloc-ref-color-error) bg-(--reloc-ref-color-bg-card)': salaryForm.controls.respondentAge.invalid && salaryForm.controls.respondentAge.touched,
-              'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)': !(salaryForm.controls.respondentAge.invalid && salaryForm.controls.respondentAge.touched)
+              'border-(--reloc-ref-color-error) bg-(--reloc-ref-color-bg-card) focus:ring-(--reloc-ref-color-error)':
+                salaryForm.controls.respondentAge.invalid &&
+                salaryForm.controls.respondentAge.touched,
+              'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card) focus:ring-(--reloc-ref-color-primary)':
+                !(
+                  salaryForm.controls.respondentAge.invalid &&
+                  salaryForm.controls.respondentAge.touched
+                ),
             }"
           />
         </div>
@@ -54,10 +60,14 @@
             type="number"
             formControlName="grossAnnual"
             placeholder="60,000"
-            class="w-full rounded-md border py-2.5 pl-8 pr-3 text-sm outline-none transition-colors focus:ring-2"
+            class="w-full rounded-md border py-2.5 pl-8 pr-3 text-sm text-(--reloc-ref-color-text-primary) outline-none transition-colors focus:ring-2 placeholder:text-(--reloc-ref-color-text-muted)"
             [ngClass]="{
-              'border-(--reloc-ref-color-error) bg-(--reloc-ref-color-bg-card)': salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched,
-              'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)': !(salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched)
+              'border-(--reloc-ref-color-error) bg-(--reloc-ref-color-bg-card) focus:ring-(--reloc-ref-color-error)':
+                salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched,
+              'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card) focus:ring-(--reloc-ref-color-primary)':
+                !(
+                  salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched
+                ),
             }"
           />
         </div>
@@ -68,22 +78,16 @@
           <p class="mt-1 text-xs text-(--reloc-ref-color-error)">Salary is required</p>
         }
         @if (salaryForm.controls.grossAnnual.errors?.['min']) {
-          <p class="mt-1 text-xs text-(--reloc-ref-color-error)">
-            Salary must be positive
-          </p>
+          <p class="mt-1 text-xs text-(--reloc-ref-color-error)">Salary must be positive</p>
         }
         @if (salaryForm.controls.grossAnnual.errors?.['max']) {
-          <p class="mt-1 text-xs text-(--reloc-ref-color-error)">
-            Salary exceeds maximum
-          </p>
+          <p class="mt-1 text-xs text-(--reloc-ref-color-error)">Salary exceeds maximum</p>
         }
       </div>
 
       <!-- Tax Class -->
       <div>
-        <label
-          class="mb-2 block text-sm font-medium text-(--reloc-ref-color-text-primary)"
-        >
+        <label class="mb-2 block text-sm font-medium text-(--reloc-ref-color-text-primary)">
           Tax Class (Steuerklasse)
         </label>
         <div class="grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -91,19 +95,19 @@
             <label
               class="flex cursor-pointer flex-col items-center rounded-md border p-2.5 text-center transition-colors"
               [ngClass]="{
-                'border-(--reloc-ref-color-primary) bg-(--reloc-ref-color-primary-light)': salaryForm.controls.taxClass.value === tc.value,
-                'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)': salaryForm.controls.taxClass.value !== tc.value
+                'border-(--reloc-ref-color-primary) bg-(--reloc-ref-color-primary-light)':
+                  salaryForm.controls.taxClass.value === tc.value,
+                'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)':
+                  salaryForm.controls.taxClass.value !== tc.value,
               }"
             >
               <input type="radio" formControlName="taxClass" [value]="tc.value" class="sr-only" />
-              <span
-                class="text-sm font-semibold text-(--reloc-ref-color-text-primary)"
-                >{{ tc.label }}</span
-              >
-              <span
-                class="mt-0.5 text-[10px] leading-tight text-(--reloc-ref-color-text-muted)"
-                >{{ tc.description }}</span
-              >
+              <span class="text-sm font-semibold text-(--reloc-ref-color-text-primary)">{{
+                tc.label
+              }}</span>
+              <span class="mt-0.5 text-[10px] leading-tight text-(--reloc-ref-color-text-muted)">{{
+                tc.description
+              }}</span>
             </label>
           }
         </div>
@@ -117,7 +121,7 @@
             class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all border-(--reloc-ref-color-border)"
             [ngClass]="{
               'bg-(--reloc-ref-color-primary)': salaryForm.controls.churchTax.value,
-              'bg-(--reloc-ref-color-border)': !salaryForm.controls.churchTax.value
+              'bg-(--reloc-ref-color-border)': !salaryForm.controls.churchTax.value,
             }"
           >
             <div
@@ -139,7 +143,7 @@
             class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all border-(--reloc-ref-color-border)"
             [ngClass]="{
               'bg-(--reloc-ref-color-primary)': salaryForm.controls.hasChildren.value,
-              'bg-(--reloc-ref-color-border)': !salaryForm.controls.hasChildren.value
+              'bg-(--reloc-ref-color-border)': !salaryForm.controls.hasChildren.value,
             }"
           >
             <div
@@ -148,9 +152,7 @@
             ></div>
           </div>
         </label>
-        <span class="text-sm text-(--reloc-ref-color-text-primary)">
-          I have children
-        </span>
+        <span class="text-sm text-(--reloc-ref-color-text-primary)"> I have children </span>
       </div>
 
       <!-- Child Count (conditional) -->
@@ -183,17 +185,13 @@
       <div
         class="h-5 w-5 animate-spin rounded-full border-2 border-(--reloc-ref-color-primary) border-t-transparent"
       ></div>
-      <span class="ml-3 text-sm text-(--reloc-ref-color-text-secondary)"
-        >Calculating...</span
-      >
+      <span class="ml-3 text-sm text-(--reloc-ref-color-text-secondary)">Calculating...</span>
     </div>
   }
 
   <!-- Error State -->
   @if (error(); as err) {
-    <div
-      class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-[#fef2f2]"
-    >
+    <div class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-[#fef2f2]">
       <p class="text-sm font-medium text-(--reloc-ref-color-error)">
         {{ err.message }}
       </p>
