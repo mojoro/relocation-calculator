@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, input, computed, effect } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 export interface WizardStep {
@@ -11,7 +12,7 @@ export interface WizardStep {
 @Component({
   selector: 'reloc-step-indicator',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <nav class="mb-8">
@@ -25,7 +26,11 @@ export interface WizardStep {
               <!-- Step circle -->
               <div
                 class="flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors"
-                [style]="getStepStyle(i)"
+                [ngClass]="{
+                  'bg-[--reloc-ref-color-primary-light] border-[--reloc-ref-color-primary] text-[--reloc-ref-color-primary]': isStepActive(i),
+                  'bg-[--reloc-ref-color-primary] border-[--reloc-ref-color-primary] text-white': isStepCompleted(i),
+                  'bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border] text-[--reloc-ref-color-text-muted]': isStepUpcoming(i)
+                }"
               >
                 @if (i < currentIndex() || (i <= maxVisitedIndex() && i !== currentIndex())) {
                   <svg
@@ -45,21 +50,19 @@ export interface WizardStep {
               <!-- Label -->
               <span
                 class="hidden text-xs font-medium sm:block"
-                [style]="
-                  i <= currentIndex() || i <= maxVisitedIndex()
-                    ? 'color: var(--reloc-ref-color-primary)'
-                    : 'color: var(--reloc-ref-color-text-muted)'
-                "
+                [ngClass]="{
+                  'text-[--reloc-ref-color-primary]': i <= currentIndex() || i <= maxVisitedIndex(),
+                  'text-[--reloc-ref-color-text-muted]': i > currentIndex() && i > maxVisitedIndex()
+                }"
               >
                 {{ step.label }}
               </span>
               <span
                 class="block text-xs font-medium sm:hidden"
-                [style]="
-                  i <= currentIndex() || i <= maxVisitedIndex()
-                    ? 'color: var(--reloc-ref-color-primary)'
-                    : 'color: var(--reloc-ref-color-text-muted)'
-                "
+                [ngClass]="{
+                  'text-[--reloc-ref-color-primary]': i <= currentIndex() || i <= maxVisitedIndex(),
+                  'text-[--reloc-ref-color-text-muted]': i > currentIndex() && i > maxVisitedIndex()
+                }"
               >
                 {{ step.shortLabel }}
               </span>
@@ -69,11 +72,10 @@ export interface WizardStep {
             @if (i < steps().length - 1) {
               <div
                 class="mx-1 hidden h-0.5 flex-1 sm:block"
-                [style]="
-                  i < currentIndex() || i < maxVisitedIndex()
-                    ? 'background-color: var(--reloc-ref-color-primary)'
-                    : 'background-color: var(--reloc-ref-color-border)'
-                "
+                [ngClass]="{
+                  'bg-[--reloc-ref-color-primary]': i < currentIndex() || i < maxVisitedIndex(),
+                  'bg-[--reloc-ref-color-border]': i >= currentIndex() && i >= maxVisitedIndex()
+                }"
               ></div>
             }
           </li>
@@ -116,18 +118,15 @@ export class StepIndicatorComponent {
     }
   }
 
-  getStepStyle(index: number): string {
-    const current = this.currentIndex();
-    const maxVisited = this.maxVisitedIndex();
-    if (index === current) {
-      // Active
-      return 'background-color: var(--reloc-ref-color-primary-light); border-color: var(--reloc-ref-color-primary); color: var(--reloc-ref-color-primary)';
-    } else if (index < current || index <= maxVisited) {
-      // Completed / Visited
-      return 'background-color: var(--reloc-ref-color-primary); border-color: var(--reloc-ref-color-primary); color: white';
-    } else {
-      // Upcoming
-      return 'background-color: var(--reloc-ref-color-bg-card); border-color: var(--reloc-ref-color-border); color: var(--reloc-ref-color-text-muted)';
-    }
+  isStepActive(i: number): boolean {
+    return i === this.currentIndex();
+  }
+
+  isStepCompleted(i: number): boolean {
+    return i < this.currentIndex() || (i <= this.maxVisitedIndex() && i !== this.currentIndex());
+  }
+
+  isStepUpcoming(i: number): boolean {
+    return !this.isStepActive(i) && !this.isStepCompleted(i);
   }
 }

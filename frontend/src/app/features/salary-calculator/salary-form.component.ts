@@ -8,6 +8,7 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NgClass } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { debounceTime, filter, switchMap, tap, catchError } from 'rxjs';
 import { EMPTY } from 'rxjs';
@@ -18,7 +19,7 @@ import { SalaryBreakdownComponent } from './salary-breakdown.component';
 @Component({
   selector: 'reloc-salary-form',
   standalone: true,
-  imports: [ReactiveFormsModule, SalaryBreakdownComponent],
+  imports: [ReactiveFormsModule, SalaryBreakdownComponent, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './salary-form.component.html',
 })

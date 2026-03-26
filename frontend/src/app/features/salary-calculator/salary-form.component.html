@@ -29,11 +29,10 @@
             formControlName="respondentAge"
             placeholder="18"
             class="w-15 rounded-md border py-2.5 pl-2.5 pr-2.5 mr-1.5 text-sm outline-none transition-colors focus:ring-2"
-            [style]="
-              salaryForm.controls.respondentAge.invalid && salaryForm.controls.respondentAge.touched
-                ? 'border-color: var(--reloc-ref-color-error); background-color: var(--reloc-ref-color-bg-card)'
-                : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)'
-            "
+            [ngClass]="{
+              'border-[--reloc-ref-color-error] bg-[--reloc-ref-color-bg-card]': salaryForm.controls.respondentAge.invalid && salaryForm.controls.respondentAge.touched,
+              'border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]': !(salaryForm.controls.respondentAge.invalid && salaryForm.controls.respondentAge.touched)
+            }"
           />
         </div>
       </div>
@@ -56,11 +55,10 @@
             formControlName="grossAnnual"
             placeholder="60,000"
             class="w-full rounded-md border py-2.5 pl-8 pr-3 text-sm outline-none transition-colors focus:ring-2"
-            [style]="
-              salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched
-                ? 'border-color: var(--reloc-ref-color-error); background-color: var(--reloc-ref-color-bg-card)'
-                : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)'
-            "
+            [ngClass]="{
+              'border-[--reloc-ref-color-error] bg-[--reloc-ref-color-bg-card]': salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched,
+              'border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]': !(salaryForm.controls.grossAnnual.invalid && salaryForm.controls.grossAnnual.touched)
+            }"
           />
         </div>
         @if (
@@ -92,11 +90,10 @@
           @for (tc of taxClasses; track tc.value) {
             <label
               class="flex cursor-pointer flex-col items-center rounded-md border p-2.5 text-center transition-colors"
-              [style]="
-                salaryForm.controls.taxClass.value === tc.value
-                  ? 'border-color: var(--reloc-ref-color-primary); background-color: var(--reloc-ref-color-primary-light)'
-                  : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card)'
-              "
+              [ngClass]="{
+                'border-[--reloc-ref-color-primary] bg-[--reloc-ref-color-primary-light]': salaryForm.controls.taxClass.value === tc.value,
+                'border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card]': salaryForm.controls.taxClass.value !== tc.value
+              }"
             >
               <input type="radio" formControlName="taxClass" [value]="tc.value" class="sr-only" />
               <span
@@ -117,12 +114,11 @@
         <label class="relative inline-flex cursor-pointer items-center">
           <input type="checkbox" formControlName="churchTax" class="peer sr-only" />
           <div
-            class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all bg-[--reloc-ref-color-border] border-[--reloc-ref-color-border]"
-            [style.background-color]="
-              salaryForm.controls.churchTax.value
-                ? 'var(--reloc-ref-color-primary)'
-                : 'var(--reloc-ref-color-border)'
-            "
+            class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all border-[--reloc-ref-color-border]"
+            [ngClass]="{
+              'bg-[--reloc-ref-color-primary]': salaryForm.controls.churchTax.value,
+              'bg-[--reloc-ref-color-border]': !salaryForm.controls.churchTax.value
+            }"
           >
             <div
               class="absolute start-[2px] top-[2px] h-4 w-4 rounded-full bg-white transition-all"
@@ -140,12 +136,11 @@
         <label class="relative inline-flex cursor-pointer items-center">
           <input type="checkbox" formControlName="hasChildren" class="peer sr-only" />
           <div
-            class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all bg-[--reloc-ref-color-border] border-[--reloc-ref-color-border]"
-            [style.background-color]="
-              salaryForm.controls.hasChildren.value
-                ? 'var(--reloc-ref-color-primary)'
-                : 'var(--reloc-ref-color-border)'
-            "
+            class="h-5 w-9 rounded-full border peer-checked:after:translate-x-full after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:transition-all border-[--reloc-ref-color-border]"
+            [ngClass]="{
+              'bg-[--reloc-ref-color-primary]': salaryForm.controls.hasChildren.value,
+              'bg-[--reloc-ref-color-border]': !salaryForm.controls.hasChildren.value
+            }"
           >
             <div
               class="absolute start-[2px] top-[2px] h-4 w-4 rounded-full bg-white transition-all"

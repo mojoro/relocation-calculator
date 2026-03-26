@@ -43,11 +43,10 @@
           @for (room of roomOptions; track room) {
             <label
               class="flex h-10 w-14 cursor-pointer items-center justify-center rounded-md border text-sm font-medium transition-colors"
-              [style]="
-                form.controls.rooms.value === room
-                  ? 'border-color: var(--reloc-ref-color-primary); background-color: var(--reloc-ref-color-primary-light); color: var(--reloc-ref-color-primary)'
-                  : 'border-color: var(--reloc-ref-color-border); background-color: var(--reloc-ref-color-bg-card); color: var(--reloc-ref-color-text-primary)'
-              "
+              [ngClass]="{
+                'border-[--reloc-ref-color-primary] bg-[--reloc-ref-color-primary-light] text-[--reloc-ref-color-primary]': form.controls.rooms.value === room,
+                'border-[--reloc-ref-color-border] bg-[--reloc-ref-color-bg-card] text-[--reloc-ref-color-text-primary]': form.controls.rooms.value !== room
+              }"
             >
               <input type="radio" formControlName="rooms" [value]="room" class="sr-only" />
               {{ room }}
