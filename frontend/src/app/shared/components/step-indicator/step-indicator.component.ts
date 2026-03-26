@@ -27,9 +27,9 @@ export interface WizardStep {
               <div
                 class="flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-semibold transition-colors"
                 [ngClass]="{
-                  'bg-[--reloc-ref-color-primary-light] border-[--reloc-ref-color-primary] text-[--reloc-ref-color-primary]': isStepActive(i),
-                  'bg-[--reloc-ref-color-primary] border-[--reloc-ref-color-primary] text-white': isStepCompleted(i),
-                  'bg-[--reloc-ref-color-bg-card] border-[--reloc-ref-color-border] text-[--reloc-ref-color-text-muted]': isStepUpcoming(i)
+                  'bg-(--reloc-ref-color-primary-light) border-(--reloc-ref-color-primary) text-(--reloc-ref-color-primary)': isStepActive(i),
+                  'bg-(--reloc-ref-color-primary) border-(--reloc-ref-color-primary) text-white': isStepCompleted(i),
+                  'bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) text-(--reloc-ref-color-text-muted)': isStepUpcoming(i)
                 }"
               >
                 @if (i < currentIndex() || (i <= maxVisitedIndex() && i !== currentIndex())) {
@@ -51,8 +51,8 @@ export interface WizardStep {
               <span
                 class="hidden text-xs font-medium sm:block"
                 [ngClass]="{
-                  'text-[--reloc-ref-color-primary]': i <= currentIndex() || i <= maxVisitedIndex(),
-                  'text-[--reloc-ref-color-text-muted]': i > currentIndex() && i > maxVisitedIndex()
+                  'text-(--reloc-ref-color-primary)': i <= currentIndex() || i <= maxVisitedIndex(),
+                  'text-(--reloc-ref-color-text-muted)': i > currentIndex() && i > maxVisitedIndex()
                 }"
               >
                 {{ step.label }}
@@ -60,8 +60,8 @@ export interface WizardStep {
               <span
                 class="block text-xs font-medium sm:hidden"
                 [ngClass]="{
-                  'text-[--reloc-ref-color-primary]': i <= currentIndex() || i <= maxVisitedIndex(),
-                  'text-[--reloc-ref-color-text-muted]': i > currentIndex() && i > maxVisitedIndex()
+                  'text-(--reloc-ref-color-primary)': i <= currentIndex() || i <= maxVisitedIndex(),
+                  'text-(--reloc-ref-color-text-muted)': i > currentIndex() && i > maxVisitedIndex()
                 }"
               >
                 {{ step.shortLabel }}
@@ -73,8 +73,8 @@ export interface WizardStep {
               <div
                 class="mx-1 hidden h-0.5 flex-1 sm:block"
                 [ngClass]="{
-                  'bg-[--reloc-ref-color-primary]': i < currentIndex() || i < maxVisitedIndex(),
-                  'bg-[--reloc-ref-color-border]': i >= currentIndex() && i >= maxVisitedIndex()
+                  'bg-(--reloc-ref-color-primary)': i < currentIndex() || i < maxVisitedIndex(),
+                  'bg-(--reloc-ref-color-border)': i >= currentIndex() && i >= maxVisitedIndex()
                 }"
               ></div>
             }
