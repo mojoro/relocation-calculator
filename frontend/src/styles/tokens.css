@@ -111,3 +111,37 @@
   --reloc-ref-radius-button: var(--reloc-sys-radius-md);
   --reloc-ref-shadow-card: var(--reloc-sys-shadow-md);
 }
+
+[data-theme='dark'] {
+  /* ═══ Semantic References (overrides only) ═══
+   * Sys primitives don't change — only the ref mapping changes.
+   * The three-tier system means components update automatically.
+   */
+
+  /* Brand — shift primary to lighter teal for contrast on dark surfaces */
+  --reloc-ref-color-primary: var(--reloc-sys-color-teal-400);
+  --reloc-ref-color-primary-hover: var(--reloc-sys-color-teal-300);
+  --reloc-ref-color-primary-light: var(--reloc-sys-color-teal-900);
+  --reloc-ref-color-primary-surface: var(--reloc-sys-color-teal-800);
+
+  /* Text */
+  --reloc-ref-color-text-primary: var(--reloc-sys-color-neutral-50);
+  --reloc-ref-color-text-secondary: var(--reloc-sys-color-neutral-300);
+  --reloc-ref-color-text-muted: var(--reloc-sys-color-neutral-500);
+  --reloc-ref-color-text-inverse: var(--reloc-sys-color-neutral-900);
+
+  /* Surfaces */
+  --reloc-ref-color-bg-body: var(--reloc-sys-color-neutral-900);
+  --reloc-ref-color-bg-card: var(--reloc-sys-color-neutral-800);
+  --reloc-ref-color-bg-elevated: var(--reloc-sys-color-neutral-700);
+  --reloc-ref-color-border: var(--reloc-sys-color-neutral-700);
+  --reloc-ref-color-border-strong: var(--reloc-sys-color-neutral-600);
+
+  /* Feedback — slightly lighter for legibility on dark surfaces */
+  --reloc-ref-color-error: var(--reloc-sys-color-error-500);
+  --reloc-ref-color-success: var(--reloc-sys-color-success-500);
+  --reloc-ref-color-warning: var(--reloc-sys-color-warning-500);
+
+  /* Shadows — stronger alpha to compensate for dark-on-dark */
+  --reloc-ref-shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
