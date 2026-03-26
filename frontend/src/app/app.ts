@@ -2,6 +2,7 @@ import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/c
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ThemeToggleService } from './core/services/theme-toggle.service';
 import {
   StepIndicatorComponent,
   WizardStep,
@@ -22,8 +23,19 @@ import {
         >
           Berlin Relocation Planner
         </h1>
-        <button class="cursor-pointer rounded-lg hover:bg">
-          <span class="material-symbols-outlined">light_mode</span>
+        <button
+          (click)="theme.toggleTheme()"
+          class="flex items-center content-center justify-center align-middle cursor-pointer w-10 h-10 rounded-(--reloc-sys-radius-full) transition-colors hover:bg-(--reloc-ref-color-primary-surface) "
+        >
+          <span
+            class="w-6 h-6 text-center text-(--reloc-ref-color-text-primary) material-symbols-outlined align-middle"
+          >
+            @if (theme.isDark()) {
+              light_mode
+            } @else {
+              dark_mode
+            }
+          </span>
         </button>
       </header>
       <main class="mx-auto max-w-4xl px-4 py-8">
@@ -35,6 +47,7 @@ import {
 })
 export class AppComponent {
   private readonly router = inject(Router);
+  readonly theme = inject(ThemeToggleService);
 
   readonly wizardSteps: WizardStep[] = [
     { path: 'salary', label: 'Salary Calculator', shortLabel: 'Salary', icon: '💰' },
