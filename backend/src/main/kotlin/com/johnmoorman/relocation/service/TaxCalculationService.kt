@@ -60,6 +60,13 @@ class TaxCalculationService {
          */
         const val HEALTH_INSURANCE_RATE = 0.0815
 
+        /**
+         * Health insurance rate for Vorsorgepauschale calculation (KVSATZAN in PAP).
+         * Uses a reduced base of 7.0% (not 7.3%) + Zusatzbeitrag/2.
+         * With average Zusatzbeitrag of ~1.7%, KVSATZAN = 0.07 + 0.017/2 = 0.0785.
+         */
+        const val HEALTH_VORSORGEPAUSCHALE_RATE = 0.0785
+
         /** Pension insurance (Rentenversicherung) — employee share: 9.3% */
         const val PENSION_INSURANCE_RATE = 0.093
 
@@ -260,9 +267,9 @@ class TaxCalculationService {
             return ceil(vspr)
         }
 
-        // Health + nursing portion (VSPKVPV) — uses HEALTH_INSURANCE_RATE for now
+        // Health + nursing portion (VSPKVPV) — uses reduced KVSATZAN rate, not full employee rate
         val vspkvpv = min(grossAnnual, HEALTH_CEILING_ANNUAL.toDouble()) *
-            (HEALTH_INSURANCE_RATE + social.nursingRate)
+            (HEALTH_VORSORGEPAUSCHALE_RATE + social.nursingRate)
 
         // Full variant: pension + health/nursing (rounded up)
         val vsp = ceil(vspr + vspkvpv)
