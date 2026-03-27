@@ -61,27 +61,76 @@
       >
         <div class="overflow-hidden">
           <div
-            class="mt-2 ml-3 space-y-1 text-xs text-(--reloc-ref-color-text-secondary) transition-opacity duration-300"
+            class="mt-2 ml-3 text-xs text-(--reloc-ref-color-text-secondary) transition-opacity duration-300"
             [class.opacity-100]="taxDetailOpen()"
             [class.opacity-0]="!taxDetailOpen()"
           >
-            <div class="flex justify-between">
-              <span>Gross annual</span>
-              <span>{{
-                result().grossMonthly * 12 | currency: 'EUR' : 'symbol' : '1.0-0' : 'de'
-              }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span>− Vorsorgepauschale</span>
-              <span>...</span>
-            </div>
-            <div class="flex justify-between">
-              <span>− Werbungskosten (1.230 €)</span>
-              <span>...</span>
-            </div>
-            <div class="flex justify-between">
-              <span>= zu versteuerndes Einkommen</span>
-              <span>...</span>
+            <!-- Tax bracket breakdown table -->
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-(--reloc-ref-color-border)">
+                  <th class="pb-1 font-medium">Bracket</th>
+                  <th class="pb-1 font-medium">Range</th>
+                  <th class="pb-1 font-medium text-right">Tax</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="py-0.5">Grundfreibetrag (0 %)</td>
+                  <td>0 – 12.348 €</td>
+                  <td class="text-right">0,00 €</td>
+                </tr>
+                <tr>
+                  <td class="py-0.5">Zone 1 (14–24 %)</td>
+                  <td>12.349 – 17.799 €</td>
+                  <td class="text-right">...</td>
+                </tr>
+                <tr>
+                  <td class="py-0.5">Zone 2 (24–42 %)</td>
+                  <td>17.800 – 69.878 €</td>
+                  <td class="text-right">...</td>
+                </tr>
+                <tr>
+                  <td class="py-0.5">Spitzensteuersatz (42 %)</td>
+                  <td>69.879 – 277.825 €</td>
+                  <td class="text-right">...</td>
+                </tr>
+                <tr>
+                  <td class="py-0.5">Reichensteuer (45 %)</td>
+                  <td>ab 277.826 €</td>
+                  <td class="text-right">...</td>
+                </tr>
+                <tr class="border-t border-(--reloc-ref-color-border) font-medium">
+                  <td class="pt-1" colspan="2">Einkommensteuer (annual)</td>
+                  <td class="pt-1 text-right">...</td>
+                </tr>
+                <tr class="font-medium">
+                  <td class="pt-1" colspan="2">Einkommensteuer (monthly)</td>
+                  <td class="pt-1 text-right">...</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Employee deductions -->
+            <div class="mt-3 space-y-1 border-t pt-2 border-(--reloc-ref-color-border)">
+              <div class="flex justify-between">
+                <span>− Vorsorgepauschale</span>
+                <span>...</span>
+              </div>
+              <div class="flex justify-between">
+                <span>− Werbungskosten (1.230 €)</span>
+                <span>...</span>
+              </div>
+              <div class="flex justify-between">
+                <span>− Sonderausgaben (36 €)</span>
+                <span>...</span>
+              </div>
+              <div
+                class="flex justify-between font-medium border-t pt-1 border-(--reloc-ref-color-border)"
+              >
+                <span>= Lohnsteuer (monthly)</span>
+                <span>...</span>
+              </div>
             </div>
           </div>
         </div>
