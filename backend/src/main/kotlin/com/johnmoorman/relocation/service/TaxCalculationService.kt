@@ -1,7 +1,9 @@
 package com.johnmoorman.relocation.service
 
+import com.johnmoorman.relocation.model.IncomeTaxBreakdown
 import com.johnmoorman.relocation.model.SalaryRequest
 import com.johnmoorman.relocation.model.SalaryResponse
+import com.johnmoorman.relocation.model.TaxBracket
 import com.johnmoorman.relocation.model.TaxClass
 import kotlin.math.ceil
 import kotlin.math.max
@@ -155,6 +157,25 @@ class TaxCalculationService {
         val annualIncomeTax = calculateIncomeTax(zvE, taxClass)
         val monthlyIncomeTax = annualIncomeTax / 12.0
 
+        // Step 4b: Per-bracket breakdown
+        val brackets = calculateBracketBreakdown(zvE, taxClass)
+        val allowances =
+                when (taxClass) {
+                    TaxClass.I, TaxClass.III, TaxClass.IV -> Pair(ANP.toDouble(), SAP.toDouble())
+                    TaxClass.II -> Pair(ANP.toDouble(), SAP.toDouble())
+                    TaxClass.V, TaxClass.VI -> Pair(0.0, 0.0)
+                }
+        val incomeBreakdown =
+                IncomeTaxBreakdown(
+                        brackets = brackets,
+                        einkommensteuerAnnual = roundToTwoDecimals(annualIncomeTax),
+                        einkommensteuerMonthly = roundToTwoDecimals(monthlyIncomeTax),
+                        vorsorgepauschale = roundToTwoDecimals(vsp),
+                        werbungskosten = allowances.first,
+                        sonderausgaben = allowances.second,
+                        lohnsteuerMonthly = roundToTwoDecimals(monthlyIncomeTax)
+                )
+
         // Step 5: Solidarity surcharge
         val annualSoli = calculateSoli(annualIncomeTax)
         val monthlySoli = annualSoli / 12.0
@@ -193,7 +214,55 @@ class TaxCalculationService {
                 unemploymentInsurance = roundToTwoDecimals(monthlyUnemployment),
                 nursingCareInsurance = roundToTwoDecimals(monthlyNursing),
                 churchTaxAmount = monthlyChurchTax?.let { roundToTwoDecimals(it) },
-                totalDeductions = roundToTwoDecimals(totalDeductions)
+                totalDeductions = roundToTwoDecimals(totalDeductions),
+                incomeBreakdown = incomeBreakdown
+        )
+    }
+
+    /**
+     * Computes per-bracket tax amounts by taking differences of the cumulative progressive formula
+     * at each zone boundary. For class III (Splitting), brackets are computed on zvE/2 and then
+     * doubled.
+     */
+    private fun calculateBracketBreakdown(zvE: Double, taxClass: TaxClass): List<TaxBracket> {
+        val income = if (taxClass == TaxClass.III) zvE / 2.0 else zvE
+        val mult = if (taxClass == TaxClass.III) 2.0 else 1.0
+
+        val taxAtZone1 = calculateProgressiveTax(min(income, ZONE_B_END.toDouble()))
+        val taxAtZone2 = calculateProgressiveTax(min(income, ZONE_C_END.toDouble()))
+        val taxAtZone3 = calculateProgressiveTax(min(income, ZONE_D_END.toDouble()))
+        val taxTotal = calculateProgressiveTax(income)
+
+        return listOf(
+                TaxBracket(TaxBracket.Name.Grundfreibetrag, 0, GRUNDFREIBETRAG, "0%", 0.0),
+                TaxBracket(
+                        TaxBracket.Name.Zone_1,
+                        GRUNDFREIBETRAG + 1,
+                        ZONE_B_END,
+                        "14–24%",
+                        roundToTwoDecimals(taxAtZone1 * mult)
+                ),
+                TaxBracket(
+                        TaxBracket.Name.Zone_2,
+                        ZONE_B_END + 1,
+                        ZONE_C_END,
+                        "24–42%",
+                        roundToTwoDecimals((taxAtZone2 - taxAtZone1) * mult)
+                ),
+                TaxBracket(
+                        TaxBracket.Name.Spitzensteuersatz,
+                        ZONE_C_END + 1,
+                        ZONE_D_END,
+                        "42%",
+                        roundToTwoDecimals((taxAtZone3 - taxAtZone2) * mult)
+                ),
+                TaxBracket(
+                        TaxBracket.Name.Reichensteuer,
+                        ZONE_D_END + 1,
+                        null,
+                        "45%",
+                        roundToTwoDecimals((taxTotal - taxAtZone3) * mult)
+                )
         )
     }
 
