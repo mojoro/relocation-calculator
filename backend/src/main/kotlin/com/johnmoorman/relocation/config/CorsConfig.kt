@@ -12,10 +12,9 @@ class CorsConfig {
     @Bean
     fun corsFilter(): CorsFilter {
         val config = CorsConfiguration().apply {
-            allowedOrigins = listOf(
-                "http://localhost:4200",
-                "http://localhost:4000",
-                "https://relocation-calculator.vercel.app" // TODO: update with real production URL
+            allowedOriginPatterns = listOf(
+                "http://localhost:[*]",
+                "https://relocation-calculator*.vercel.app"
             )
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("Content-Type", "Accept", "Authorization", "X-Requested-With")
