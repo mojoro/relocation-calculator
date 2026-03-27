@@ -147,6 +147,79 @@ export interface components {
              * @description Monthly amount in EUR
              */
             totalDeductions: number;
+            incomeBreakdown: components["schemas"]["IncomeTaxBreakdown"];
+        };
+        IncomeTaxBreakdown: {
+            /**
+             * Format: double
+             * @description Gross annual salary (echoed for display context)
+             */
+            grossAnnual: number;
+            /**
+             * Format: double
+             * @description Zu versteuerndes Einkommen — taxable income after all deductions
+             */
+            zvE: number;
+            /** @description The five zones of the German progressive tax formula, in fixed order: [Grundfreibetrag, Zone 1, Zone 2, Spitzensteuersatz, Reichensteuer]. */
+            brackets: components["schemas"]["TaxBracket"][];
+            /**
+             * Format: double
+             * @description Total annual income tax before employee deductions
+             */
+            einkommensteuerAnnual: number;
+            /**
+             * Format: double
+             * @description einkommensteuerAnnual / 12
+             */
+            einkommensteuerMonthly: number;
+            /**
+             * Format: double
+             * @description Annual provision allowance (reduces taxable income)
+             */
+            vorsorgepauschale: number;
+            /**
+             * Format: double
+             * @description Employee expense lump sum (1.230 EUR for 2026)
+             */
+            werbungskosten: number;
+            /**
+             * Format: double
+             * @description Special expenses flat deduction (36 EUR for 2026)
+             */
+            sonderausgaben: number;
+            /**
+             * Format: double
+             * @description Final monthly wage tax after all deductions
+             */
+            lohnsteuerMonthly: number;
+        };
+        TaxBracket: {
+            /**
+             * @description Bracket name, one of the five progressive tax zones
+             * @enum {string}
+             */
+            name: "Grundfreibetrag" | "Zone 1" | "Zone 2" | "Spitzensteuersatz" | "Reichensteuer";
+            /**
+             * @description Inclusive lower bound of the bracket in EUR
+             * @example 0
+             */
+            lowerBound: number;
+            /**
+             * @description Inclusive upper bound in EUR, null for the open-ended top bracket
+             * @example 12348
+             */
+            upperBound: ((number | null) | null) | null;
+            /**
+             * @description Tax rate or rate range for this bracket (e.g. "0%", "14–24%", "42%")
+             * @example 0%
+             */
+            rate: string;
+            /**
+             * Format: double
+             * @description Tax owed within this bracket for the given income
+             * @example 0
+             */
+            taxAmount: number;
         };
         RentRange: {
             /** Format: double */

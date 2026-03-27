@@ -5,5 +5,7 @@ import type { components } from '../api/generated-types';
 export type TaxClass = components['schemas']['TaxClass'];
 export type SalaryRequest = components['schemas']['SalaryRequest'];
 export type SalaryResponse = components['schemas']['SalaryResponse'];
+export type IncomeTaxBreakdown = components['schemas']['IncomeTaxBreakdown'];
+export type TaxBracket = components['schemas']['TaxBracket'];
 
 export type { ApiError } from './api-error.model';
