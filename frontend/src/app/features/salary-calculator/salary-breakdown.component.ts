@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, computed, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { SalaryResponse } from '../../core/models/salary.model';
 
@@ -12,6 +12,7 @@ import { SalaryResponse } from '../../core/models/salary.model';
 export class SalaryBreakdownComponent {
   /** The salary calculation result (required input) */
   readonly result = input.required<SalaryResponse>();
+  readonly taxDetailOpen = signal(false);
 
   /** Computed: percentage of gross taken by deductions */
   readonly deductionPercentage = computed(() => {

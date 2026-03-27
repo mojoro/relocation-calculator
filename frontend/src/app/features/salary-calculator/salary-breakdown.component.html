@@ -12,9 +12,7 @@
     class="mb-6 flex items-end justify-between rounded-md p-4 bg-(--reloc-ref-color-primary-light)"
   >
     <div>
-      <p
-        class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)"
-      >
+      <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
         Gross Monthly
       </p>
       <p class="text-2xl font-bold text-(--reloc-ref-color-text-primary)">
@@ -25,9 +23,7 @@
       <span class="text-lg text-(--reloc-ref-color-text-muted)">&rarr;</span>
     </div>
     <div class="text-right">
-      <p
-        class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)"
-      >
+      <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
         Net Monthly
       </p>
       <p class="text-2xl font-bold text-(--reloc-ref-color-primary)">
@@ -38,28 +34,62 @@
 
   <!-- Deductions breakdown -->
   <div class="space-y-3">
-    <h4
-      class="text-sm font-medium uppercase tracking-wide text-(--reloc-ref-color-text-secondary)"
-    >
+    <h4 class="text-sm font-medium uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
       Deductions ({{ deductionPercentage() }}% of gross)
     </h4>
 
-    <!-- Income Tax -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Income Tax (Lohnsteuer)</span
+    <!-- Income Tax (clickable accordion) -->
+    <div class="border-b pb-2 border-(--reloc-ref-color-border) transition-all">
+      <button
+        type="button"
+        (click)="taxDetailOpen.set(!taxDetailOpen())"
+        class="flex w-full items-center justify-between text-left"
       >
-      <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
-        {{ result().incomeTax | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-      </span>
+        <span class="text-sm text-(--reloc-ref-color-text-primary) flex">
+          <span class="text-xs mr-1.5 self-baseline">{{ taxDetailOpen() ? '▾' : '▸' }}</span>
+          Income Tax (Lohnsteuer)
+        </span>
+        <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
+          {{ result().incomeTax | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+        </span>
+      </button>
+
+      <div
+        class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+        [class.grid-rows-[1fr]]="taxDetailOpen()"
+        [class.grid-rows-[0fr]]="!taxDetailOpen()"
+      >
+        <div class="overflow-hidden">
+          <div
+            class="mt-2 ml-3 space-y-1 text-xs text-(--reloc-ref-color-text-secondary) transition-opacity duration-300"
+            [class.opacity-100]="taxDetailOpen()"
+            [class.opacity-0]="!taxDetailOpen()"
+          >
+            <div class="flex justify-between">
+              <span>Gross annual</span>
+              <span>{{
+                result().grossMonthly * 12 | currency: 'EUR' : 'symbol' : '1.0-0' : 'de'
+              }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>− Vorsorgepauschale</span>
+              <span>...</span>
+            </div>
+            <div class="flex justify-between">
+              <span>− Werbungskosten (1.230 €)</span>
+              <span>...</span>
+            </div>
+            <div class="flex justify-between">
+              <span>= zu versteuerndes Einkommen</span>
+              <span>...</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Solidarity Surcharge -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
+    <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
       <span class="text-sm text-(--reloc-ref-color-text-primary)"
         >Solidarity Surcharge (Solidarit&auml;tszuschlag)</span
       >
@@ -93,9 +123,7 @@
     </h4>
 
     <!-- Health Insurance -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
+    <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
       <span class="text-sm text-(--reloc-ref-color-text-primary)"
         >Health Insurance (Krankenversicherung)</span
       >
@@ -105,9 +133,7 @@
     </div>
 
     <!-- Pension Insurance -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
+    <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
       <span class="text-sm text-(--reloc-ref-color-text-primary)"
         >Pension Insurance (Rentenversicherung)</span
       >
@@ -117,9 +143,7 @@
     </div>
 
     <!-- Unemployment Insurance -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
+    <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
       <span class="text-sm text-(--reloc-ref-color-text-primary)"
         >Unemployment Insurance (Arbeitslosenversicherung)</span
       >
@@ -129,9 +153,7 @@
     </div>
 
     <!-- Nursing Care Insurance -->
-    <div
-      class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
-    >
+    <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
       <span class="text-sm text-(--reloc-ref-color-text-primary)"
         >Nursing Care Insurance (Pflegeversicherung)</span
       >
