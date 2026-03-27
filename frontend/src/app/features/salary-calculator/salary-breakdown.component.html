@@ -159,9 +159,6 @@
       class="mt-4 text-sm font-medium uppercase tracking-wide text-(--reloc-ref-color-text-secondary)"
     >
       Social Insurance (Sozialversicherung)
-      <span class="normal-case font-normal"
-        >({{ socialInsuranceTotal() | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }})</span
-      >
     </h4>
 
     <!-- Health Insurance -->
@@ -193,6 +190,14 @@
       <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Nursing Care Insurance (Pflegeversicherung)</span><reloc-info-bubble [isOpen]="openBubble() === 'nursingCareInsurance'" (toggle)="toggleBubble('nursingCareInsurance')">Funds long-term care for the elderly and disabled. The base rate is 3.6% (1.8% employee share). Childless employees over 23 pay an extra 0.6% surcharge (0.3% employee share). Parents get a 0.25% discount per child, up to 5.</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().nursingCareInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+      </span>
+    </div>
+
+    <!-- Social Insurance Subtotal -->
+    <div class="flex items-center justify-between pb-2">
+      <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">Social Insurance Subtotal</span>
+      <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
+        {{ socialInsuranceTotal() | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
     </div>
 
