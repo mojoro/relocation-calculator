@@ -92,21 +92,21 @@
                 }}</span>
               </div>
               <div class="flex justify-between">
-                <span>− Vorsorgepauschale</span>
+                <span class="flex items-center gap-1">− Vorsorgepauschale <reloc-info-bubble [isOpen]="openBubble() === 'vorsorgepauschale'" (toggle)="toggleBubble('vorsorgepauschale')">A provision allowance that reduces your taxable income to account for social insurance contributions. It includes portions for pension, health, nursing care, and unemployment insurance. The exact amount depends on your gross salary and tax class.</reloc-info-bubble></span>
                 <span>{{
                   result().incomeBreakdown.vorsorgepauschale
                     | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
                 }}</span>
               </div>
               <div class="flex justify-between">
-                <span>− Werbungskosten</span>
+                <span class="flex items-center gap-1">− Werbungskosten <reloc-info-bubble [isOpen]="openBubble() === 'werbungskosten'" (toggle)="toggleBubble('werbungskosten')">A flat 1.230 € annual deduction for work-related expenses (Werbungskosten-Pauschbetrag). Covers commuting, work clothes, tools, and home office costs. You get this automatically — no receipts needed unless your actual expenses exceed it.</reloc-info-bubble></span>
                 <span>{{
                   result().incomeBreakdown.werbungskosten
                     | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
                 }}</span>
               </div>
               <div class="flex justify-between">
-                <span>− Sonderausgaben</span>
+                <span class="flex items-center gap-1">− Sonderausgaben <reloc-info-bubble [isOpen]="openBubble() === 'sonderausgaben'" (toggle)="toggleBubble('sonderausgaben')">A flat 36 € annual deduction for special expenses like church tax, charitable donations, and certain insurance premiums. Applied automatically by your employer when calculating payroll tax.</reloc-info-bubble></span>
                 <span>{{
                   result().incomeBreakdown.sonderausgaben
                     | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
