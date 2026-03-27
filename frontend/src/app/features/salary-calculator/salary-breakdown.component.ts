@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, computed, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, HostListener, input, computed, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { SalaryResponse } from '../../core/models/salary.model';
 import { InfoBubbleComponent } from '../../shared/components/reloc-info-bubble.component';
@@ -14,6 +14,16 @@ export class SalaryBreakdownComponent {
   /** The salary calculation result (required input) */
   readonly result = input.required<SalaryResponse>();
   readonly taxDetailOpen = signal(false);
+  readonly openBubble = signal<string | null>(null);
+
+  @HostListener('document:click')
+  closeBubble(): void {
+    this.openBubble.set(null);
+  }
+
+  toggleBubble(key: string): void {
+    this.openBubble.update(current => current === key ? null : key);
+  }
 
   /** Computed: percentage of gross taken by deductions */
   readonly deductionPercentage = computed(() => {
