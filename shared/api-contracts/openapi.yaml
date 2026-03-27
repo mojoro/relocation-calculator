@@ -245,6 +245,8 @@ components:
     IncomeTaxBreakdown:
       type: object
       required:
+        - grossAnnual
+        - zvE
         - brackets
         - einkommensteuerAnnual
         - einkommensteuerMonthly
@@ -253,6 +255,14 @@ components:
         - sonderausgaben
         - lohnsteuerMonthly
       properties:
+        grossAnnual:
+          type: number
+          format: double
+          description: Gross annual salary (echoed for display context)
+        zvE:
+          type: number
+          format: double
+          description: Zu versteuerndes Einkommen — taxable income after all deductions
         brackets:
           type: array
           description: >
