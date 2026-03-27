@@ -194,6 +194,7 @@ components:
         - nursingCareInsurance
         - churchTaxAmount
         - totalDeductions
+        - incomeBreakdown
       properties:
         grossMonthly:
           type: number
@@ -238,6 +239,93 @@ components:
           type: number
           format: double
           description: Monthly amount in EUR
+        incomeBreakdown:
+          $ref: '#/components/schemas/IncomeTaxBreakdown'
+
+    IncomeTaxBreakdown:
+      type: object
+      required:
+        - brackets
+        - einkommensteuerAnnual
+        - einkommensteuerMonthly
+        - vorsorgepauschale
+        - werbungskosten
+        - sonderausgaben
+        - lohnsteuerMonthly
+      properties:
+        brackets:
+          type: array
+          description: >
+            The five zones of the German progressive tax formula, in fixed order:
+            [Grundfreibetrag, Zone 1, Zone 2, Spitzensteuersatz, Reichensteuer].
+          minItems: 5
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/TaxBracket'
+        einkommensteuerAnnual:
+          type: number
+          format: double
+          description: Total annual income tax before employee deductions
+        einkommensteuerMonthly:
+          type: number
+          format: double
+          description: einkommensteuerAnnual / 12
+        vorsorgepauschale:
+          type: number
+          format: double
+          description: Annual provision allowance (reduces taxable income)
+        werbungskosten:
+          type: number
+          format: double
+          description: Employee expense lump sum (1.230 EUR for 2026)
+        sonderausgaben:
+          type: number
+          format: double
+          description: Special expenses flat deduction (36 EUR for 2026)
+        lohnsteuerMonthly:
+          type: number
+          format: double
+          description: Final monthly wage tax after all deductions
+
+    TaxBracket:
+      type: object
+      required:
+        - name
+        - lowerBound
+        - upperBound
+        - rate
+        - taxAmount
+      properties:
+        name:
+          type: string
+          enum:
+            - Grundfreibetrag
+            - Zone 1
+            - Zone 2
+            - Spitzensteuersatz
+            - Reichensteuer
+          description: Bracket name, one of the five progressive tax zones
+        lowerBound:
+          type: integer
+          description: Inclusive lower bound of the bracket in EUR
+          example: 0
+        upperBound:
+          type:
+            - integer
+            - 'null'
+          nullable: true
+          description: Inclusive upper bound in EUR, null for the open-ended top bracket
+          example: 12348
+        rate:
+          type: string
+          description: >
+            Tax rate or rate range for this bracket (e.g. "0%", "14–24%", "42%")
+          example: "0%"
+        taxAmount:
+          type: number
+          format: double
+          description: Tax owed within this bracket for the given income
+          example: 0.0
 
     RentRange:
       type: object
