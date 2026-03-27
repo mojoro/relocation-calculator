@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: '/api/v1', // Will be configured for deployed backend
+  apiBaseUrl: 'https://relocation-calculator-production.up.railway.app/api/v1',
 };
