@@ -1,52 +1,20 @@
-// Inlined from shared/api-contracts/costs.ts — source of truth
-// Kotlin mirror: shared/api-contracts/costs.kt
-// Any field changes must be mirrored in both files.
+// Generated from shared/api-contracts/openapi.yaml
+// Run `npm run generate:api` to regenerate after spec changes.
+import type { components } from '../api/generated-types';
 
-/** Berlin districts (Bezirke) */
-export type Bezirk =
-  | 'mitte'
-  | 'friedrichshain-kreuzberg'
-  | 'pankow'
-  | 'charlottenburg-wilmersdorf'
-  | 'spandau'
-  | 'steglitz-zehlendorf'
-  | 'tempelhof-schoeneberg'
-  | 'neukoelln'
-  | 'treptow-koepenick'
-  | 'marzahn-hellersdorf'
-  | 'lichtenberg'
-  | 'reinickendorf';
-
-/** Query parameters for GET /api/v1/costs/estimate */
-export interface CostEstimateQuery {
-  bezirk: Bezirk;
-  rooms: number;
-}
-
-/** Monthly cost breakdown for a neighborhood */
-export interface CostEstimate {
-  bezirk: Bezirk;
-  displayName: string;
-  rooms: number;
-  rentRange: { min: number; max: number; median: number };
-  utilities: number;
-  transport: number;
-  groceries: number;
-  totalEstimated: number;
-}
-
-/** Neighborhood profile for the explorer view */
-export interface NeighborhoodProfile {
-  bezirk: Bezirk;
-  displayName: string;
-  vibe: string;
-  commuteMinutes: number;
-  highlights: string[];
-}
+export type Bezirk = components['schemas']['Bezirk'];
+export type CostEstimate = components['schemas']['CostEstimate'];
+export type NeighborhoodProfile = components['schemas']['NeighborhoodProfile'];
+export type RentRange = components['schemas']['RentRange'];
 
 export type { ApiError } from './api-error.model';
 
 // Angular-specific display helpers — not part of the API contract
+
+export interface CostEstimateQuery {
+  bezirk: Bezirk;
+  rooms: number;
+}
 
 export interface BezirkOption {
   value: Bezirk;
@@ -67,11 +35,3 @@ export const BEZIRK_OPTIONS: BezirkOption[] = [
   { value: 'lichtenberg', label: 'Lichtenberg' },
   { value: 'reinickendorf', label: 'Reinickendorf' },
 ];
-
-// RentRange is named for use in components; structurally identical to
-// the inline type in shared/api-contracts/costs.ts CostEstimate.rentRange
-export interface RentRange {
-  min: number;
-  max: number;
-  median: number;
-}
