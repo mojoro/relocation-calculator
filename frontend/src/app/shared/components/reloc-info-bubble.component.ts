@@ -4,23 +4,22 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
   selector: 'reloc-info-bubble',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'inline-flex items-center' },
-  template: `<span class="relative ml-1 inline-flex items-center">
+  host: { class: 'relative inline-flex items-center' },
+  template: `
     <button
       type="button"
-      (click)="open.set(!open())"
-      class="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full
-           bg-(--reloc-ref-color-primary-light) text-[10px] font-medium leading-none
-           text-(--reloc-ref-color-primary) cursor-pointer hover:opacity-80"
-    >
-      <span class="-ml-px">?</span>
-    </button>
-
+      (click)="open.set(!open()); $event.stopPropagation()"
+      class="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full
+             border text-[10px] font-semibold leading-none cursor-pointer
+             border-(--reloc-ref-color-primary)/30 text-(--reloc-ref-color-primary)
+             hover:bg-(--reloc-ref-color-primary-light)"
+    >?</button>
     <div
-      class="absolute left-6 bottom-0 z-10 w-52 rounded-md border p-2                 
-           text-xs bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)                                                              
-           text-(--reloc-ref-color-text-secondary) shadow-md                                                                                     
-           grid transition-[grid-template-rows,opacity] duration-200 ease-in-out"
+      class="absolute left-full ml-2 bottom-0 z-20 w-52 rounded-md border p-2
+             text-xs leading-relaxed shadow-md
+             bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)
+             text-(--reloc-ref-color-text-secondary)
+             grid transition-[grid-template-rows,opacity] duration-200 ease-in-out"
       [class.grid-rows-[1fr]]="open()"
       [class.grid-rows-[0fr]]="!open()"
       [class.opacity-100]="open()"
@@ -31,7 +30,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
         <ng-content />
       </div>
     </div>
-  </span> `,
+  `,
 })
 export class InfoBubbleComponent {
   readonly open = signal(false);

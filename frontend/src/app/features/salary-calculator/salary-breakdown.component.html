@@ -45,16 +45,7 @@
         (click)="taxDetailOpen.set(!taxDetailOpen())"
         class="flex w-full items-center justify-between text-left items-center"
       >
-        <span class="text-sm text-(--reloc-ref-color-text-primary) flex">
-          <span class="text-xs mr-1.5 self-baseline">{{ taxDetailOpen() ? '▾' : '▸' }}</span>
-          Income Tax (Lohnsteuer)
-          <reloc-info-bubble class="self-center"
-            >German taxes are not cheap, but they are well-structured. A sliding scale gradually
-            increases the tax burden as income increases, so making one euro more won't launch you
-            into a much higher tax bracket. You are only taxed a higher amount on money earned above
-            each threshold.</reloc-info-bubble
-          >
-        </span>
+        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><svg class="h-3.5 w-3.5 shrink-0 fill-current transition-transform duration-200 cursor-pointer" [class.rotate-90]="taxDetailOpen()" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><span>Income Tax (Lohnsteuer)</span><reloc-info-bubble>German taxes are not cheap, but they are well-structured. A sliding scale gradually increases the tax burden as income increases, so making one euro more won't launch you into a much higher tax bracket. You are only taxed a higher amount on money earned above each threshold.</reloc-info-bubble></span>
         <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
           {{ result().incomeTax | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
         </span>
@@ -145,9 +136,7 @@
 
     <!-- Solidarity Surcharge -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Solidarity Surcharge (Solidarit&auml;tszuschlag)</span
-      >
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Solidarity Surcharge (Solidarit&auml;tszuschlag)</span><reloc-info-bubble>A 5.5% surcharge on income tax, originally introduced to fund German reunification. Since 2021, most earners are exempt — it only applies when annual income tax exceeds €20.350.</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().solidaritySurcharge | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -158,9 +147,7 @@
       <div
         class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
       >
-        <span class="text-sm text-(--reloc-ref-color-text-primary)"
-          >Church Tax (Kirchensteuer)</span
-        >
+        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Church Tax (Kirchensteuer)</span><reloc-info-bubble>If you are a registered member of a tax-collecting church (Catholic, Protestant, or a few others), 9% of your income tax is added as church tax in Berlin. You can avoid this by formally leaving the church (Kirchenaustritt) at the Amtsgericht.</reloc-info-bubble></span>
         <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
           {{ result().churchTaxAmount | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
         </span>
@@ -179,9 +166,7 @@
 
     <!-- Health Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Health Insurance (Krankenversicherung)</span
-      >
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Health Insurance (Krankenversicherung)</span><reloc-info-bubble>Mandatory public health insurance. The base rate is 14.6% split equally between employer and employee (7.3% each), plus a supplementary contribution (Zusatzbeitrag) that varies by insurer — the average is ~1.7% (0.85% employee share).</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().healthInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -189,9 +174,7 @@
 
     <!-- Pension Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Pension Insurance (Rentenversicherung)</span
-      >
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Pension Insurance (Rentenversicherung)</span><reloc-info-bubble>Germany's pay-as-you-go public pension system. The total rate is 18.6%, split equally — you pay 9.3%, your employer pays 9.3%. Contributions are capped at the Beitragsbemessungsgrenze (€101.400/year in 2026).</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().pensionInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -199,9 +182,7 @@
 
     <!-- Unemployment Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Unemployment Insurance (Arbeitslosenversicherung)</span
-      >
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Unemployment Insurance (Arbeitslosenversicherung)</span><reloc-info-bubble>Covers you if you lose your job — you receive ~60% of your net salary (67% with children) for up to 12 months. The rate is 2.6% total, split equally at 1.3% each.</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().unemploymentInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -209,9 +190,7 @@
 
     <!-- Nursing Care Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary)"
-        >Nursing Care Insurance (Pflegeversicherung)</span
-      >
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Nursing Care Insurance (Pflegeversicherung)</span><reloc-info-bubble>Funds long-term care for the elderly and disabled. The base rate is 3.6% (1.8% employee share). Childless employees over 23 pay an extra 0.6% surcharge (0.3% employee share). Parents get a 0.25% discount per child, up to 5.</reloc-info-bubble></span>
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().nursingCareInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
