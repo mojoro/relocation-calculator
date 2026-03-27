@@ -19,13 +19,12 @@ import org.springframework.stereotype.Service
  * - Solidarity surcharge (Solidaritaetszuschlag) with 2026 threshold
  * - Church tax (Kirchensteuer) at Berlin's 9% rate
  *
- * The Grundfreibetrag (12,348 EUR) is handled entirely within the progressive
- * formula — zone (a) applies 0% tax up to that amount. It is NOT subtracted
- * from gross income beforehand.
+ * The Grundfreibetrag (12,348 EUR) is handled entirely within the progressive formula — zone (a)
+ * applies 0% tax up to that amount. It is NOT subtracted from gross income beforehand.
  *
- * IMPORTANT: This is a simplified model for demonstration purposes. It is
- * directionally accurate but NOT suitable for actual tax filing. Real tax
- * calculation requires the official BMF Programmablaufplan.
+ * IMPORTANT: This is a simplified model for demonstration purposes. It is directionally accurate
+ * but NOT suitable for actual tax filing. Real tax calculation requires the official BMF
+ * Programmablaufplan.
  */
 @Service
 class TaxCalculationService {
@@ -54,16 +53,15 @@ class TaxCalculationService {
         // ==================================================
 
         /**
-         * Health insurance (Krankenversicherung) — employee share:
-         * 7.3% base + Zusatzbeitrag/2 (avg ~0.85% for 2026).
-         * Used for actual payroll deductions.
+         * Health insurance (Krankenversicherung) — employee share: 7.3% base + Zusatzbeitrag/2 (avg
+         * ~0.85% for 2026). Used for actual payroll deductions.
          */
         const val HEALTH_INSURANCE_RATE = 0.0815
 
         /**
-         * Health insurance rate for Vorsorgepauschale calculation (KVSATZAN in PAP).
-         * Uses a reduced base of 7.0% (not 7.3%) + Zusatzbeitrag/2.
-         * With average Zusatzbeitrag of ~1.7%, KVSATZAN = 0.07 + 0.017/2 = 0.0785.
+         * Health insurance rate for Vorsorgepauschale calculation (KVSATZAN in PAP). Uses a reduced
+         * base of 7.0% (not 7.3%) + Zusatzbeitrag/2. With average Zusatzbeitrag of ~1.7%, KVSATZAN
+         * = 0.07 + 0.017/2 = 0.0785.
          */
         const val HEALTH_VORSORGEPAUSCHALE_RATE = 0.0785
 
@@ -77,8 +75,8 @@ class TaxCalculationService {
         const val NURSING_CARE_BASE_RATE = 0.018
 
         /**
-         * Childless surcharge on nursing care: employee's share of the 0.6% total
-         * surcharge (equal employer/employee split = 0.3% each).
+         * Childless surcharge on nursing care: employee's share of the 0.6% total surcharge (equal
+         * employer/employee split = 0.3% each).
          */
         const val NURSING_CARE_CHILDLESS_SURCHARGE = 0.003
         const val CHILDLESS_EXEMPTION_AGE = 23
@@ -128,15 +126,15 @@ class TaxCalculationService {
     }
 
     /**
-     * Holds pre-calculated annual social insurance amounts.
-     * Used both as actual payroll deductions AND as inputs to the Vorsorgepauschale.
+     * Holds pre-calculated annual social insurance amounts. Used both as actual payroll deductions
+     * AND as inputs to the Vorsorgepauschale.
      */
     private data class SocialInsurance(
-        val healthAnnual: Double,
-        val pensionAnnual: Double,
-        val unemploymentAnnual: Double,
-        val nursingAnnual: Double,
-        val nursingRate: Double
+            val healthAnnual: Double,
+            val pensionAnnual: Double,
+            val unemploymentAnnual: Double,
+            val nursingAnnual: Double,
+            val nursingRate: Double
     )
 
     fun calculate(request: SalaryRequest): SalaryResponse {
@@ -163,9 +161,9 @@ class TaxCalculationService {
 
         // Step 6: Church tax (Berlin: 9% of income tax)
         val monthlyChurchTax =
-            if (request.churchTax == true) {
-                (annualIncomeTax * CHURCH_TAX_RATE) / 12.0
-            } else null
+                if (request.churchTax == true) {
+                    (annualIncomeTax * CHURCH_TAX_RATE) / 12.0
+                } else null
 
         // Monthly social insurance deductions
         val monthlyHealth = social.healthAnnual / 12.0
@@ -175,40 +173,39 @@ class TaxCalculationService {
 
         // Total monthly deductions
         val totalDeductions =
-            monthlyIncomeTax +
-                monthlySoli +
-                (monthlyChurchTax ?: 0.0) +
-                monthlyHealth +
-                monthlyPension +
-                monthlyUnemployment +
-                monthlyNursing
+                monthlyIncomeTax +
+                        monthlySoli +
+                        (monthlyChurchTax ?: 0.0) +
+                        monthlyHealth +
+                        monthlyPension +
+                        monthlyUnemployment +
+                        monthlyNursing
 
         val netMonthly = grossMonthly - totalDeductions
 
         return SalaryResponse(
-            grossMonthly = roundToTwoDecimals(grossMonthly),
-            netMonthly = roundToTwoDecimals(netMonthly),
-            incomeTax = roundToTwoDecimals(monthlyIncomeTax),
-            solidaritySurcharge = roundToTwoDecimals(monthlySoli),
-            healthInsurance = roundToTwoDecimals(monthlyHealth),
-            pensionInsurance = roundToTwoDecimals(monthlyPension),
-            unemploymentInsurance = roundToTwoDecimals(monthlyUnemployment),
-            nursingCareInsurance = roundToTwoDecimals(monthlyNursing),
-            churchTaxAmount = monthlyChurchTax?.let { roundToTwoDecimals(it) },
-            totalDeductions = roundToTwoDecimals(totalDeductions)
+                grossMonthly = roundToTwoDecimals(grossMonthly),
+                netMonthly = roundToTwoDecimals(netMonthly),
+                incomeTax = roundToTwoDecimals(monthlyIncomeTax),
+                solidaritySurcharge = roundToTwoDecimals(monthlySoli),
+                healthInsurance = roundToTwoDecimals(monthlyHealth),
+                pensionInsurance = roundToTwoDecimals(monthlyPension),
+                unemploymentInsurance = roundToTwoDecimals(monthlyUnemployment),
+                nursingCareInsurance = roundToTwoDecimals(monthlyNursing),
+                churchTaxAmount = monthlyChurchTax?.let { roundToTwoDecimals(it) },
+                totalDeductions = roundToTwoDecimals(totalDeductions)
         )
     }
 
     /**
      * Calculates annual social insurance contributions.
      *
-     * Each branch of social insurance has its own contribution ceiling
-     * (Beitragsbemessungsgrenze). Health and nursing share one ceiling;
-     * pension and unemployment share another.
+     * Each branch of social insurance has its own contribution ceiling (Beitragsbemessungsgrenze).
+     * Health and nursing share one ceiling; pension and unemployment share another.
      */
     private fun calculateSocialInsurance(
-        request: SalaryRequest,
-        grossAnnual: Double
+            request: SalaryRequest,
+            grossAnnual: Double
     ): SocialInsurance {
         val healthBase = min(grossAnnual, HEALTH_CEILING_ANNUAL.toDouble())
         val pensionBase = min(grossAnnual, PENSION_CEILING_ANNUAL.toDouble())
@@ -219,45 +216,44 @@ class TaxCalculationService {
 
         // Nursing care rate depends on parental status and age
         val nursingRate =
-            if ((request.hasChildren != true || (request.childCount ?: 0) == 0) &&
-                (request.respondentAge ?: 18) > CHILDLESS_EXEMPTION_AGE
-            ) {
-                // Childless surcharge applies
-                NURSING_CARE_BASE_RATE + NURSING_CARE_CHILDLESS_SURCHARGE
-            } else {
-                // Parents get a 0.25% discount per child (up to 5 children)
-                val childDiscount = min(request.childCount ?: 0, 5) * 0.0025
-                max(NURSING_CARE_BASE_RATE - childDiscount, 0.01)
-            }
+                if ((request.hasChildren != true || (request.childCount ?: 0) == 0) &&
+                                (request.respondentAge ?: 18) > CHILDLESS_EXEMPTION_AGE
+                ) {
+                    // Childless surcharge applies
+                    NURSING_CARE_BASE_RATE + NURSING_CARE_CHILDLESS_SURCHARGE
+                } else {
+                    // Parents get a 0.25% discount per child (up to 5 children)
+                    val childDiscount = min(request.childCount ?: 0, 5) * 0.0025
+                    max(NURSING_CARE_BASE_RATE - childDiscount, 0.01)
+                }
         val nursingAnnual = healthBase * nursingRate
 
         return SocialInsurance(
-            healthAnnual = healthAnnual,
-            pensionAnnual = pensionAnnual,
-            unemploymentAnnual = unemploymentAnnual,
-            nursingAnnual = nursingAnnual,
-            nursingRate = nursingRate
+                healthAnnual = healthAnnual,
+                pensionAnnual = pensionAnnual,
+                unemploymentAnnual = unemploymentAnnual,
+                nursingAnnual = nursingAnnual,
+                nursingRate = nursingRate
         )
     }
 
     /**
      * Calculates the Vorsorgepauschale (provision allowance).
      *
-     * This is the key deduction that makes Lohnsteuer (payroll tax) lower than
-     * raw Einkommensteuer. It accounts for the employee's social insurance
-     * contributions when determining taxable income for payroll purposes.
+     * This is the key deduction that makes Lohnsteuer (payroll tax) lower than raw Einkommensteuer.
+     * It accounts for the employee's social insurance contributions when determining taxable income
+     * for payroll purposes.
      *
-     * The BMF algorithm computes two variants and takes the larger:
-     *   VSP  = VSPR + VSPKVPV             (pension + health/nursing)
-     *   VSPN = VSPR + min(VSPALV + VSPKVPV, 1900)  (pension + capped health/nursing/unemployment)
-     *   Final = max(VSP, VSPN)
+     * The BMF algorithm computes two variants and takes the larger: VSP = VSPR + VSPKVPV (pension +
+     * health/nursing) VSPN = VSPR + min(VSPALV + VSPKVPV, 1900) (pension + capped
+     * health/nursing/unemployment) Final = max(VSP, VSPN)
      *
      * For tax class VI (secondary employment), only the pension portion applies.
      */
     private fun calculateVorsorgepauschale(
-        grossAnnual: Double,
-        social: SocialInsurance,
-        taxClass: TaxClass
+            grossAnnual: Double,
+            social: SocialInsurance,
+            taxClass: TaxClass
     ): Double {
         // Pension portion (VSPR): employee's 9.3% of gross up to pension ceiling
         val vspr = min(grossAnnual, PENSION_CEILING_ANNUAL.toDouble()) * PENSION_INSURANCE_RATE
@@ -268,14 +264,16 @@ class TaxCalculationService {
         }
 
         // Health + nursing portion (VSPKVPV) — uses reduced KVSATZAN rate, not full employee rate
-        val vspkvpv = min(grossAnnual, HEALTH_CEILING_ANNUAL.toDouble()) *
-            (HEALTH_VORSORGEPAUSCHALE_RATE + social.nursingRate)
+        val vspkvpv =
+                min(grossAnnual, HEALTH_CEILING_ANNUAL.toDouble()) *
+                        (HEALTH_VORSORGEPAUSCHALE_RATE + social.nursingRate)
 
         // Full variant: pension + health/nursing (rounded up)
         val vsp = ceil(vspr + vspkvpv)
 
         // Unemployment portion (VSPALV)
-        val vspalv = min(grossAnnual, PENSION_CEILING_ANNUAL.toDouble()) * UNEMPLOYMENT_INSURANCE_RATE
+        val vspalv =
+                min(grossAnnual, PENSION_CEILING_ANNUAL.toDouble()) * UNEMPLOYMENT_INSURANCE_RATE
 
         // Capped health + unemployment (VSPHB)
         val vsphb = min(vspalv + vspkvpv, VORSORGEPAUSCHALE_CAP.toDouble())
@@ -288,54 +286,53 @@ class TaxCalculationService {
     }
 
     /**
-     * Calculates zu versteuerndes Einkommen (zvE) — the taxable income
-     * that gets fed into the progressive formula.
+     * Calculates zu versteuerndes Einkommen (zvE) — the taxable income that gets fed into the
+     * progressive formula.
      *
      * zvE = grossAnnual - VSP - ANP - SAP - (EFA for class II)
      *
-     * Where:
-     *   VSP = Vorsorgepauschale (social insurance provision allowance)
-     *   ANP = Werbungskosten-Pauschbetrag (1,230 EUR employee expense lump sum)
-     *   SAP = Sonderausgaben-Pauschbetrag (36 EUR special expenses)
-     *   EFA = Entlastungsbetrag (4,260 EUR single-parent relief, class II only)
+     * Where: VSP = Vorsorgepauschale (social insurance provision allowance) ANP =
+     * Werbungskosten-Pauschbetrag (1,230 EUR employee expense lump sum) SAP =
+     * Sonderausgaben-Pauschbetrag (36 EUR special expenses) EFA = Entlastungsbetrag (4,260 EUR
+     * single-parent relief, class II only)
      *
-     * The Grundfreibetrag is NOT subtracted here — it is handled inside the
-     * progressive tax formula (zone a = 0% up to 12,348).
+     * The Grundfreibetrag is NOT subtracted here — it is handled inside the progressive tax formula
+     * (zone a = 0% up to 12,348).
      *
-     * Tax classes V and VI receive no ANP, SAP, or EFA deductions.
-     * Tax class III uses the normal zvE but applies Ehegattensplitting in
-     * the tax formula (halve zvE, compute tax, double the result).
+     * Tax classes V and VI receive no ANP, SAP, or EFA deductions. Tax class III uses the normal
+     * zvE but applies Ehegattensplitting in the tax formula (halve zvE, compute tax, double the
+     * result).
      */
     private fun calculateZvE(
-        grossAnnual: Double,
-        vorsorgepauschale: Double,
-        taxClass: TaxClass
+            grossAnnual: Double,
+            vorsorgepauschale: Double,
+            taxClass: TaxClass
     ): Double {
         val base = grossAnnual - vorsorgepauschale
 
-        val allowances = when (taxClass) {
-            TaxClass.I, TaxClass.III, TaxClass.IV -> ANP + SAP.toDouble()
-            TaxClass.II -> ANP + SAP + EFA.toDouble()
-            TaxClass.V, TaxClass.VI -> 0.0
-        }
+        val allowances =
+                when (taxClass) {
+                    TaxClass.I, TaxClass.III, TaxClass.IV -> ANP + SAP.toDouble()
+                    TaxClass.II -> ANP + SAP + EFA.toDouble()
+                    TaxClass.V, TaxClass.VI -> 0.0
+                }
 
         return max(base - allowances, 0.0)
     }
 
     /**
-     * Calculates annual income tax from zvE, handling Ehegattensplitting
-     * for tax class III.
+     * Calculates annual income tax from zvE, handling Ehegattensplitting for tax class III.
      *
-     * Class III (married, one earner): divide zvE by 2, calculate tax on
-     * that half, then double the result. This is the Splitting-Verfahren.
+     * Class III (married, one earner): divide zvE by 2, calculate tax on that half, then double the
+     * result. This is the Splitting-Verfahren.
      */
     private fun calculateIncomeTax(zvE: Double, taxClass: TaxClass): Double {
         val incomeForCalculation =
-            if (taxClass == TaxClass.III) {
-                zvE / 2.0
-            } else {
-                zvE
-            }
+                if (taxClass == TaxClass.III) {
+                    zvE / 2.0
+                } else {
+                    zvE
+                }
 
         val tax = calculateProgressiveTax(incomeForCalculation)
 
@@ -345,16 +342,18 @@ class TaxCalculationService {
     /**
      * Implements the 2026 five-zone progressive income tax formula.
      *
-     * The zvE is passed directly — the Grundfreibetrag is built into the
-     * formula as zone (a).
+     * The zvE is passed directly — the Grundfreibetrag is built into the formula as zone (a).
      *
-     * Zone (a): zvE <= 12,348        → tax = 0
-     * Zone (b): 12,349 – 17,799      → y = (zvE - 12,348) / 10,000
+     * Zone (a): zvE <= 12,348 → tax = 0 Zone (b): 12,349 – 17,799 → y = (zvE - 12,348) / 10,000
+     * ```
      *                                   tax = (914.51 * y + 1,400) * y
-     * Zone (c): 17,800 – 69,878      → z = (zvE - 17,799) / 10,000
+     * ```
+     * Zone (c): 17,800 – 69,878 → z = (zvE - 17,799) / 10,000
+     * ```
      *                                   tax = (173.10 * z + 2,397) * z + 1,034.87
-     * Zone (d): 69,879 – 277,825     → tax = 0.42 * zvE - 11,135.63
-     * Zone (e): above 277,825        → tax = 0.45 * zvE - 19,470.38
+     * ```
+     * Zone (d): 69,879 – 277,825 → tax = 0.42 * zvE - 11,135.63 Zone (e): above 277,825 → tax =
+     * 0.45 * zvE - 19,470.38
      */
     private fun calculateProgressiveTax(zvE: Double): Double {
         if (zvE <= GRUNDFREIBETRAG) return 0.0
@@ -379,12 +378,11 @@ class TaxCalculationService {
     /**
      * Calculates the solidarity surcharge (Solidaritaetszuschlag).
      *
-     * 5.5% of income tax, but only if annual income tax exceeds the
-     * threshold of 20,350 EUR (2026). Below the threshold: 0.
+     * 5.5% of income tax, but only if annual income tax exceeds the threshold of 20,350 EUR (2026).
+     * Below the threshold: 0.
      *
-     * Note: The actual Soli has a phase-in zone just above the threshold
-     * (capped at 11.9% of the excess). This simplified version applies
-     * the full 5.5% rate once the threshold is exceeded.
+     * Note: The actual Soli has a phase-in zone just above the threshold (capped at 11.9% of the
+     * excess). This simplified version applies the full 5.5% rate once the threshold is exceeded.
      */
     private fun calculateSoli(annualIncomeTax: Double): Double {
         if (annualIncomeTax <= SOLI_THRESHOLD) return 0.0
