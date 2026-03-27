@@ -1,0 +1,327 @@
+openapi: 3.1.0
+info:
+  title: Berlin Relocation Calculator API
+  version: 1.0.0
+  description: API for calculating German net salary and estimating Berlin relocation costs
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://relocation-calculator-production.up.railway.app
+    description: Production
+
+paths:
+  /api/v1/salary/calculate:
+    post:
+      operationId: calculateNetSalary
+      summary: Calculate net salary from gross annual salary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SalaryRequest'
+      responses:
+        '200':
+          description: Successful salary calculation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalaryResponse'
+
+  /api/v1/costs/estimate:
+    get:
+      operationId: estimateCosts
+      summary: Estimate living costs for a Berlin neighborhood
+      parameters:
+        - name: bezirk
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: rooms
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 2
+      responses:
+        '200':
+          description: Successful cost estimation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CostEstimate'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /api/v1/neighborhoods:
+    get:
+      operationId: getAllNeighborhoods
+      summary: Get all Berlin neighborhood profiles
+      responses:
+        '200':
+          description: List of all neighborhood profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NeighborhoodProfile'
+
+  /api/v1/neighborhoods/{bezirk}:
+    get:
+      operationId: getNeighborhood
+      summary: Get a specific Berlin neighborhood profile
+      parameters:
+        - name: bezirk
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Neighborhood profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NeighborhoodProfile'
+        '404':
+          description: Neighborhood not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+components:
+  schemas:
+    TaxClass:
+      type: string
+      enum:
+        - I
+        - II
+        - III
+        - IV
+        - V
+        - VI
+      description: German tax classes (Steuerklassen I-VI)
+
+    Bezirk:
+      type: string
+      enum:
+        - mitte
+        - friedrichshain-kreuzberg
+        - pankow
+        - charlottenburg-wilmersdorf
+        - spandau
+        - steglitz-zehlendorf
+        - tempelhof-schoeneberg
+        - neukoelln
+        - treptow-koepenick
+        - marzahn-hellersdorf
+        - lichtenberg
+        - reinickendorf
+      x-enum-varnames:
+        - MITTE
+        - FRIEDRICHSHAIN_KREUZBERG
+        - PANKOW
+        - CHARLOTTENBURG_WILMERSDORF
+        - SPANDAU
+        - STEGLITZ_ZEHLENDORF
+        - TEMPELHOF_SCHOENEBERG
+        - NEUKOELLN
+        - TREPTOW_KOEPENICK
+        - MARZAHN_HELLERSDORF
+        - LICHTENBERG
+        - REINICKENDORF
+      x-enum-descriptions:
+        - Mitte
+        - Friedrichshain-Kreuzberg
+        - Pankow
+        - Charlottenburg-Wilmersdorf
+        - Spandau
+        - Steglitz-Zehlendorf
+        - "Tempelhof-Sch\xF6neberg"
+        - "Neuk\xF6lln"
+        - "Treptow-K\xF6penick"
+        - Marzahn-Hellersdorf
+        - Lichtenberg
+        - Reinickendorf
+
+    SalaryRequest:
+      type: object
+      required:
+        - grossAnnual
+        - taxClass
+      properties:
+        grossAnnual:
+          type: integer
+          minimum: 1
+          maximum: 10000000
+          description: Gross annual salary in EUR
+        taxClass:
+          $ref: '#/components/schemas/TaxClass'
+        churchTax:
+          type: boolean
+          default: false
+        hasChildren:
+          type: boolean
+          default: false
+        childCount:
+          type: integer
+          minimum: 0
+          default: 0
+        respondentAge:
+          type: integer
+          minimum: 18
+          maximum: 125
+          default: 18
+
+    SalaryResponse:
+      type: object
+      required:
+        - grossMonthly
+        - netMonthly
+        - incomeTax
+        - solidaritySurcharge
+        - healthInsurance
+        - pensionInsurance
+        - unemploymentInsurance
+        - nursingCareInsurance
+        - churchTaxAmount
+        - totalDeductions
+      properties:
+        grossMonthly:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        netMonthly:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        incomeTax:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        solidaritySurcharge:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        healthInsurance:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        pensionInsurance:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        unemploymentInsurance:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        nursingCareInsurance:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+        churchTaxAmount:
+          type:
+            - number
+            - 'null'
+          format: double
+          nullable: true
+          description: Monthly amount in EUR
+        totalDeductions:
+          type: number
+          format: double
+          description: Monthly amount in EUR
+
+    RentRange:
+      type: object
+      required:
+        - min
+        - max
+        - median
+      properties:
+        min:
+          type: number
+          format: double
+        max:
+          type: number
+          format: double
+        median:
+          type: number
+          format: double
+
+    CostEstimate:
+      type: object
+      required:
+        - bezirk
+        - displayName
+        - rooms
+        - rentRange
+        - utilities
+        - transport
+        - groceries
+        - totalEstimated
+      properties:
+        bezirk:
+          $ref: '#/components/schemas/Bezirk'
+        displayName:
+          type: string
+        rooms:
+          type: integer
+        rentRange:
+          $ref: '#/components/schemas/RentRange'
+        utilities:
+          type: number
+          format: double
+        transport:
+          type: number
+          format: double
+        groceries:
+          type: number
+          format: double
+        totalEstimated:
+          type: number
+          format: double
+
+    NeighborhoodProfile:
+      type: object
+      required:
+        - bezirk
+        - displayName
+        - vibe
+        - commuteMinutes
+        - highlights
+      properties:
+        bezirk:
+          $ref: '#/components/schemas/Bezirk'
+        displayName:
+          type: string
+        vibe:
+          type: string
+        commuteMinutes:
+          type: integer
+        highlights:
+          type: array
+          items:
+            type: string
+
+    ApiError:
+      type: object
+      required:
+        - status
+        - message
+        - timestamp
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
