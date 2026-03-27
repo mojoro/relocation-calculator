@@ -167,6 +167,8 @@ class TaxCalculationService {
                 }
         val incomeBreakdown =
                 IncomeTaxBreakdown(
+                        grossAnnual = grossAnnual,
+                        zvE = roundToTwoDecimals(zvE),
                         brackets = brackets,
                         einkommensteuerAnnual = roundToTwoDecimals(annualIncomeTax),
                         einkommensteuerMonthly = roundToTwoDecimals(monthlyIncomeTax),
