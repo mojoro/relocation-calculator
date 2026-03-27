@@ -45,7 +45,27 @@
         (click)="taxDetailOpen.set(!taxDetailOpen())"
         class="flex w-full items-center justify-between text-left items-center"
       >
-        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><svg class="h-3.5 w-3.5 shrink-0 fill-current transition-transform duration-200 cursor-pointer" [class.rotate-90]="taxDetailOpen()" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg><span>Income Tax (Lohnsteuer)</span><reloc-info-bubble [isOpen]="openBubble() === 'incomeTax'" (toggle)="toggleBubble('incomeTax')">German taxes are not cheap, but they are well-structured. A sliding scale gradually increases the tax burden as income increases, so making one euro more won't launch you into a much higher tax bracket. You are only taxed a higher amount on money earned above each threshold.</reloc-info-bubble></span>
+        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+          ><svg
+            class="h-3.5 w-3.5 shrink-0 fill-current transition-transform duration-200 cursor-pointer"
+            [class.rotate-90]="taxDetailOpen()"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            /></svg
+          ><span>Income Tax (Lohnsteuer)</span
+          ><reloc-info-bubble
+            [isOpen]="openBubble() === 'incomeTax'"
+            (toggle)="toggleBubble('incomeTax')"
+            >German taxes are not cheap, but they are well-structured. A sliding scale gradually
+            increases the tax burden as income increases, so making one euro more won't launch you
+            into a much higher tax bracket. You are only taxed a higher amount on money earned above
+            each threshold.</reloc-info-bubble
+          ></span
+        >
         <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
           {{ result().incomeTax | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
         </span>
@@ -62,73 +82,83 @@
             [class.opacity-100]="taxDetailOpen()"
             [class.opacity-0]="!taxDetailOpen()"
           >
-            <!-- Tax bracket breakdown table -->
-            <table class="w-full text-left">
-              <thead>
-                <tr class="border-b border-(--reloc-ref-color-border)">
-                  <th class="pb-1 font-medium">Bracket</th>
-                  <th class="pb-1 font-medium">Range</th>
-                  <th class="pb-1 font-medium text-right">Tax</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="py-0.5">Grundfreibetrag (0 %)</td>
-                  <td>0 – 12.348 €</td>
-                  <td class="text-right">0,00 €</td>
-                </tr>
-                <tr>
-                  <td class="py-0.5">Zone 1 (14–24 %)</td>
-                  <td>12.349 – 17.799 €</td>
-                  <td class="text-right">...</td>
-                </tr>
-                <tr>
-                  <td class="py-0.5">Zone 2 (24–42 %)</td>
-                  <td>17.800 – 69.878 €</td>
-                  <td class="text-right">...</td>
-                </tr>
-                <tr>
-                  <td class="py-0.5">Spitzensteuersatz (42 %)</td>
-                  <td>69.879 – 277.825 €</td>
-                  <td class="text-right">...</td>
-                </tr>
-                <tr>
-                  <td class="py-0.5">Reichensteuer (45 %)</td>
-                  <td>ab 277.826 €</td>
-                  <td class="text-right">...</td>
-                </tr>
-                <tr class="border-t border-(--reloc-ref-color-border) font-medium">
-                  <td class="pt-1" colspan="2">Einkommensteuer (annual)</td>
-                  <td class="pt-1 text-right">...</td>
-                </tr>
-                <tr class="font-medium">
-                  <td class="pt-1" colspan="2">Einkommensteuer (monthly)</td>
-                  <td class="pt-1 text-right">...</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <!-- Employee deductions -->
-            <div class="mt-3 space-y-1 border-t pt-2 border-(--reloc-ref-color-border)">
+            <!-- Step 1: How taxable income (zvE) is derived -->
+            <div class="space-y-1">
+              <p class="mb-1 font-medium">Taxable income</p>
+              <div class="flex justify-between">
+                <span>Gross annual</span>
+                <span>{{
+                  result().incomeBreakdown.grossAnnual | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}</span>
+              </div>
               <div class="flex justify-between">
                 <span>− Vorsorgepauschale</span>
-                <span>...</span>
+                <span>{{
+                  result().incomeBreakdown.vorsorgepauschale
+                    | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}</span>
               </div>
               <div class="flex justify-between">
-                <span>− Werbungskosten (1.230 €)</span>
-                <span>...</span>
+                <span>− Werbungskosten</span>
+                <span>{{
+                  result().incomeBreakdown.werbungskosten
+                    | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}</span>
               </div>
               <div class="flex justify-between">
-                <span>− Sonderausgaben (36 €)</span>
-                <span>...</span>
+                <span>− Sonderausgaben</span>
+                <span>{{
+                  result().incomeBreakdown.sonderausgaben
+                    | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}</span>
               </div>
               <div
                 class="flex justify-between font-medium border-t pt-1 border-(--reloc-ref-color-border)"
               >
-                <span>= Lohnsteuer (monthly)</span>
-                <span>...</span>
+                <span>= zu versteuerndes Einkommen (taxable income)</span>
+                <span>{{
+                  result().incomeBreakdown.zvE | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                }}</span>
               </div>
             </div>
+
+            <!-- Step 2: How zvE is taxed across brackets (monthly) -->
+            <table class="mt-6 w-full text-left">
+              <thead>
+                <tr class="border-b border-(--reloc-ref-color-border)">
+                  <th class="pb-1 font-medium">Bracket</th>
+                  <th class="pb-1 font-medium">Range</th>
+                  <th class="pb-1 font-medium text-right">Monthly</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (bracket of result().incomeBreakdown.brackets; track bracket.name) {
+                  <tr>
+                    <td class="py-0.5">{{ bracket.name }} ({{ bracket.rate }})</td>
+                    <td>
+                      @if (bracket.upperBound !== null) {
+                        {{ bracket.lowerBound | number: '1.0-0' : 'de' }} –
+                        {{ bracket.upperBound | number: '1.0-0' : 'de' }} €
+                      } @else {
+                        ab {{ bracket.lowerBound | number: '1.0-0' : 'de' }} €
+                      }
+                    </td>
+                    <td class="text-right">
+                      {{ bracket.taxAmount / 12 | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
+                    </td>
+                  </tr>
+                }
+                <tr class="border-t border-(--reloc-ref-color-border) font-medium">
+                  <td class="pt-1" colspan="2">= Lohnsteuer (monthly)</td>
+                  <td class="pt-1 text-right">
+                    {{
+                      result().incomeBreakdown.einkommensteuerMonthly
+                        | currency: 'EUR' : 'symbol' : '1.2-2' : 'de'
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -136,7 +166,16 @@
 
     <!-- Solidarity Surcharge -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Solidarity Surcharge (Solidarit&auml;tszuschlag)</span><reloc-info-bubble [isOpen]="openBubble() === 'solidaritySurcharge'" (toggle)="toggleBubble('solidaritySurcharge')">A 5.5% surcharge on income tax, originally introduced to fund German reunification. Since 2021, most earners are exempt — it only applies when annual income tax exceeds €20.350.</reloc-info-bubble></span>
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+        ><span>Solidarity Surcharge (Solidarit&auml;tszuschlag)</span
+        ><reloc-info-bubble
+          [isOpen]="openBubble() === 'solidaritySurcharge'"
+          (toggle)="toggleBubble('solidaritySurcharge')"
+          >A 5.5% surcharge on income tax, originally introduced to fund German reunification. Since
+          2021, most earners are exempt — it only applies when annual income tax exceeds
+          €20.350.</reloc-info-bubble
+        ></span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().solidaritySurcharge | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -147,7 +186,16 @@
       <div
         class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)"
       >
-        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Church Tax (Kirchensteuer)</span><reloc-info-bubble [isOpen]="openBubble() === 'churchTax'" (toggle)="toggleBubble('churchTax')">If you are a registered member of a tax-collecting church (Catholic, Protestant, or a few others), 9% of your income tax is added as church tax in Berlin. You can avoid this by formally leaving the church (Kirchenaustritt) at the Amtsgericht.</reloc-info-bubble></span>
+        <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+          ><span>Church Tax (Kirchensteuer)</span
+          ><reloc-info-bubble
+            [isOpen]="openBubble() === 'churchTax'"
+            (toggle)="toggleBubble('churchTax')"
+            >If you are a registered member of a tax-collecting church (Catholic, Protestant, or a
+            few others), 9% of your income tax is added as church tax in Berlin. You can avoid this
+            by formally leaving the church (Kirchenaustritt) at the Amtsgericht.</reloc-info-bubble
+          ></span
+        >
         <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
           {{ result().churchTaxAmount | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
         </span>
@@ -163,7 +211,16 @@
 
     <!-- Health Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Health Insurance (Krankenversicherung)</span><reloc-info-bubble [isOpen]="openBubble() === 'healthInsurance'" (toggle)="toggleBubble('healthInsurance')">Mandatory public health insurance. The base rate is 14.6% split equally between employer and employee (7.3% each), plus a supplementary contribution (Zusatzbeitrag) that varies by insurer — the average is ~1.7% (0.85% employee share).</reloc-info-bubble></span>
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+        ><span>Health Insurance (Krankenversicherung)</span
+        ><reloc-info-bubble
+          [isOpen]="openBubble() === 'healthInsurance'"
+          (toggle)="toggleBubble('healthInsurance')"
+          >Mandatory public health insurance. The base rate is 14.6% split equally between employer
+          and employee (7.3% each), plus a supplementary contribution (Zusatzbeitrag) that varies by
+          insurer — the average is ~1.7% (0.85% employee share).</reloc-info-bubble
+        ></span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().healthInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -171,7 +228,16 @@
 
     <!-- Pension Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Pension Insurance (Rentenversicherung)</span><reloc-info-bubble [isOpen]="openBubble() === 'pensionInsurance'" (toggle)="toggleBubble('pensionInsurance')">Germany's pay-as-you-go public pension system. The total rate is 18.6%, split equally — you pay 9.3%, your employer pays 9.3%. Contributions are capped at the Beitragsbemessungsgrenze (€101.400/year in 2026).</reloc-info-bubble></span>
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+        ><span>Pension Insurance (Rentenversicherung)</span
+        ><reloc-info-bubble
+          [isOpen]="openBubble() === 'pensionInsurance'"
+          (toggle)="toggleBubble('pensionInsurance')"
+          >Germany's pay-as-you-go public pension system. The total rate is 18.6%, split equally —
+          you pay 9.3%, your employer pays 9.3%. Contributions are capped at the
+          Beitragsbemessungsgrenze (€101.400/year in 2026).</reloc-info-bubble
+        ></span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().pensionInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -179,7 +245,16 @@
 
     <!-- Unemployment Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Unemployment Insurance (Arbeitslosenversicherung)</span><reloc-info-bubble [isOpen]="openBubble() === 'unemploymentInsurance'" (toggle)="toggleBubble('unemploymentInsurance')">Covers you if you lose your job — you receive ~60% of your net salary (67% with children) for up to 12 months. The rate is 2.6% total, split equally at 1.3% each.</reloc-info-bubble></span>
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+        ><span>Unemployment Insurance (Arbeitslosenversicherung)</span
+        ><reloc-info-bubble
+          [isOpen]="openBubble() === 'unemploymentInsurance'"
+          (toggle)="toggleBubble('unemploymentInsurance')"
+          >Covers you if you lose your job — you receive ~60% of your net salary (67% with children)
+          for up to 12 months. The rate is 2.6% total, split equally at 1.3%
+          each.</reloc-info-bubble
+        ></span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().unemploymentInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -187,7 +262,16 @@
 
     <!-- Nursing Care Insurance -->
     <div class="flex items-center justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"><span>Nursing Care Insurance (Pflegeversicherung)</span><reloc-info-bubble [isOpen]="openBubble() === 'nursingCareInsurance'" (toggle)="toggleBubble('nursingCareInsurance')">Funds long-term care for the elderly and disabled. The base rate is 3.6% (1.8% employee share). Childless employees over 23 pay an extra 0.6% surcharge (0.3% employee share). Parents get a 0.25% discount per child, up to 5.</reloc-info-bubble></span>
+      <span class="text-sm text-(--reloc-ref-color-text-primary) flex items-center gap-1.5"
+        ><span>Nursing Care Insurance (Pflegeversicherung)</span
+        ><reloc-info-bubble
+          [isOpen]="openBubble() === 'nursingCareInsurance'"
+          (toggle)="toggleBubble('nursingCareInsurance')"
+          >Funds long-term care for the elderly and disabled. The base rate is 3.6% (1.8% employee
+          share). Childless employees over 23 pay an extra 0.6% surcharge (0.3% employee share).
+          Parents get a 0.25% discount per child, up to 5.</reloc-info-bubble
+        ></span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ result().nursingCareInsurance | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>
@@ -195,7 +279,9 @@
 
     <!-- Social Insurance Subtotal -->
     <div class="flex items-center justify-between pb-2">
-      <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">Social Insurance Subtotal</span>
+      <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)"
+        >Social Insurance Subtotal</span
+      >
       <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
         {{ socialInsuranceTotal() | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </span>

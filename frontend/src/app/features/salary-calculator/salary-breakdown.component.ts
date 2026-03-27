@@ -1,12 +1,12 @@
 import { Component, ChangeDetectionStrategy, HostListener, input, computed, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { SalaryResponse } from '../../core/models/salary.model';
 import { InfoBubbleComponent } from '../../shared/components/reloc-info-bubble.component';
 
 @Component({
   selector: 'reloc-salary-breakdown',
   standalone: true,
-  imports: [CurrencyPipe, InfoBubbleComponent],
+  imports: [CurrencyPipe, DecimalPipe, InfoBubbleComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './salary-breakdown.component.html',
 })
