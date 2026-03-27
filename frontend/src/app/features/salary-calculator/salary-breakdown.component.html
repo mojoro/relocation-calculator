@@ -43,11 +43,17 @@
       <button
         type="button"
         (click)="taxDetailOpen.set(!taxDetailOpen())"
-        class="flex w-full items-center justify-between text-left"
+        class="flex w-full items-center justify-between text-left items-center"
       >
         <span class="text-sm text-(--reloc-ref-color-text-primary) flex">
           <span class="text-xs mr-1.5 self-baseline">{{ taxDetailOpen() ? '▾' : '▸' }}</span>
           Income Tax (Lohnsteuer)
+          <reloc-info-bubble class="self-center"
+            >German taxes are not cheap, but they are well-structured. A sliding scale gradually
+            increases the tax burden as income increases, so making one euro more won't launch you
+            into a much higher tax bracket. You are only taxed a higher amount on money earned above
+            each threshold.</reloc-info-bubble
+          >
         </span>
         <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
           {{ result().incomeTax | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
