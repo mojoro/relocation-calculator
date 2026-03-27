@@ -106,9 +106,8 @@ class TaxCalculationService {
     }
 
     fun calculate(request: SalaryRequest): SalaryResponse {
-        val grossAnnualInt = requireNotNull(request.grossAnnual) { "grossAnnual must not be null" }
-        val taxClass = requireNotNull(request.taxClass) { "taxClass must not be null" }
-        val grossAnnual = grossAnnualInt.toDouble()
+        val grossAnnual = request.grossAnnual.toDouble()
+        val taxClass = request.taxClass
         val grossMonthly = grossAnnual / 12.0
 
         // Calculate taxable income based on tax class
@@ -124,7 +123,7 @@ class TaxCalculationService {
 
         // Church tax
         val monthlyChurchTax =
-                if (request.churchTax) {
+                if (request.churchTax == true) {
                     (annualIncomeTax * CHURCH_TAX_RATE) / 12.0
                 } else null
 
@@ -137,13 +136,13 @@ class TaxCalculationService {
         val monthlyUnemployment = pensionBase * UNEMPLOYMENT_INSURANCE_RATE
 
         val nursingRate =
-                if ((!request.hasChildren || request.childCount == 0) &&
-                                request.respondentAge > CHILDLESS_EXEMPTION_AGE
+                if ((request.hasChildren != true || (request.childCount ?: 0) == 0) &&
+                                (request.respondentAge ?: 18) > CHILDLESS_EXEMPTION_AGE
                 ) {
                     NURSING_CARE_BASE_RATE + NURSING_CARE_CHILDLESS_SURCHARGE
                 } else {
                     // Reduced rate for parents: base rate minus 0.25% per child (up to 5)
-                    val childDiscount = min(request.childCount, 5) * 0.0025
+                    val childDiscount = min(request.childCount ?: 0, 5) * 0.0025
                     max(NURSING_CARE_BASE_RATE - childDiscount, 0.01)
                 }
         val monthlyNursing = healthBase * nursingRate

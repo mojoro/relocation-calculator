@@ -213,7 +213,7 @@ class CostEstimationService {
     )
 
     fun estimateCosts(bezirkSlug: String, rooms: Int): CostEstimate {
-        val bezirk = Bezirk.fromSlug(bezirkSlug)
+        val bezirk = bezirkFromSlug(bezirkSlug)
             ?: throw IllegalArgumentException("Unknown Bezirk: $bezirkSlug")
 
         val clampedRooms = rooms.coerceIn(1, 5)
@@ -241,7 +241,7 @@ class CostEstimationService {
     }
 
     fun getNeighborhoodProfile(bezirkSlug: String): NeighborhoodProfile {
-        val bezirk = Bezirk.fromSlug(bezirkSlug)
+        val bezirk = bezirkFromSlug(bezirkSlug)
             ?: throw IllegalArgumentException("Unknown Bezirk: $bezirkSlug")
         return profiles[bezirk] ?: throw IllegalStateException("No profile for $bezirk")
     }
