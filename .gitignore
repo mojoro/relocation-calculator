@@ -25,5 +25,8 @@ Thumbs.db
 .gradle/
 !backend/gradle/wrapper/gradle-wrapper.jar
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
 # Misc
 *.log
