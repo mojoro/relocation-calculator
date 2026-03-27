@@ -6,6 +6,8 @@
  */
 
 :root {
+  color-scheme: light;
+
   /* ═══ System Primitives ═══ */
 
   /* Colors — Teal palette (primary) */
@@ -113,6 +115,8 @@
 }
 
 [data-theme='dark'] {
+  color-scheme: dark;
+
   /* ═══ Semantic References (overrides only) ═══
    * Sys primitives don't change — only the ref mapping changes.
    * The three-tier system means components update automatically.
