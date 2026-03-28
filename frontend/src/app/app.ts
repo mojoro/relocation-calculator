@@ -51,8 +51,8 @@ export class AppComponent {
 
   readonly wizardSteps: WizardStep[] = [
     { path: 'salary', label: 'Salary Calculator', shortLabel: 'Salary', icon: '💰' },
-    { path: 'costs', label: 'Cost Estimator', shortLabel: 'Costs', icon: '🏠' },
     { path: 'neighborhoods', label: 'Neighborhoods', shortLabel: 'Areas', icon: '🗺️' },
+    { path: 'costs', label: 'Cost Estimator', shortLabel: 'Costs', icon: '🏠' },
     { path: 'checklist', label: 'Visa Checklist', shortLabel: 'Visa', icon: '✅' },
   ];
 
