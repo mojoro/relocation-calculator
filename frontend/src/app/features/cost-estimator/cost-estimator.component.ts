@@ -14,7 +14,7 @@ import { debounceTime, switchMap, tap, catchError, EMPTY, combineLatest } from '
 import { CostEstimationService } from '../../core/services/cost-estimation.service';
 import { CostEstimate, Bezirk, BEZIRK_OPTIONS, ApiError } from '../../core/models/cost.model';
 import { CostBreakdownComponent } from './cost-breakdown.component';
-import { WizardStepService } from '../../core/services/wizard-step.service';
+import { WizardService } from '../../core/services/wizard.service';
 
 @Component({
   selector: 'reloc-cost-estimator',
@@ -26,7 +26,7 @@ import { WizardStepService } from '../../core/services/wizard-step.service';
 export class CostEstimatorComponent {
   private readonly costService = inject(CostEstimationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly wizardService = inject(WizardStepService);
+  private readonly wizardService = inject(WizardService);
   readonly bezirkOptions = BEZIRK_OPTIONS;
   readonly roomOptions = [1, 2, 3, 4, 5];
 

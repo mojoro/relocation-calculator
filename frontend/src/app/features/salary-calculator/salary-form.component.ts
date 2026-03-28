@@ -15,7 +15,7 @@ import { EMPTY } from 'rxjs';
 import { SalaryCalculationService } from '../../core/services/salary-calculation.service';
 import { SalaryResponse, TaxClass, ApiError } from '../../core/models/salary.model';
 import { SalaryBreakdownComponent } from './salary-breakdown.component';
-import { WizardStepService } from '../../core/services/wizard-step.service';
+import { WizardService } from '../../core/services/wizard.service';
 
 @Component({
   selector: 'reloc-salary-form',
@@ -27,7 +27,7 @@ import { WizardStepService } from '../../core/services/wizard-step.service';
 export class SalaryFormComponent implements OnInit {
   private readonly salaryService = inject(SalaryCalculationService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly wizardService = inject(WizardStepService);
+  private readonly wizardService = inject(WizardService);
 
   /** Tax class options for the radio buttons */
   readonly taxClasses: { value: TaxClass; label: string; description: string }[] = [

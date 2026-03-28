@@ -4,7 +4,7 @@ import { filter, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ThemeToggleService } from './core/services/theme-toggle.service';
 import { StepIndicatorComponent } from './shared/components/step-indicator/step-indicator.component';
-import { WizardStepService } from './core/services/wizard-step.service';
+import { WizardService } from './core/services/wizard.service';
 
 @Component({
   selector: 'app-root',
@@ -46,8 +46,8 @@ import { WizardStepService } from './core/services/wizard-step.service';
 export class AppComponent {
   private readonly router = inject(Router);
   readonly theme = inject(ThemeToggleService);
-  private readonly wizardStepService = inject(WizardStepService);
-  readonly wizardSteps = this.wizardStepService.wizardSteps;
+  private readonly wizardService = inject(WizardService);
+  readonly wizardSteps = this.wizardService.wizardSteps;
 
-  readonly currentPath = this.wizardStepService.currentPath;
+  readonly currentPath = this.wizardService.currentPath;
 }

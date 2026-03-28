@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, computed, effect } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { WizardStep } from '../../../core/services/wizard-step.service';
+import { WizardStep } from '../../../core/services/wizard.service';
 
 
 

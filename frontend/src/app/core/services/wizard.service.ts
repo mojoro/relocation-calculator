@@ -14,7 +14,7 @@ export interface WizardStep {
 }
 
 @Injectable({ providedIn: 'root' })
-export class WizardStepService {
+export class WizardService {
   private readonly router = inject(Router);
   readonly wizardSteps: WizardStep[] = [
     { path: 'salary', label: 'Salary Calculator', shortLabel: 'Salary', icon: '💰' },

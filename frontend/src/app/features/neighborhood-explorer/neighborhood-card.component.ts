@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, inject, computed } from '@angular/core';
 import { NeighborhoodProfile } from '../../core/models/cost.model';
-import { WizardStepService } from '../../core/services/wizard-step.service';
+import { WizardService } from '../../core/services/wizard.service';
 
 @Component({
   selector: 'reloc-neighborhood-card',
@@ -55,11 +55,11 @@ import { WizardStepService } from '../../core/services/wizard-step.service';
 })
 export class NeighborhoodCardComponent {
   readonly profile = input.required<NeighborhoodProfile>();
-  private readonly wizardStepService = inject(WizardStepService);
+  private readonly wizardService = inject(WizardService);
   readonly cardSelected = computed(
-    () => this.wizardStepService.bezirkSelection() === this.profile().bezirk,
+    () => this.wizardService.bezirkSelection() === this.profile().bezirk,
   );
   selectBezirk() {
-    this.wizardStepService.bezirkSelection.set(this.profile().bezirk);
+    this.wizardService.bezirkSelection.set(this.profile().bezirk);
   }
 }
