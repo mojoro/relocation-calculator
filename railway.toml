@@ -1,0 +1,4 @@
+[build]
+# Use repo root as Docker context so shared/ is accessible
+dockerfilePath = "backend/Dockerfile"
+watchPatterns = ["backend/**", "shared/**"]
