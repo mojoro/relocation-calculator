@@ -1,9 +1,10 @@
 // should manage all shared router state. Wizard steps, bezirk selection, net salary, etc.
 
-import { inject, Injectable, signal } from "@angular/core";
-import { NavigationEnd, Router } from "@angular/router";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { inject, Injectable, signal } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
+import { Bezirk } from '../models/cost.model';
 
 export interface WizardStep {
   path: string;
@@ -22,6 +23,8 @@ export class WizardStepService {
     { path: 'checklist', label: 'Visa Checklist', shortLabel: 'Visa', icon: '✅' },
   ];
 
+  readonly bezirkSelection = signal<Bezirk>('mitte');
+
   readonly currentPath = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -33,5 +36,4 @@ export class WizardStepService {
     ),
     { initialValue: 'salary' },
   );
-
 }

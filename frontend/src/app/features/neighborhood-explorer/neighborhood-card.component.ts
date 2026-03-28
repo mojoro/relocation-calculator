@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, inject, computed } from '@angular/core';
 import { NeighborhoodProfile } from '../../core/models/cost.model';
+import { WizardStepService } from '../../core/services/wizard-step.service';
 
 @Component({
   selector: 'reloc-neighborhood-card',
@@ -7,7 +8,13 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
-      class="rounded-lg border p-5 transition-shadow hover:shadow-md bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)"
+      class="rounded-lg border p-5 transition-shadow hover:shadow-md cursor-pointer"
+      [class]="
+        cardSelected()
+          ? 'border-(--reloc-ref-color-primary) bg-(--reloc-ref-color-primary-light)'
+          : 'border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-card)'
+      "
+      (click)="selectBezirk()"
     >
       <!-- Header -->
       <div class="mb-3 flex items-start justify-between">
@@ -35,9 +42,7 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
       <!-- Highlights -->
       <ul class="space-y-1">
         @for (highlight of profile().highlights; track highlight) {
-          <li
-            class="flex items-start gap-2 text-xs text-(--reloc-ref-color-text-primary)"
-          >
+          <li class="flex items-start gap-2 text-xs text-(--reloc-ref-color-text-primary)">
             <span
               class="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-(--reloc-ref-color-primary)"
             ></span>
@@ -50,4 +55,11 @@ import { NeighborhoodProfile } from '../../core/models/cost.model';
 })
 export class NeighborhoodCardComponent {
   readonly profile = input.required<NeighborhoodProfile>();
+  private readonly wizardStepService = inject(WizardStepService);
+  readonly cardSelected = computed(
+    () => this.wizardStepService.bezirkSelection() === this.profile().bezirk,
+  );
+  selectBezirk() {
+    this.wizardStepService.bezirkSelection.set(this.profile().bezirk);
+  }
 }
