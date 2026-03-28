@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
@@ -13,6 +14,7 @@ import { debounceTime, switchMap, tap, catchError, EMPTY, combineLatest } from '
 import { CostEstimationService } from '../../core/services/cost-estimation.service';
 import { CostEstimate, Bezirk, BEZIRK_OPTIONS, ApiError } from '../../core/models/cost.model';
 import { CostBreakdownComponent } from './cost-breakdown.component';
+import { WizardStepService } from '../../core/services/wizard-step.service';
 
 @Component({
   selector: 'reloc-cost-estimator',
@@ -24,12 +26,13 @@ import { CostBreakdownComponent } from './cost-breakdown.component';
 export class CostEstimatorComponent {
   private readonly costService = inject(CostEstimationService);
   private readonly destroyRef = inject(DestroyRef);
-
+  private readonly wizardService = inject(WizardStepService);
+  readonly bezirkSelection = this.wizardService.bezirkSelection();
   readonly bezirkOptions = BEZIRK_OPTIONS;
   readonly roomOptions = [1, 2, 3, 4, 5];
 
   readonly form = new FormGroup({
-    bezirk: new FormControl<Bezirk>('friedrichshain-kreuzberg', { nonNullable: true }),
+    bezirk: new FormControl<Bezirk>(this.bezirkSelection, { nonNullable: true }),
     rooms: new FormControl<number>(2, { nonNullable: true }),
   });
 
@@ -57,6 +60,20 @@ export class CostEstimatorComponent {
   });
 
   constructor() {
+    // Sync bezirk form selection with neighborhood page selection
+    effect(() => {
+      const bezirk = this.wizardService.bezirkSelection();
+      if (bezirk && bezirk !== this.form.controls.bezirk.value) {
+        this.form.controls.bezirk.setValue(bezirk);
+      }
+    });
+    // Sync bezirk neighborhood page selection with form change
+    this.form.controls.bezirk.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((bezirk) => {
+        this.wizardService.bezirkSelection.set(bezirk);
+      });
+
     // Auto-fetch when form changes
     combineLatest([this.form.controls.bezirk.valueChanges, this.form.controls.rooms.valueChanges])
       .pipe(
