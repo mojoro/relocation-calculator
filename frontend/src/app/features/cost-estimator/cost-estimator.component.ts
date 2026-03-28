@@ -27,12 +27,11 @@ export class CostEstimatorComponent {
   private readonly costService = inject(CostEstimationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly wizardService = inject(WizardStepService);
-  readonly bezirkSelection = this.wizardService.bezirkSelection();
   readonly bezirkOptions = BEZIRK_OPTIONS;
   readonly roomOptions = [1, 2, 3, 4, 5];
 
   readonly form = new FormGroup({
-    bezirk: new FormControl<Bezirk>(this.bezirkSelection, { nonNullable: true }),
+    bezirk: new FormControl<Bezirk>(this.wizardService.bezirkSelection(), { nonNullable: true }),
     rooms: new FormControl<number>(2, { nonNullable: true }),
   });
 
@@ -40,8 +39,8 @@ export class CostEstimatorComponent {
   readonly isLoading = signal(false);
   readonly error = signal<ApiError | null>(null);
 
-  /** Net monthly salary from Step 1, stored in sessionStorage */
-  readonly netMonthlySalary = signal<number | null>(this.loadNetSalary());
+  /** Net monthly salary from Step 1, stored in the wizard service */
+  readonly netMonthlySalary = this.wizardService.netMonthlySalary;
 
   readonly affordabilityRatio = computed(() => {
     const net = this.netMonthlySalary();
@@ -102,14 +101,5 @@ export class CostEstimatorComponent {
     // Trigger initial fetch
     this.form.controls.bezirk.updateValueAndValidity();
     this.form.controls.rooms.updateValueAndValidity();
-  }
-
-  private loadNetSalary(): number | null {
-    try {
-      const saved = sessionStorage.getItem('reloc_net_monthly');
-      return saved ? parseFloat(saved) : null;
-    } catch {
-      return null;
-    }
   }
 }

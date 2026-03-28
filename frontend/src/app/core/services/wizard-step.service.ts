@@ -23,6 +23,8 @@ export class WizardStepService {
     { path: 'checklist', label: 'Visa Checklist', shortLabel: 'Visa', icon: '✅' },
   ];
 
+  readonly netMonthlySalary = signal<number | null>(null);
+
   readonly bezirkSelection = signal<Bezirk>('mitte');
 
   readonly currentPath = toSignal(
