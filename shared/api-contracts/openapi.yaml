@@ -233,7 +233,6 @@ components:
             - number
             - 'null'
           format: double
-          nullable: true
           description: Monthly amount in EUR
         totalDeductions:
           type: number
@@ -318,24 +317,23 @@ components:
         lowerBound:
           type: integer
           description: Inclusive lower bound of the bracket in EUR
-          example: 0
+          examples: [0]
         upperBound:
           type:
             - integer
             - 'null'
-          nullable: true
           description: Inclusive upper bound in EUR, null for the open-ended top bracket
-          example: 12348
+          examples: [12348]
         rate:
           type: string
           description: >
             Tax rate or rate range for this bracket (e.g. "0%", "14–24%", "42%")
-          example: "0%"
+          examples: ["0%"]
         taxAmount:
           type: number
           format: double
           description: Tax owed within this bracket for the given income
-          example: 0.0
+          examples: [0.0]
 
     RentRange:
       type: object
