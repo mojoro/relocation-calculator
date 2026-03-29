@@ -10,6 +10,8 @@ servers:
   - url: https://relocation-calculator-production.up.railway.app
     description: Production
 
+security: []
+
 paths:
   /api/v1/salary/calculate:
     post:
@@ -28,6 +30,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SalaryResponse"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 
   /api/v1/costs/estimate:
     get:
@@ -59,6 +67,54 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiError"
 
+  /api/v1/costs/allocate:
+    post:
+      operationId: allocateBudget
+      summary: Construct a budget and return Bezirk-specific information on line-items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetAllocationRequest"
+      responses:
+        "200":
+          description: Successful budget allocation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetAllocation"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /api/v1/costs/analyze:
+    post:
+      operationId: analyzeSelections
+      summary: Collects all relevant context about chosen bezirk and budget choices, sends to AI for analysis, and returns a description of life with the user's choices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalysisContext"
+      responses:
+        "200":
+          description: Successful AI-generated budget analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetAnalysis"
+        "400":
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
   /api/v1/neighborhoods:
     get:
       operationId: getAllNeighborhoods
@@ -72,6 +128,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/NeighborhoodProfile"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 
   /api/v1/neighborhoods/{bezirk}:
     get:
@@ -384,6 +446,204 @@ components:
         totalEstimated:
           type: number
           format: double
+
+    BudgetAllocationRequest:
+      type: object
+      required:
+        - netMonthlySalary
+        - bezirk
+        - rooms
+        - categories
+      properties:
+        netMonthlySalary:
+          type: number
+          format: float
+        bezirk:
+          $ref: "#/components/schemas/Bezirk"
+        rooms:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetCategoryInput"
+
+    BudgetCategoryInput:
+      type: object
+      required:
+        - key
+        - label
+        - percentage
+        - isCustom
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        percentage:
+          type: number
+          format: float
+        isCustom:
+          type: boolean
+
+    BudgetAllocation:
+      type: object
+      required:
+        - netMonthlySalary
+        - bezirk
+        - rooms
+        - categories
+      properties:
+        netMonthlySalary:
+          type: number
+          format: float
+        bezirk:
+          $ref: "#/components/schemas/Bezirk"
+        rooms:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetCategory"
+
+    BudgetCategory:
+      type: object
+      required:
+        - key
+        - label
+        - percentage
+        - total
+        - isCustom
+        - pieGroup
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        percentage:
+          type: number
+          format: float
+        total:
+          type: number
+          format: float
+        isCustom:
+          type: boolean
+        pieGroup:
+          type: string
+        recommendedState:
+          type:
+            - object
+            - "null"
+          properties:
+            minTotal:
+              type: number
+              format: double
+            percentage:
+              type: number
+              format: float
+
+    AnalysisContext:
+      type: object
+      required:
+        - netMonthlySalary
+        - grossAnnualSalary
+        - taxClass
+        - bezirk
+        - rooms
+        - categories
+        - rentRange
+        - neighborhoodVibe
+      properties:
+        netMonthlySalary:
+          type: number
+          format: double
+          description: Monthly take-home pay after all deductions
+        grossAnnualSalary:
+          type: integer
+          description: Gross annual salary in EUR (for context on career level)
+        taxClass:
+          $ref: "#/components/schemas/TaxClass"
+        bezirk:
+          $ref: "#/components/schemas/Bezirk"
+        bezirkDisplayName:
+          type: string
+          description: Human-readable Bezirk name (e.g. "Friedrichshain-Kreuzberg")
+        rooms:
+          type: integer
+          description: Number of rooms in the apartment
+        categories:
+          type: array
+          description: Full budget allocation with percentages and EUR amounts
+          items:
+            $ref: "#/components/schemas/BudgetCategory"
+        totalAllocated:
+          type: number
+          format: double
+          description: Sum of all category EUR amounts
+        remainingMonthly:
+          type: number
+          format: double
+          description: Net salary minus total allocated (can be negative)
+        rentRange:
+          $ref: "#/components/schemas/RentRange"
+        neighborhoodVibe:
+          type: string
+          description: The Bezirk's vibe description from neighborhood profile
+        neighborhoodHighlights:
+          type: array
+          items:
+            type: string
+          description: Key highlights of the chosen Bezirk
+        hasChildren:
+          type: boolean
+        childCount:
+          type: integer
+
+    BudgetAnalysis:
+      type: object
+      required:
+        - sections
+        - generatedAt
+      properties:
+        sections:
+          type: array
+          description: Structured narrative sections for display
+          items:
+            $ref: "#/components/schemas/AnalysisSection"
+        generatedAt:
+          type: string
+          format: date-time
+
+    AnalysisSection:
+      type: object
+      required:
+        - key
+        - heading
+        - body
+      properties:
+        key:
+          type: string
+          description: Section identifier for styling/icons
+          enum:
+            - daily-life
+            - housing
+            - food-and-dining
+            - transport-and-mobility
+            - leisure-and-culture
+            - financial-health
+            - tips
+        heading:
+          type: string
+          description: Display heading for the section
+        body:
+          type: string
+          description: Markdown-formatted narrative content
+        sentiment:
+          type: string
+          enum:
+            - positive
+            - neutral
+            - caution
+          description: Overall tone of this section, for visual treatment
 
     NeighborhoodProfile:
       type: object
