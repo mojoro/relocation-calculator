@@ -20,14 +20,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SalaryRequest'
+              $ref: "#/components/schemas/SalaryRequest"
       responses:
-        '200':
+        "200":
           description: Successful salary calculation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SalaryResponse'
+                $ref: "#/components/schemas/SalaryResponse"
 
   /api/v1/costs/estimate:
     get:
@@ -46,32 +46,32 @@ paths:
             type: integer
             default: 2
       responses:
-        '200':
+        "200":
           description: Successful cost estimation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CostEstimate'
-        '400':
+                $ref: "#/components/schemas/CostEstimate"
+        "400":
           description: Invalid request parameters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiError'
+                $ref: "#/components/schemas/ApiError"
 
   /api/v1/neighborhoods:
     get:
       operationId: getAllNeighborhoods
       summary: Get all Berlin neighborhood profiles
       responses:
-        '200':
+        "200":
           description: List of all neighborhood profiles
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/NeighborhoodProfile'
+                  $ref: "#/components/schemas/NeighborhoodProfile"
 
   /api/v1/neighborhoods/{bezirk}:
     get:
@@ -84,18 +84,18 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Neighborhood profile found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NeighborhoodProfile'
-        '404':
+                $ref: "#/components/schemas/NeighborhoodProfile"
+        "404":
           description: Neighborhood not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiError'
+                $ref: "#/components/schemas/ApiError"
 
 components:
   schemas:
@@ -164,7 +164,7 @@ components:
           maximum: 10000000
           description: Gross annual salary in EUR
         taxClass:
-          $ref: '#/components/schemas/TaxClass'
+          $ref: "#/components/schemas/TaxClass"
         churchTax:
           type: boolean
           default: false
@@ -231,7 +231,7 @@ components:
         churchTaxAmount:
           type:
             - number
-            - 'null'
+            - "null"
           format: double
           description: Monthly amount in EUR
         totalDeductions:
@@ -239,7 +239,7 @@ components:
           format: double
           description: Monthly amount in EUR
         incomeBreakdown:
-          $ref: '#/components/schemas/IncomeTaxBreakdown'
+          $ref: "#/components/schemas/IncomeTaxBreakdown"
 
     IncomeTaxBreakdown:
       type: object
@@ -270,7 +270,7 @@ components:
           minItems: 5
           maxItems: 5
           items:
-            $ref: '#/components/schemas/TaxBracket'
+            $ref: "#/components/schemas/TaxBracket"
         einkommensteuerAnnual:
           type: number
           format: double
@@ -321,7 +321,7 @@ components:
         upperBound:
           type:
             - integer
-            - 'null'
+            - "null"
           description: Inclusive upper bound in EUR, null for the open-ended top bracket
           examples: [12348]
         rate:
@@ -365,13 +365,13 @@ components:
         - totalEstimated
       properties:
         bezirk:
-          $ref: '#/components/schemas/Bezirk'
+          $ref: "#/components/schemas/Bezirk"
         displayName:
           type: string
         rooms:
           type: integer
         rentRange:
-          $ref: '#/components/schemas/RentRange'
+          $ref: "#/components/schemas/RentRange"
         utilities:
           type: number
           format: double
@@ -395,7 +395,7 @@ components:
         - highlights
       properties:
         bezirk:
-          $ref: '#/components/schemas/Bezirk'
+          $ref: "#/components/schemas/Bezirk"
         displayName:
           type: string
         vibe:
