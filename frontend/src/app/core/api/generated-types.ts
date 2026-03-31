@@ -38,6 +38,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/costs/allocate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Construct a budget and return Bezirk-specific information on line-items */
+        post: operations["allocateBudget"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/costs/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Collects all relevant context about chosen bezirk and budget choices, sends to AI for analysis, and returns a description of life with the user's choices */
+        post: operations["analyzeSelections"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/neighborhoods": {
         parameters: {
             query?: never;
@@ -141,7 +175,7 @@ export interface components {
              * Format: double
              * @description Monthly amount in EUR
              */
-            churchTaxAmount: ((number | null) | null) | null;
+            churchTaxAmount: number | null;
             /**
              * Format: double
              * @description Monthly amount in EUR
@@ -208,7 +242,7 @@ export interface components {
              * @description Inclusive upper bound in EUR, null for the open-ended top bracket
              * @example 12348
              */
-            upperBound: ((number | null) | null) | null;
+            upperBound: number | null;
             /**
              * @description Tax rate or rate range for this bracket (e.g. "0%", "14–24%", "42%")
              * @example 0%
@@ -242,6 +276,99 @@ export interface components {
             groceries: number;
             /** Format: double */
             totalEstimated: number;
+        };
+        BudgetAllocationRequest: {
+            /** Format: float */
+            netMonthlySalary: number;
+            bezirk: components["schemas"]["Bezirk"];
+            rooms: number;
+            categories: components["schemas"]["BudgetCategoryInput"][];
+        };
+        BudgetCategoryInput: {
+            key: string;
+            label: string;
+            /** Format: float */
+            percentage: number;
+            isCustom: boolean;
+        };
+        BudgetAllocation: {
+            /** Format: float */
+            netMonthlySalary: number;
+            bezirk: components["schemas"]["Bezirk"];
+            rooms: number;
+            categories: components["schemas"]["BudgetCategory"][];
+        };
+        BudgetCategory: {
+            key: string;
+            label: string;
+            /** Format: float */
+            percentage: number;
+            /** Format: float */
+            total: number;
+            isCustom: boolean;
+            pieGroup: string;
+            recommendedState?: {
+                /** Format: double */
+                minTotal?: number;
+                /** Format: float */
+                percentage?: number;
+            } | null;
+        };
+        AnalysisContext: {
+            /**
+             * Format: double
+             * @description Monthly take-home pay after all deductions
+             */
+            netMonthlySalary: number;
+            /** @description Gross annual salary in EUR (for context on career level) */
+            grossAnnualSalary: number;
+            taxClass: components["schemas"]["TaxClass"];
+            bezirk: components["schemas"]["Bezirk"];
+            /** @description Human-readable Bezirk name (e.g. "Friedrichshain-Kreuzberg") */
+            bezirkDisplayName?: string;
+            /** @description Number of rooms in the apartment */
+            rooms: number;
+            /** @description Full budget allocation with percentages and EUR amounts */
+            categories: components["schemas"]["BudgetCategory"][];
+            /**
+             * Format: double
+             * @description Sum of all category EUR amounts
+             */
+            totalAllocated?: number;
+            /**
+             * Format: double
+             * @description Net salary minus total allocated (can be negative)
+             */
+            remainingMonthly?: number;
+            rentRange: components["schemas"]["RentRange"];
+            /** @description The Bezirk's vibe description from neighborhood profile */
+            neighborhoodVibe: string;
+            /** @description Key highlights of the chosen Bezirk */
+            neighborhoodHighlights?: string[];
+            hasChildren?: boolean;
+            childCount?: number;
+        };
+        BudgetAnalysis: {
+            /** @description Structured narrative sections for display */
+            sections: components["schemas"]["AnalysisSection"][];
+            /** Format: date-time */
+            generatedAt: string;
+        };
+        AnalysisSection: {
+            /**
+             * @description Section identifier for styling/icons
+             * @enum {string}
+             */
+            key: "daily-life" | "housing" | "food-and-dining" | "transport-and-mobility" | "leisure-and-culture" | "financial-health" | "tips";
+            /** @description Display heading for the section */
+            heading: string;
+            /** @description Markdown-formatted narrative content */
+            body: string;
+            /**
+             * @description Overall tone of this section, for visual treatment
+             * @enum {string}
+             */
+            sentiment?: "positive" | "neutral" | "caution";
         };
         NeighborhoodProfile: {
             bezirk: components["schemas"]["Bezirk"];
@@ -287,6 +414,15 @@ export interface operations {
                     "application/json": components["schemas"]["SalaryResponse"];
                 };
             };
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
         };
     };
     estimateCosts: {
@@ -321,6 +457,72 @@ export interface operations {
             };
         };
     };
+    allocateBudget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BudgetAllocationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful budget allocation */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetAllocation"];
+                };
+            };
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    analyzeSelections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalysisContext"];
+            };
+        };
+        responses: {
+            /** @description Successful AI-generated budget analysis */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetAnalysis"];
+                };
+            };
+            /** @description Invalid request parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     getAllNeighborhoods: {
         parameters: {
             query?: never;
@@ -337,6 +539,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["NeighborhoodProfile"][];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };
