@@ -4,3 +4,7 @@ server:
 spring:
   application:
     name: relocation-backend
+
+openrouter:
+  api-key: ${OPENROUTER_API_KEY:}
+  model: ${OPENROUTER_MODEL:anthropic/claude-sonnet-4}
