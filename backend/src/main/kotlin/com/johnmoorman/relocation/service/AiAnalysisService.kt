@@ -45,11 +45,17 @@ class AiAnalysisService(
 
     private val logger = LoggerFactory.getLogger(AiAnalysisService::class.java)
 
-    private val restClient = RestClient.builder()
-        .baseUrl(BASE_URL)
-        .defaultHeader("HTTP-Referer", "https://relocation-calculator.vercel.app")
-        .defaultHeader("X-Title", "Berlin Relocation Calculator")
-        .build()
+    private val restClient: RestClient = run {
+        val factory = org.springframework.boot.web.client.ClientHttpRequestFactorySettings.DEFAULTS
+            .withConnectTimeout(java.time.Duration.ofSeconds(5))
+            .withReadTimeout(java.time.Duration.ofSeconds(15))
+        RestClient.builder()
+            .requestFactory(org.springframework.boot.web.client.ClientHttpRequestFactories.get(factory))
+            .baseUrl(BASE_URL)
+            .defaultHeader("HTTP-Referer", "https://relocation-calculator.vercel.app")
+            .defaultHeader("X-Title", "Berlin Relocation Calculator")
+            .build()
+    }
 
     /** True when an API key has been provided. */
     val isConfigured: Boolean
