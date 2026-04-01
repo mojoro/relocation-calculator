@@ -27,9 +27,9 @@ import { WizardService } from '../../core/services/wizard.service';
           class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium bg-(--reloc-ref-color-primary-light) text-(--reloc-ref-color-primary)"
         >
           {{
-            profile().commuteMinutes === 0
-              ? 'City center'
-              : profile().commuteMinutes + ' min commute'
+            profile().commuteMinutesMin <= 5 && profile().commuteMinutesMax <= 25
+              ? profile().commuteMinutesMin + '-' + profile().commuteMinutesMax + ' min'
+              : profile().commuteMinutesMin + '-' + profile().commuteMinutesMax + ' min commute'
           }}
         </span>
       </div>

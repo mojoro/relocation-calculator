@@ -100,7 +100,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'mitte',
         displayName: 'Mitte',
         vibe: 'The historic and governmental heart of Berlin. Tourist-heavy but culturally rich.',
-        commuteMinutes: 0,
+        commuteMinutesMin: 5, commuteMinutesMax: 25,
         highlights: [
           'Museum Island & Brandenburg Gate',
           'Excellent transit connections',
@@ -112,7 +112,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'friedrichshain-kreuzberg',
         displayName: 'Friedrichshain-Kreuzberg',
         vibe: "Berlin's creative and nightlife epicenter. Diverse, vibrant, sometimes chaotic.",
-        commuteMinutes: 10,
+        commuteMinutesMin: 6, commuteMinutesMax: 20,
         highlights: [
           'Best nightlife in Berlin',
           'Multicultural food scene',
@@ -124,7 +124,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'pankow',
         displayName: 'Pankow',
         vibe: 'Family-friendly with a village feel. Prenzlauer Berg is the gentrified gem within.',
-        commuteMinutes: 15,
+        commuteMinutesMin: 11, commuteMinutesMax: 35,
         highlights: [
           'Café culture and boutiques',
           'Mauerpark flea market',
@@ -136,7 +136,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'charlottenburg-wilmersdorf',
         displayName: 'Charlottenburg-Wilmersdorf',
         vibe: 'Old West Berlin elegance. Upscale, quiet, with grand architecture.',
-        commuteMinutes: 15,
+        commuteMinutesMin: 12, commuteMinutesMax: 30,
         highlights: [
           'Kurfürstendamm shopping',
           'Charlottenburg Palace',
@@ -148,7 +148,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'neukoelln',
         displayName: 'Neukölln',
         vibe: 'Rapidly gentrifying but still gritty. Art galleries meet döner shops.',
-        commuteMinutes: 15,
+        commuteMinutesMin: 11, commuteMinutesMax: 30,
         highlights: [
           'Thriving art and music scene',
           'Incredible food diversity',
@@ -160,7 +160,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'tempelhof-schoeneberg',
         displayName: 'Tempelhof-Schöneberg',
         vibe: 'Diverse and welcoming. Historic LGBTQ+ neighborhood with great parks.',
-        commuteMinutes: 15,
+        commuteMinutesMin: 15, commuteMinutesMax: 30,
         highlights: [
           'Tempelhofer Feld',
           'Vibrant LGBTQ+ scene',
@@ -172,7 +172,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'steglitz-zehlendorf',
         displayName: 'Steglitz-Zehlendorf',
         vibe: 'Leafy, suburban, and academic. Home to Freie Universität.',
-        commuteMinutes: 25,
+        commuteMinutesMin: 25, commuteMinutesMax: 45,
         highlights: [
           'Botanical Garden',
           'Lakes for swimming',
@@ -184,7 +184,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'treptow-koepenick',
         displayName: 'Treptow-Köpenick',
         vibe: "Berlin's green lung. Lakes, forests, and a small-town feel.",
-        commuteMinutes: 25,
+        commuteMinutesMin: 15, commuteMinutesMax: 45,
         highlights: [
           'Müggelsee lake',
           'Treptower Park',
@@ -196,14 +196,14 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'lichtenberg',
         displayName: 'Lichtenberg',
         vibe: 'Up-and-coming East Berlin. Vietnamese community hub with great food.',
-        commuteMinutes: 20,
+        commuteMinutesMin: 12, commuteMinutesMax: 25,
         highlights: ['Dong Xuan Center', 'Tierpark Berlin', 'Affordable', 'Growing creative scene'],
       },
       {
         bezirk: 'spandau',
         displayName: 'Spandau',
         vibe: 'A city within a city. Affordable, green, and feels separate from Berlin.',
-        commuteMinutes: 35,
+        commuteMinutesMin: 25, commuteMinutesMax: 55,
         highlights: [
           'Most affordable rents',
           'Spandau Citadel',
@@ -215,7 +215,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'marzahn-hellersdorf',
         displayName: 'Marzahn-Hellersdorf',
         vibe: 'East Berlin Plattenbau district being reinvented. Surprisingly green.',
-        commuteMinutes: 35,
+        commuteMinutesMin: 25, commuteMinutesMax: 45,
         highlights: [
           'Gardens of the World',
           'Lowest rents in Berlin',
@@ -227,7 +227,7 @@ export class NeighborhoodExplorerComponent implements OnInit {
         bezirk: 'reinickendorf',
         displayName: 'Reinickendorf',
         vibe: 'Quiet northern district. Lakes, forests, and old Berlin charm.',
-        commuteMinutes: 30,
+        commuteMinutesMin: 20, commuteMinutesMax: 45,
         highlights: [
           'Tegeler See',
           'Tegel redevelopment',
