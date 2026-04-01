@@ -42,9 +42,9 @@ import { WizardService } from '../../core/services/wizard.service';
       <!-- Highlights -->
       <ul class="space-y-1">
         @for (highlight of profile().highlights; track highlight) {
-          <li class="flex items-start gap-2 text-xs text-(--reloc-ref-color-text-primary)">
+          <li class="flex items-center gap-2 text-xs text-(--reloc-ref-color-text-primary)">
             <span
-              class="mt-0.5 block h-1.5 w-1.5 shrink-0 rounded-full bg-(--reloc-ref-color-primary)"
+              class="block h-1.5 w-1.5 shrink-0 rounded-full bg-(--reloc-ref-color-primary)"
             ></span>
             {{ highlight }}
           </li>
