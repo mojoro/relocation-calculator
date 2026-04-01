@@ -374,7 +374,10 @@ export interface components {
             bezirk: components["schemas"]["Bezirk"];
             displayName: string;
             vibe: string;
-            commuteMinutes: number;
+            /** @description Minimum commute time to Mitte (Alexanderplatz) by public transit */
+            commuteMinutesMin: number;
+            /** @description Maximum commute time to Mitte from the furthest parts of the district */
+            commuteMinutesMax: number;
             highlights: string[];
         };
         ApiError: {

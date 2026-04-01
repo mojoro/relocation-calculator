@@ -651,7 +651,8 @@ components:
         - bezirk
         - displayName
         - vibe
-        - commuteMinutes
+        - commuteMinutesMin
+        - commuteMinutesMax
         - highlights
       properties:
         bezirk:
@@ -660,8 +661,12 @@ components:
           type: string
         vibe:
           type: string
-        commuteMinutes:
+        commuteMinutesMin:
           type: integer
+          description: Minimum commute time to Mitte (Alexanderplatz) by public transit
+        commuteMinutesMax:
+          type: integer
+          description: Maximum commute time to Mitte from the furthest parts of the district
         highlights:
           type: array
           items:
