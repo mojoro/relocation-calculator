@@ -191,7 +191,7 @@
 
   <!-- Error State -->
   @if (error(); as err) {
-    <div class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-[#fef2f2]">
+    <div class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-(--reloc-ref-color-error-light)">
       <p class="text-sm font-medium text-(--reloc-ref-color-error)">
         {{ err.message }}
       </p>
