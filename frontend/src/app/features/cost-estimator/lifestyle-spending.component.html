@@ -1,0 +1,118 @@
+<div
+  class="rounded-lg border bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
+>
+  <!-- Collapsible Header -->
+  <button
+    type="button"
+    (click)="toggleExpanded()"
+    class="flex w-full items-center justify-between p-6 text-left"
+  >
+    <div class="flex items-center gap-3">
+      <h3
+        class="text-lg font-semibold text-(--reloc-ref-color-text-primary) [font-family:var(--reloc-ref-font-display)]"
+      >
+        Lifestyle Budget
+      </h3>
+      <!-- Allocation badge -->
+      <span
+        class="rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+        [style.background-color]="isOverBudget() ? 'var(--reloc-ref-color-error)' : 'var(--reloc-ref-color-success)'"
+      >
+        {{ totalAllocatedPercent() }}%
+      </span>
+    </div>
+    <!-- Chevron -->
+    <svg
+      class="h-5 w-5 shrink-0 transition-transform duration-300 text-(--reloc-ref-color-text-muted)"
+      [class.rotate-180]="isExpanded()"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  </button>
+
+  <!-- Collapsible Content -->
+  <div
+    class="grid transition-[grid-template-rows] duration-300"
+    [class]="isExpanded() ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+  >
+    <div class="overflow-hidden">
+      <div class="space-y-5 px-6 pb-6">
+        <!-- Allocation bar -->
+        <div>
+          <div class="relative h-3 w-full rounded-full bg-(--reloc-ref-color-border)">
+            <div class="flex h-full overflow-hidden rounded-full">
+              @for (category of categories(); track category.key) {
+                <div
+                  class="h-full cursor-pointer transition-all duration-300"
+                  [style.width.%]="category.percentage"
+                  [style.background-color]="getCategoryColor(category.key)"
+                  [style.opacity]="hoveredSegment() && hoveredSegment() !== category.key ? 0.4 : 1"
+                  (mouseenter)="hoveredSegment.set(category.key)"
+                  (mouseleave)="hoveredSegment.set(null)"
+                ></div>
+              }
+            </div>
+          </div>
+          <!-- Hover detail (below bar) -->
+          <div class="h-5 mt-1">
+            @if (hoveredSegment(); as key) {
+              @for (category of categories(); track category.key) {
+                @if (category.key === key) {
+                  <span class="text-xs font-medium" [style.color]="getCategoryColor(category.key)">
+                    {{ category.label }} · {{ category.percentage }}% · {{ category.total | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+                  </span>
+                }
+              }
+            }
+          </div>
+        </div>
+
+        <!-- Over-budget warning -->
+        @if (isOverBudget()) {
+          <div
+            class="flex items-center gap-2 rounded-md border px-4 py-3 border-(--reloc-ref-color-error) bg-(--reloc-ref-color-error-light)"
+          >
+            <svg class="h-4 w-4 shrink-0 text-(--reloc-ref-color-error)" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+            <span class="text-sm font-medium text-(--reloc-ref-color-error)">
+              Budget exceeds 100% — adjust allocations
+            </span>
+          </div>
+        }
+
+        <!-- Unallocated info -->
+        <div class="flex items-center justify-between">
+          <span
+            class="text-sm"
+            [class]="totalAllocatedPercent() <= 100 ? 'text-(--reloc-ref-color-success)' : 'text-(--reloc-ref-color-error)'"
+          >
+            @if (totalAllocatedPercent() <= 100) {
+              {{ 100 - totalAllocatedPercent() }}% unallocated
+              ({{ netMonthlySalary() * (100 - totalAllocatedPercent()) / 100 | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }} remaining)
+            } @else {
+              {{ totalAllocatedPercent() - 100 }}% over budget
+              ({{ netMonthlySalary() * (totalAllocatedPercent() - 100) / 100 | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }} excess)
+            }
+          </span>
+        </div>
+
+        <!-- Category sliders -->
+        @for (category of categories(); track category.key) {
+          <reloc-budget-slider
+            [label]="category.label"
+            [percentage]="category.percentage"
+            [amount]="category.total"
+            [color]="getCategoryColor(category.key)"
+            [recommended]="category.recommendedState ?? null"
+            (percentageChange)="onCategoryPercentageChange(category.key, $event)"
+          />
+        }
+      </div>
+    </div>
+  </div>
+</div>
