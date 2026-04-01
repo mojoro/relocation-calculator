@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 /**
  * Lightweight markdown-to-HTML pipe.
- * Supports: **bold**, - list items, and newlines.
+ * Supports: **bold**, list items (- or *), and newlines.
  * Sanitises HTML tags from input before transforming.
  */
 @Pipe({ name: 'markdown', standalone: true })
@@ -16,9 +16,9 @@ export class MarkdownPipe implements PipeTransform {
     // Convert **bold** → <strong>bold</strong>
     safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-    // Convert lines starting with "- " into list items
-    const lines = safe.split(/(?:\r?\n|(?<=\.)\s+-\s)/);
-    const hasListItems = lines.some(l => l.trimStart().startsWith('- '));
+    // Split on newlines and inline list boundaries (". - " or ". * ")
+    const lines = safe.split(/(?:\r?\n|(?<=\.)\s+[-*]\s)/);
+    const hasListItems = lines.some(l => /^\s*[-*]\s/.test(l));
 
     if (hasListItems) {
       const parts: string[] = [];
@@ -26,12 +26,13 @@ export class MarkdownPipe implements PipeTransform {
 
       for (const line of lines) {
         const trimmed = line.trimStart();
-        if (trimmed.startsWith('- ')) {
+        const match = trimmed.match(/^[-*]\s(.*)$/);
+        if (match) {
           if (!inList) {
             parts.push('<ul class="mt-1.5 list-disc pl-4 space-y-0.5">');
             inList = true;
           }
-          parts.push(`<li>${trimmed.slice(2)}</li>`);
+          parts.push(`<li>${match[1]}</li>`);
         } else {
           if (inList) {
             parts.push('</ul>');
