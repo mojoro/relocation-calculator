@@ -122,17 +122,17 @@ class AiAnalysisService(
         |  1. "daily-life"   — paint a picture of their daily routine in the Bezirk
         |  2. "housing"      — analyze their rent budget against local market reality
         |  3. "food-and-dining" — grocery and restaurant budget in Berlin context
-        |  4. "transport-and-mobility" — BVG pass, biking, commute from their Bezirk
+        |  4. "transport-and-mobility" — Deutschlandticket, biking, commute from their Bezirk
         |  5. "leisure-and-culture" — what their entertainment budget unlocks in Berlin
         |  6. "financial-health" — savings rate, emergency fund, overall sustainability
         |  7. "tips"         — 5-7 actionable Berlin survival tips as a bullet list
         |
         |Each section's "sentiment" must be exactly one of: "positive", "neutral", "caution".
         |
-        |For the body field, use markdown: **bold** for emphasis, bullet points with
-        |"- " prefix, and specific EUR amounts. Reference real Berlin places, markets,
-        |transit lines, and neighborhoods. The tone should be warm but honest — like
-        |advice from a friend who actually lives there.
+        |For the body field, use markdown: **bold** for emphasis, and bullet points
+        |with "- " prefix (never use "* " for bullets). Include specific EUR amounts.
+        |Reference real Berlin places, markets, transit lines, and neighborhoods.
+        |The tone should be warm but honest — like advice from a friend who lives there.
         |
         |The "tips" section body should be a markdown bullet list where each item
         |starts with a bold label, e.g. "- **Anmeldung first:** Register your address..."
@@ -182,6 +182,11 @@ class AiAnalysisService(
             |$categorySummary
             |- Total allocated: EUR ${"%.0f".format(totalAllocated)}/month
             |- Remaining unallocated: EUR ${"%.0f".format(remaining)}/month
+            |
+            |**Key transport info:**
+            |- The Deutschlandticket costs EUR 63/month and provides unlimited access to all local
+            |  and regional public transit nationwide (U-Bahn, S-Bahn, buses, trams, regional trains).
+            |  This is the standard choice for most Berlin residents and commuters.
             |
             |**Rent market (${context.rooms}-room in $bezirkName):**
             |- Min: EUR ${"%.0f".format(context.rentRange.min)}/month
