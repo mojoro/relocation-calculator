@@ -6,6 +6,7 @@ import { Bezirk } from '../models/cost.model';
 import type { components } from '../api/generated-types';
 import type { BudgetAnalysis } from '../models/budget.model';
 import { DEFAULT_BUDGET_CATEGORIES } from '../models/budget.model';
+import type { VisaType } from '../models/checklist.model';
 
 type TaxClass = components['schemas']['TaxClass'];
 
@@ -27,6 +28,8 @@ interface PersistedState {
   budgetPercentages: Record<string, number>;
   analysis: BudgetAnalysis | null;
   analysisSnapshot: Record<string, number> | null;
+  visaType: VisaType;
+  completedChecklistIds: string[];
 }
 
 function loadState(): Partial<PersistedState> {
@@ -73,6 +76,10 @@ export class WizardService {
     this.saved.analysisSnapshot ?? null,
   );
 
+  // Step 4: Visa checklist
+  readonly visaType = signal<VisaType>(this.saved.visaType ?? 'eu-blue-card');
+  readonly completedChecklistIds = signal<string[]>(this.saved.completedChecklistIds ?? []);
+
   readonly currentPath = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -95,6 +102,8 @@ export class WizardService {
         budgetPercentages: this.budgetPercentages(),
         analysis: this.analysis(),
         analysisSnapshot: this.analysisSnapshot(),
+        visaType: this.visaType(),
+        completedChecklistIds: this.completedChecklistIds(),
       };
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));

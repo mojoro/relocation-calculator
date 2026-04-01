@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import {
   VisaType,
@@ -6,6 +6,7 @@ import {
   VISA_TYPE_OPTIONS,
   getDefaultChecklist,
 } from '../../core/models/checklist.model';
+import { WizardService } from '../../core/services/wizard.service';
 
 @Component({
   selector: 'reloc-visa-checklist',
@@ -15,9 +16,18 @@ import {
   templateUrl: './visa-checklist.component.html',
 })
 export class VisaChecklistComponent {
+  private readonly wizardService = inject(WizardService);
   readonly visaTypeOptions = VISA_TYPE_OPTIONS;
-  readonly selectedVisaType = signal<VisaType>('eu-blue-card');
-  readonly checklist = signal<ChecklistItem[]>(getDefaultChecklist());
+  readonly selectedVisaType = this.wizardService.visaType;
+
+  /** Checklist items with completed state derived from persisted IDs. */
+  readonly checklist = computed<ChecklistItem[]>(() => {
+    const completedIds = new Set(this.wizardService.completedChecklistIds());
+    return getDefaultChecklist().map((item) => ({
+      ...item,
+      completed: completedIds.has(item.id),
+    }));
+  });
 
   readonly filteredItems = computed(() => {
     const visaType = this.selectedVisaType();
@@ -52,8 +62,8 @@ export class VisaChecklistComponent {
   }
 
   toggleItem(id: string): void {
-    this.checklist.update((items) =>
-      items.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item)),
+    this.wizardService.completedChecklistIds.update((ids) =>
+      ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id],
     );
   }
 }
