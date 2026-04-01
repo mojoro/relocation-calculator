@@ -175,7 +175,7 @@ class AiAnalysisService(
             |- Bezirk: $bezirkName
             |- Vibe: ${profile.vibe}
             |- Apartment: ${context.rooms} rooms
-            |- Commute to Mitte: ${profile.commuteMinutes} minutes
+            |- Commute to Mitte: ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minutes (depending on location within district)
             |- Highlights: $highlights
             |
             |**Budget allocation:**

@@ -161,10 +161,14 @@ class BudgetService(
         val bezirkName = context.bezirkDisplayName ?: context.bezirk.displayName
         val vibe = context.neighborhoodVibe
         val commuteNote = when {
-            profile.commuteMinutes == 0 -> "You're in the center — most of Berlin is your commute destination, not the other way around."
-            profile.commuteMinutes <= 15 -> "With a ${profile.commuteMinutes}-minute commute to Mitte, you're close enough to bike on good days."
-            profile.commuteMinutes <= 25 -> "The ${profile.commuteMinutes}-minute commute is typical for Berlin — a podcast episode on the U-Bahn and you're there."
-            else -> "The ${profile.commuteMinutes}-minute commute is on the longer side, but you gain space and quiet in return."
+            profile.commuteMinutesMin <= 5 && profile.commuteMinutesMax <= 25 ->
+                "You're in the center — most destinations are ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minutes away."
+            profile.commuteMinutesMin <= 15 ->
+                "With a ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minute commute to Mitte, you're close enough to bike on good days."
+            profile.commuteMinutesMin <= 25 ->
+                "The ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minute commute is typical for Berlin — a podcast episode on the U-Bahn and you're there."
+            else ->
+                "The ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minute commute is on the longer side, but you gain space and quiet in return."
         }
 
         val budgetTone = when {
@@ -313,10 +317,10 @@ class BudgetService(
             else -> "**${formatEur(transport)}** is quite low for Berlin transport. A used bike from eBay Kleinanzeigen (€50–100 one-time) could be your best investment — Berlin is flat and bike-friendly."
         }
 
-        val commuteContext = if (profile.commuteMinutes > 20) {
-            "\n\nFrom **$bezirkName**, the ${profile.commuteMinutes}-minute commute to central Berlin makes reliable transit important. The BVG pass pays for itself quickly at this distance."
-        } else if (profile.commuteMinutes > 0) {
-            "\n\n**$bezirkName** is well-connected — at ${profile.commuteMinutes} minutes to Mitte, you might find yourself biking as often as taking the train."
+        val commuteContext = if (profile.commuteMinutesMin > 20) {
+            "\n\nFrom **$bezirkName**, the ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minute commute to central Berlin makes the Deutschlandticket essential."
+        } else if (profile.commuteMinutesMin > 5) {
+            "\n\n**$bezirkName** is well-connected — at ${profile.commuteMinutesMin}-${profile.commuteMinutesMax} minutes to Mitte, you might find yourself biking as often as taking the train."
         } else {
             ""
         }
