@@ -75,6 +75,7 @@ export class CostEstimatorComponent {
   readonly analysis = this.wizardService.analysis;
   readonly isAnalyzing = signal(false);
   readonly analysisError = signal<string | null>(null);
+  readonly analysisFailed = signal(false);
 
   /** Snapshot of budget percentages at the time the last analysis was generated. */
   readonly analysisPercentageSnapshot = this.wizardService.analysisSnapshot;
@@ -190,10 +191,11 @@ export class CostEstimatorComponent {
       .subscribe({
         next: (result) => {
           this.analysis.set(result);
+          this.analysisFailed.set(false);
           this.isAnalyzing.set(false);
         },
-        error: (err) => {
-          this.analysisError.set(err?.message ?? 'Analysis failed. Please try again.');
+        error: () => {
+          this.analysisFailed.set(true);
           this.isAnalyzing.set(false);
         },
       });

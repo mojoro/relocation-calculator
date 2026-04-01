@@ -100,19 +100,24 @@
       </div>
     }
 
-    <!-- Error state -->
-    @if (analysisError(); as error) {
-      <div class="rounded-md border p-4 bg-(--reloc-ref-color-error-light) border-(--reloc-ref-color-error)">
-        <p class="mb-2 text-sm font-medium text-(--reloc-ref-color-error)">
-          Analysis failed
-        </p>
-        <p class="text-xs text-(--reloc-ref-color-text-muted)">{{ error }}</p>
+    <!-- Error state / fallback notice -->
+    @if (analysisFailed() && !isAnalyzing()) {
+      <div class="space-y-3">
+        <div class="flex items-start gap-2 rounded-md border p-3 border-(--reloc-ref-color-border) bg-(--reloc-ref-color-bg-elevated)">
+          <span class="mt-0.5 text-xs leading-none">&#9432;</span>
+          <p class="text-xs text-(--reloc-ref-color-text-secondary)">
+            Showing rules-based analysis — the AI server could not be reached.
+          </p>
+        </div>
         <button
           type="button"
-          class="mt-3 rounded-md px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 bg-(--reloc-ref-color-primary)"
+          class="flex w-full items-center justify-center gap-2 rounded-md border px-4 py-3 text-sm font-medium transition-colors border-(--reloc-ref-color-primary) text-(--reloc-ref-color-primary) hover:bg-(--reloc-ref-color-primary-light)"
           (click)="onAnalyzeClick()"
         >
-          Try Again
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.992 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+          </svg>
+          Retry AI analysis
         </button>
       </div>
     }

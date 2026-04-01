@@ -33,6 +33,9 @@ export class SanityCheckComponent {
   /** Whether the budget has changed since the last analysis. */
   readonly budgetChanged = input<boolean>(false);
 
+  /** Whether the current analysis failed and we're showing rules-only mode. */
+  readonly analysisFailed = input<boolean>(false);
+
   // --------------- Outputs ---------------
   /** Emitted when the user clicks "Analyze My Budget". */
   readonly analyzeRequested = output<void>();
