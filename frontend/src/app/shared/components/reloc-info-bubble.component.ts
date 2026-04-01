@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal, ElementRef, inject } from '@angular/core';
 
 @Component({
   selector: 'reloc-info-bubble',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'inline-flex items-center' },
+  host: { class: 'relative inline-flex items-center' },
   template: `
     <button
       type="button"
@@ -17,12 +17,11 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
     @if (isOpen()) {
       <div
         (click)="$event.stopPropagation()"
-        class="fixed z-50 w-52 -translate-y-full rounded-md border p-2
+        class="absolute z-50 w-56 rounded-md border p-2.5
                text-xs leading-relaxed shadow-md
                bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)
                text-(--reloc-ref-color-text-secondary)"
-        [style.top.px]="pos().top"
-        [style.left.px]="pos().left"
+        [class]="positionClass()"
       >
         <ng-content />
       </div>
@@ -30,13 +29,21 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
   `,
 })
 export class InfoBubbleComponent {
+  private readonly el = inject(ElementRef);
   readonly isOpen = input(false);
   readonly toggle = output();
-  readonly pos = signal({ top: 0, left: 0 });
+
+  positionClass(): string {
+    const rect = this.el.nativeElement.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    // If the bubble would clip the right edge, position to the left instead
+    if (rect.right + 230 > viewportWidth) {
+      return 'right-0 top-6';
+    }
+    return 'left-0 top-6';
+  }
 
   onToggle(event: MouseEvent): void {
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    this.pos.set({ top: rect.bottom, left: rect.right + 8 });
     this.toggle.emit();
     event.stopPropagation();
   }
