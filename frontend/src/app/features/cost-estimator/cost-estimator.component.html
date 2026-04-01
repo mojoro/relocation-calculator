@@ -74,7 +74,7 @@
   <!-- Error -->
   @if (error(); as err) {
     <div
-      class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-[#fef2f2]"
+      class="rounded-lg border p-4 border-(--reloc-ref-color-error) bg-(--reloc-ref-color-error-light)"
     >
       <p class="text-sm font-medium text-(--reloc-ref-color-error)">
         {{ err.message }}
@@ -85,12 +85,40 @@
   <!-- Results -->
   @if (result(); as estimate) {
     @if (!isLoading()) {
-      <reloc-cost-breakdown
-        [estimate]="estimate"
-        [netMonthlySalary]="netMonthlySalary()"
-        [affordabilityRatio]="affordabilityRatio()"
-        [affordabilityLabel]="affordabilityLabel()"
-      />
+      @if (netMonthlySalary(); as net) {
+        <reloc-cost-breakdown
+          [estimate]="estimate"
+          [categories]="categories()"
+          [netMonthlySalary]="net"
+          [totalAllocatedPercent]="totalAllocatedPercent()"
+        />
+
+        <reloc-lifestyle-spending
+          [categories]="categories()"
+          [netMonthlySalary]="net"
+          [totalAllocatedPercent]="totalAllocatedPercent()"
+          [isOverBudget]="isOverBudget()"
+          (categoryChange)="onCategoryChange($event)"
+        />
+
+        <reloc-sanity-check
+          [categories]="categories()"
+          [netMonthlySalary]="net"
+          [rentMedian]="estimate.rentRange.median"
+          [bezirkDisplayName]="estimate.displayName"
+          [analysis]="analysis()"
+          [isAnalyzing]="isAnalyzing()"
+          [analysisError]="analysisError()"
+          [budgetChanged]="hasAnalysisChanged()"
+          (analyzeRequested)="onAnalyzeRequested()"
+        />
+      } @else {
+        <div class="rounded-lg border p-6 bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)">
+          <p class="text-sm text-(--reloc-ref-color-text-secondary)">
+            Complete the <strong>Salary Calculator</strong> step first to unlock budget planning and analysis tools.
+          </p>
+        </div>
+      }
     }
   }
 </div>
