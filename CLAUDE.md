@@ -40,268 +40,182 @@ This project must demonstrate:
 ### Monorepo Structure
 
 ```
-berlin-relocation-planner/
-├── frontend/                  # Angular 21 application
+relocation-calculator/
+├── frontend/                  # Angular 21.2 application
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── core/          # Singleton services, guards, interceptors
-│   │   │   ├── shared/        # Shared components, pipes, directives
+│   │   │   ├── core/          # Services, models, interceptors, generated API types
+│   │   │   ├── shared/        # Reusable components (currency-input, step-indicator) and pipes
 │   │   │   ├── features/
-│   │   │   │   ├── salary-calculator/
-│   │   │   │   ├── cost-estimator/
-│   │   │   │   ├── neighborhood-explorer/
-│   │   │   │   └── visa-checklist/
-│   │   │   ├── app.component.ts
+│   │   │   │   ├── salary-calculator/    # Step 1: Gross->net salary with tax breakdown
+│   │   │   │   ├── neighborhood-explorer/ # Step 2: 12 Berlin Bezirke profiles
+│   │   │   │   ├── cost-estimator/       # Step 3: Rent, budget sliders, AI analysis
+│   │   │   │   └── visa-checklist/       # Step 4: Interactive visa/admin checklist
+│   │   │   ├── app.ts                    # Root component with theme toggle
 │   │   │   ├── app.config.ts
-│   │   │   └── app.routes.ts
+│   │   │   └── app.routes.ts             # Lazy-loaded feature routes
 │   │   ├── styles/
-│   │   │   └── tokens.css     # Design token system (--reloc-sys-*, --reloc-ref-*)
+│   │   │   └── tokens.css     # 3-tier design token system (--reloc-sys-*, --reloc-ref-*)
 │   │   └── environments/
+│   │       ├── environment.ts            # Dev: localhost:8080
+│   │       └── environment.prod.ts       # Prod: Railway URL
 │   ├── angular.json
-│   ├── tailwind.config.js
+│   ├── .postcssrc.json        # Tailwind 4.2 via PostCSS
+│   ├── Dockerfile             # Node 22 -> Nginx multi-stage
+│   ├── nginx.conf             # SPA routing + API proxy
 │   └── tsconfig.json
-├── backend/                   # Kotlin + Spring Boot
-│   ├── src/main/kotlin/
-│   │   └── com/johnmoorman/relocation/
-│   │       ├── RelocationApplication.kt
-│   │       ├── controller/
-│   │       │   ├── SalaryController.kt
-│   │       │   └── CostController.kt
-│   │       ├── service/
-│   │       │   ├── TaxCalculationService.kt
-│   │       │   └── CostEstimationService.kt
-│   │       ├── model/
-│   │       │   ├── SalaryRequest.kt
-│   │       │   ├── SalaryResponse.kt
-│   │       │   ├── CostEstimate.kt
-│   │       │   └── Neighborhood.kt
-│   │       └── config/
-│   │           └── CorsConfig.kt
-│   ├── build.gradle.kts
-│   └── Dockerfile
-├── shared/                    # Shared types (source of truth)
+├── backend/                   # Kotlin 2.1.10 + Spring Boot 3.4.4
+│   ├── src/main/kotlin/com/johnmoorman/relocation/
+│   │   ├── RelocationApplication.kt
+│   │   ├── controller/
+│   │   │   ├── SalaryController.kt       # POST /salary/calculate
+│   │   │   ├── CostController.kt         # GET /costs/estimate, /neighborhoods
+│   │   │   └── BudgetController.kt       # POST /costs/allocate, /costs/analyze
+│   │   ├── service/
+│   │   │   ├── TaxCalculationService.kt  # 2026 German Lohnsteuer algorithm
+│   │   │   ├── CostEstimationService.kt  # Berlin Bezirk rent data + profiles
+│   │   │   ├── BudgetService.kt          # Allocation enrichment + template analysis
+│   │   │   └── AiAnalysisService.kt      # OpenRouter-powered narrative (optional)
+│   │   ├── model/
+│   │   │   └── BezirkExtensions.kt       # Enum helpers (generated models in build/)
+│   │   └── config/
+│   │       ├── CorsConfig.kt
+│   │       └── GlobalExceptionHandler.kt
+│   ├── build.gradle.kts       # OpenAPI code generation + Spring Boot
+│   └── Dockerfile             # Gradle 8.13 JDK 21 -> Alpine JRE multi-stage
+├── shared/
 │   └── api-contracts/
-│       ├── salary.ts          # TypeScript interfaces
-│       └── salary.kt          # Kotlin data classes (mirrored)
-├── docker-compose.yml
-├── CLAUDE.md
-└── README.md
+│       └── openapi.yaml       # Single source of truth for all API contracts
+├── docker-compose.yml         # Local dev: backend:8080 + frontend:4200
+├── vercel.json                # Frontend deployment config
+├── railway.toml               # Backend deployment config
+└── CLAUDE.md
 ```
 
-### Frontend: Angular 21
+### Frontend Components
 
-**Every pattern below was extracted from Europace's Rechner source code. Match them precisely.**
+| Component | Selector | Location |
+|-----------|----------|----------|
+| AppComponent | `app-root` | `app.ts` — root wrapper, header with theme toggle, step indicator, router outlet |
+| SalaryCalculatorComponent | `reloc-salary-calculator` | `features/salary-calculator/` — container for salary form + breakdown |
+| SalaryFormComponent | `reloc-salary-form` | `features/salary-calculator/` — reactive form: gross salary, tax class, age, children, church tax |
+| SalaryBreakdownComponent | `reloc-salary-breakdown` | `features/salary-calculator/` — tax bracket breakdown display |
+| CostEstimatorComponent | `reloc-cost-estimator` | `features/cost-estimator/` — orchestrator: bezirk/room selection, cost fetch, budget sliders |
+| CostBreakdownComponent | `reloc-cost-breakdown` | `features/cost-estimator/` — pie chart + category breakdown |
+| BudgetSliderComponent | `reloc-budget-slider` | `features/cost-estimator/` — per-category budget slider |
+| LifestyleSpendingComponent | `reloc-lifestyle-spending` | `features/cost-estimator/` — editable category percentages |
+| SanityCheckComponent | `reloc-sanity-check` | `features/cost-estimator/` — validation rules + AI analysis display |
+| NeighborhoodExplorerComponent | `reloc-neighborhood-explorer` | `features/neighborhood-explorer/` — grid of 12 Berlin neighborhoods |
+| NeighborhoodCardComponent | `reloc-neighborhood-card` | `features/neighborhood-explorer/` — single neighborhood card |
+| VisaChecklistComponent | `reloc-visa-checklist` | `features/visa-checklist/` — visa type selector + interactive checklist |
+| StepIndicatorComponent | `reloc-step-indicator` | `shared/components/` — wizard progress bar |
+| CurrencyInputComponent | `reloc-currency-input` | `shared/components/` — reusable EUR input |
+| RelocInfoBubbleComponent | `reloc-info-bubble` | `shared/components/` — info tooltip |
+| MarkdownPipe | `markdown` | `shared/pipes/` — lightweight md->HTML for AI analysis body text |
 
-#### Standalone Components (no NgModules)
-```typescript
-@Component({
-  selector: 'reloc-salary-form',
-  standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './salary-form.component.html'
-})
-```
+### Backend API
 
-#### Component Naming Convention
-Use `reloc-*` prefix for all selectors. This mirrors Europace's `baufi-passt-*` convention.
-- `reloc-salary-form`
-- `reloc-cost-breakdown`
-- `reloc-neighborhood-card`
-- `reloc-visa-checklist`
-- `reloc-step-indicator`
-- `reloc-currency-input` (shared)
+**Endpoints:**
+- `POST /api/v1/salary/calculate` — SalaryRequest -> SalaryResponse (full tax breakdown)
+- `GET /api/v1/costs/estimate?bezirk=...&rooms=...` -> CostEstimate
+- `GET /api/v1/neighborhoods` -> NeighborhoodProfile[]
+- `GET /api/v1/neighborhoods/{bezirk}` -> NeighborhoodProfile
+- `POST /api/v1/costs/allocate` -> BudgetAllocation (enriched percentages with EUR totals)
+- `POST /api/v1/costs/analyze` -> BudgetAnalysis (7-section narrative, AI or template)
 
-#### Reactive Forms with FormGroup + Validators
-The Rechner uses 88 Validators and 7 FormGroups. Forms are the core interaction pattern. Every user input must go through reactive forms.
-```typescript
-this.salaryForm = new FormGroup({
-  grossSalary: new FormControl<number | null>(null, [
-    Validators.required,
-    Validators.min(0),
-    Validators.max(500000)
-  ]),
-  taxClass: new FormControl<TaxClass>('I', Validators.required),
-  churchTax: new FormControl<boolean>(false),
-  hasChildren: new FormControl<boolean>(false),
-  childCount: new FormControl<number>(0)
-});
-```
+**Tax Calculation (TaxCalculationService):**
+- 5-zone progressive income tax (Grundfreibetrag 12,348 EUR -> 45% Reichensteuer)
+- Vorsorgepauschale deduction
+- Social insurance: health, pension, unemployment, nursing care
+- Solidarity surcharge (5.5% above 20,350 EUR threshold)
+- Church tax (Berlin: 9% of income tax)
+- Ehegattensplitting for tax class III
+- Childless nursing care surcharge
 
-#### Signals for State Management
-The Rechner uses Angular Signals (20 instances of `signal`, 4 `computed`, 1 `effect`). Use Signals as the primary state management pattern — NOT a separate state library, NOT BehaviorSubjects for UI state.
-```typescript
-readonly netSalary = signal<number | null>(null);
-readonly isCalculating = signal(false);
-readonly affordabilityRating = computed(() => {
-  const net = this.netSalary();
-  const rent = this.estimatedRent();
-  if (!net || !rent) return null;
-  return rent / net;
-});
-```
+**AI Analysis (AiAnalysisService):**
+- Optional — requires `OPENROUTER_API_KEY` env var
+- Model configurable via `OPENROUTER_MODEL` (default: `anthropic/claude-sonnet-4`)
+- Graceful fallback to template-based analysis when key is absent or API fails
+- Config in `application.yml` under `openrouter.*`
 
-#### OnPush Change Detection
-Use `ChangeDetectionStrategy.OnPush` on all feature components. The Rechner does this. It demonstrates performance awareness.
+### API Contract System
 
-#### RxJS for Async Operations Only
-The Rechner uses 133 pipe() calls but also uses Signals. The pattern: RxJS for HTTP calls and async streams, Signals for synchronous derived state. Use `toSignal()` to bridge.
-```typescript
-readonly salaryResult = toSignal(
-  this.salaryForm.valueChanges.pipe(
-    debounceTime(300),
-    filter(() => this.salaryForm.valid),
-    switchMap(val => this.salaryService.calculate(val))
-  )
-);
-```
-
-#### Injectable Services with HttpClient
-At least two services that call the Kotlin backend:
-- `SalaryCalculationService` — POST gross salary → get net salary breakdown
-- `CostEstimationService` — GET neighborhood costs by Bezirk
-
-#### Design Tokens (CSS Custom Properties)
-The Rechner uses a three-tier token system: `--xp-sys-*` → `--xp-ref-*` → `--xp-comp-*`. Implement a simplified version:
-
-```css
-/* tokens.css */
-:root {
-  /* System primitives */
-  --reloc-sys-color-teal-700: #22746b;
-  --reloc-sys-color-neutral-900: #1e293e;
-  --reloc-sys-color-neutral-50: #f9f9f9;
-  --reloc-sys-font-family-display: 'Inter', sans-serif;
-  --reloc-sys-font-family-content: 'Inter', sans-serif;
-  --reloc-sys-spacing-4: 16px;
-  --reloc-sys-spacing-6: 24px;
-  --reloc-sys-radius-1: 0px;
-
-  /* Semantic references */
-  --reloc-ref-color-primary: var(--reloc-sys-color-teal-700);
-  --reloc-ref-color-text-dark: var(--reloc-sys-color-neutral-900);
-  --reloc-ref-color-bg-body: var(--reloc-sys-color-neutral-50);
-}
-```
-
-This mirrors the Europace system and gives John a concrete talking point about design token architecture.
-
-#### Tailwind CSS
-Use Tailwind utilities alongside the token system, exactly as the Rechner does. Configure Tailwind to reference the CSS custom properties where it makes sense.
-
-### Backend: Kotlin + Spring Boot
-
-**Scope this tightly. Two controllers, two services, clean data classes.**
-
-#### Kotlin Data Classes as API Contracts
-```kotlin
-data class SalaryRequest(
-    val grossAnnual: Int,
-    val taxClass: TaxClass,
-    val churchTax: Boolean = false,
-    val hasChildren: Boolean = false,
-    val childCount: Int = 0
-)
-
-data class SalaryResponse(
-    val grossMonthly: Double,
-    val netMonthly: Double,
-    val incomeTax: Double,
-    val solidaritySurcharge: Double,
-    val healthInsurance: Double,
-    val pensionInsurance: Double,
-    val unemploymentInsurance: Double,
-    val nursingCareInsurance: Double,
-    val churchTax: Double?,
-    val totalDeductions: Double
-)
-```
-
-#### German Tax Calculation
-Implement actual (simplified) German income tax brackets for 2025/2026. This is the domain authority play — John knows these numbers from personal experience. The calculation doesn't need to be BMF-certified, but it should be directionally accurate and demonstrate understanding of Steuerklassen, Sozialversicherung, Solidaritätszuschlag, and Kirchensteuer.
-
-#### REST Controllers
-```kotlin
-@RestController
-@RequestMapping("/api/v1")
-class SalaryController(private val taxService: TaxCalculationService) {
-
-    @PostMapping("/salary/calculate")
-    fun calculateNetSalary(@Valid @RequestBody request: SalaryRequest): SalaryResponse {
-        return taxService.calculate(request)
-    }
-}
-```
-
-#### CORS Configuration
-Configure for local dev (Angular on 4200, Spring Boot on 8080) and for deployed environment.
+Contract-first development via OpenAPI:
+- Single source of truth: `shared/api-contracts/openapi.yaml`
+- Backend: Gradle `openApiGenerate` task -> generates Kotlin models to `build/generated/openapi/`
+- Frontend: `npm run generate:api` -> generates TypeScript types to `core/api/generated-types.ts`
+- Both consume the same spec — type mismatches are caught at generation time
 
 ### Integration Layer (THE KEY DIFFERENTIATOR)
 
-This is what Martin said they're hiring for. The integration between frontend and backend must be visibly well-engineered:
+The integration between frontend and backend is the primary interview talking point:
 
-1. **Typed API contracts** — TypeScript interfaces in `shared/api-contracts/` that mirror Kotlin data classes exactly. Mention this mirroring pattern in the interview.
-2. **Error handling** — Angular interceptor that catches HTTP errors and surfaces them as typed error states (not just console.error).
-3. **Loading states** — Every API call should have explicit loading/success/error states visible in the UI via Signals.
-4. **Validation parity** — Frontend form validators should match backend validation. If the backend rejects `grossAnnual < 0`, the frontend should prevent it from being sent.
-
-### Deployment
-
-- **Frontend**: Static build → Vercel or Cloudflare Pages (what John already uses)
-- **Backend**: Docker container → Railway or Render free tier
-- Both must be live with working URLs before the interview
+1. **Typed API contracts** — OpenAPI spec in `shared/api-contracts/` generates both TypeScript types and Kotlin models. No manual mirroring.
+2. **Error handling** — Angular interceptor (`error.interceptor.ts`) catches HTTP errors and surfaces them as typed error states, not console.error.
+3. **Loading states** — Every API call has explicit loading/success/error states visible in the UI via Signals.
+4. **Validation parity** — Frontend form validators match backend validation. If the backend rejects `grossAnnual < 0`, the frontend prevents it from being sent.
 
 ---
 
-## Multi-Step Wizard Flow
+## Design Patterns
+
+### Angular (all implemented)
+
+- All components standalone (zero NgModules), all feature components OnPush
+- `reloc-*` selector prefix on all components
+- Reactive forms with FormGroup + Validators on salary and cost forms
+- Angular Signals for UI state, RxJS for HTTP/async only
+- `WizardService` shares state across steps (net salary, bezirk, etc.)
+- Lazy-loaded routes for all 4 features
+- Error interceptor catches HTTP errors -> typed error states
+- Light/dark theme via `data-theme` attribute + CSS custom properties
+
+### Design Token System (tokens.css)
+
+- 3-tier: `--reloc-sys-*` (primitives) -> `--reloc-ref-*` (semantic) -> component usage
+- Full teal palette (50-900), neutral scale, error/success/warning
+- Dark mode support via `[data-theme='dark']` overrides
+- Mirrors Europace's `--xp-sys-*` -> `--xp-ref-*` -> `--xp-comp-*` architecture
+
+---
+
+## Wizard Flow
 
 The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
 
-### Step 1: Salary Input
-- Gross annual salary (EUR input with formatting)
-- Tax class selection (I–VI radio buttons)
-- Church tax toggle
-- Children count (conditional on toggle)
-- **→ Calls POST /api/v1/salary/calculate**
-- Shows net monthly salary breakdown with all deductions itemized
-
-### Step 2: Cost Estimation
-- Select Bezirk(e) of interest (multi-select or clickable map)
-- Shows estimated rent ranges by apartment size
-- Shows monthly cost breakdown: rent, utilities (Nebenkosten), health insurance, transport (BVG), groceries
-- Comparison view: net salary vs. total estimated costs
-- **→ Calls GET /api/v1/costs/estimate?bezirk=kreuzberg&rooms=2**
-
-### Step 3: Neighborhood Explorer
-- Cards for each selected Bezirk with character descriptions
-- Commute times, average rent, vibe description
-- Data from a static JSON or Sanity CMS (stretch goal)
-
-### Step 4: Visa & Admin Checklist
-- Interactive checklist based on visa type (EU Blue Card, Freelance, Job Seeker)
-- Anmeldung steps, Ausländerbehörde timeline, bank account, health insurance
-- Checkbox completion state (Signals, local — no backend needed)
+1. **Salary Calculator** — Gross salary, tax class, age, children, church tax -> `POST /api/v1/salary/calculate` -> net monthly breakdown with all deductions itemized
+2. **Neighborhood Explorer** — Grid of 12 Berlin Bezirke with profiles, commute times, rent ranges, vibe -> `GET /api/v1/neighborhoods` (+ static fallback)
+3. **Cost Estimator** — Bezirk/room selection, rent estimates, budget sliders, lifestyle spending, sanity check with AI analysis -> `GET /api/v1/costs/estimate`, `POST /costs/allocate`, `POST /costs/analyze`
+4. **Visa Checklist** — Visa type selector (EU Blue Card, Freelance, Job Seeker) + interactive admin checklist (Anmeldung, Auslanderbehorde, bank, insurance) -> pure frontend, Signals-driven
 
 ---
 
-## Non-Negotiable Technical Checklist
+## Deployment
 
-Before considering the project shippable, verify ALL of these:
+- **Frontend:** Vercel — auto-deploys on push to main, SPA routing via `vercel.json`
+- **Backend:** Railway — Docker-based, watches `backend/**` and `shared/**`
+- **Local dev:** `docker-compose up` or individual `ng serve` + `gradle bootRun`
+- Dev: `http://localhost:4200` (frontend), `http://localhost:8080` (backend)
+- Prod: Railway URL configured in `frontend/src/environments/environment.prod.ts`
 
-- [ ] Angular 21 with standalone components (zero NgModules)
-- [ ] At least 5 components using `reloc-*` selector prefix
-- [ ] Reactive forms with FormGroup and Validators on Step 1 and Step 2
-- [ ] At least 2 injectable services using HttpClient
-- [ ] Signals used for state (not just RxJS BehaviorSubjects)
-- [ ] OnPush change detection on feature components
-- [ ] CSS custom property token system (`--reloc-sys-*`, `--reloc-ref-*`)
-- [ ] Tailwind CSS for utility classes
-- [ ] Kotlin Spring Boot backend with at least 1 working POST endpoint
-- [ ] Kotlin data classes mirroring TypeScript interfaces
-- [ ] Docker setup for backend
-- [ ] Loading/error states on all API calls
-- [ ] Deployed frontend URL
-- [ ] Deployed backend URL
+---
+
+## Technical Checklist
+
+- [x] Angular 21 with standalone components (zero NgModules)
+- [x] At least 5 components using `reloc-*` selector prefix
+- [x] Reactive forms with FormGroup and Validators on Step 1 and Step 3
+- [x] At least 2 injectable services using HttpClient
+- [x] Signals used for state (not just RxJS BehaviorSubjects)
+- [x] OnPush change detection on feature components
+- [x] CSS custom property token system (`--reloc-sys-*`, `--reloc-ref-*`)
+- [x] Tailwind CSS for utility classes
+- [x] Kotlin Spring Boot backend with at least 1 working POST endpoint
+- [x] Kotlin data classes mirroring TypeScript interfaces (via OpenAPI codegen)
+- [x] Docker setup for backend
+- [x] Loading/error states on all API calls
+- [x] Deployed frontend URL
+- [x] Deployed backend URL
 - [ ] README with architecture explanation
 
 ---
@@ -329,38 +243,23 @@ When discussing this project with Europace's engineering team, John should be ab
 
 ---
 
-## Build Order
+## Tech Versions
 
-Execute in this sequence. Each phase should be a clean stopping point.
-
-### Phase 1: Scaffold + Salary Calculator (MVP)
-1. `ng new` with Angular 21, standalone, Tailwind
-2. Token CSS file
-3. Salary form component with reactive forms
-4. Kotlin Spring Boot project with salary endpoint
-5. Wire frontend to backend, show net salary breakdown
-6. Deploy both
-
-### Phase 2: Cost Estimator + Polish
-7. Cost estimation endpoint (can use hardcoded Berlin Bezirk data)
-8. Step 2 UI with Bezirk selection and cost breakdown
-9. Step indicator component
-10. Loading/error states
-
-### Phase 3: Content + Checklist
-11. Neighborhood explorer (static data, cards)
-12. Visa checklist (interactive, Signals-driven)
-13. README
-14. Final deploy verification
+- Angular: 21.2
+- TypeScript: 5.9.2
+- Tailwind CSS: 4.2.2
+- Kotlin: 2.1.10
+- Spring Boot: 3.4.4
+- JDK: 21
+- Node: 22 LTS
+- Vitest: 4.x (test runner)
+- OpenAPI Generator: 7.12.0
 
 ---
 
-## Tech Versions
+## Potential Enhancements
 
-- Angular: 21 (current active release — Europace's Rechner runs 20 which just entered LTS)
-- TypeScript: 5.x (whatever Angular 21 ships with)
-- Tailwind CSS: 4.x
-- Kotlin: 2.x
-- Spring Boot: 3.x
-- JDK: 21
-- Node: 22 LTS
+- Root `README.md` with architecture explanation (currently missing)
+- Sanity CMS integration for neighborhood data
+- Example unit tests for tax calculation service and salary form
+- i18n support (German UI option)
