@@ -1,136 +1,185 @@
-<div class="space-y-4">
-  <!-- Cost Breakdown Card -->
-  <div
-    class="rounded-lg border p-6 bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
+<div
+  class="rounded-lg border p-6 bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
+>
+  <!-- Header -->
+  <h3
+    class="mb-6 text-lg font-semibold text-(--reloc-ref-color-text-primary) [font-family:var(--reloc-ref-font-display)]"
   >
-    <h3
-      class="mb-4 text-lg font-semibold text-(--reloc-ref-color-text-primary) [font-family:var(--reloc-ref-font-display)]"
-    >
-      {{ estimate().displayName }} — {{ estimate().rooms }}-Room Apartment
-    </h3>
+    Budget Overview — {{ estimate().displayName }} — {{ estimate().rooms }}-Room
+  </h3>
 
-    <!-- Rent Range -->
-    <div class="mb-4 rounded-md p-4 bg-(--reloc-ref-color-primary-light)">
-      <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
-        Monthly Rent (Kaltmiete)
-      </p>
-      <div class="mt-1 flex items-baseline gap-2">
-        <span class="text-2xl font-bold text-(--reloc-ref-color-primary)">
-          {{ estimate().rentRange.median | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
-        </span>
-        <span class="text-sm text-(--reloc-ref-color-text-muted)">
-          median ({{ estimate().rentRange.min | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }} –
-          {{ estimate().rentRange.max | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }})
-        </span>
-      </div>
-    </div>
-
-    <!-- Cost Items -->
-    <div class="space-y-3">
-      <div class="flex justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-        <span class="text-sm text-(--reloc-ref-color-text-primary)">Rent (median Kaltmiete)</span>
-        <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
-          {{ estimate().rentRange.median | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-        </span>
-      </div>
-      <div class="flex justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-        <span class="text-sm text-(--reloc-ref-color-text-primary)">Utilities (Nebenkosten)</span>
-        <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
-          {{ estimate().utilities | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-        </span>
-      </div>
-      <div class="flex justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-        <span class="text-sm text-(--reloc-ref-color-text-primary)">Transport (BVG AB Pass)</span>
-        <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
-          {{ estimate().transport | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-        </span>
-      </div>
-      <div class="flex justify-between border-b pb-2 border-(--reloc-ref-color-border)">
-        <span class="text-sm text-(--reloc-ref-color-text-primary)">Groceries (estimated)</span>
-        <span class="text-sm font-medium text-(--reloc-ref-color-text-primary)">
-          {{ estimate().groceries | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-        </span>
-      </div>
-
-      <!-- Total -->
-      <div class="flex justify-between pt-2">
-        <span class="text-sm font-semibold text-(--reloc-ref-color-text-primary)"
-          >Total Estimated Monthly</span
+  <!-- Two-column layout: pie chart + category rows -->
+  <div class="flex flex-col items-center gap-8 md:flex-row md:items-start">
+    <!-- Left: Donut pie chart -->
+    <div class="flex shrink-0 flex-col items-center gap-3">
+      <div class="relative h-48 w-48 overflow-visible">
+        <!-- SVG donut chart with per-segment hover -->
+        <svg viewBox="0 0 200 200" class="h-full w-full -rotate-90 overflow-visible">
+          @for (seg of pieSegments(); track seg.key) {
+            <circle
+              cx="100" cy="100" r="90"
+              fill="none"
+              [attr.stroke]="seg.color"
+              [attr.stroke-width]="hoveredCategory() === seg.key ? 24 : 20"
+              [attr.stroke-dasharray]="seg.dashArray"
+              [attr.stroke-dashoffset]="seg.dashOffset"
+              class="transition-all duration-200 cursor-pointer"
+              (mouseenter)="hoveredCategory.set(seg.key)"
+              (mouseleave)="hoveredCategory.set(null)"
+            />
+          }
+        </svg>
+        <!-- Inner circle (donut hole) -->
+        <div
+          class="absolute left-1/2 top-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-(--reloc-ref-color-bg-card)"
         >
-        <span class="text-base font-bold text-(--reloc-ref-color-primary)">
-          {{ estimate().totalEstimated | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-        </span>
+          @if (hoveredCategory(); as hovered) {
+            <span class="text-[11px] font-medium text-(--reloc-ref-color-text-muted) text-center leading-tight">
+              {{ getHoveredLabel(hovered) }}
+            </span>
+            <span class="text-lg font-bold tabular-nums text-(--reloc-ref-color-text-primary)">
+              {{ getHoveredPercentage(hovered) }}%
+            </span>
+            <span class="text-[11px] tabular-nums text-(--reloc-ref-color-text-muted)">
+              {{ getHoveredTotal(hovered) | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+            </span>
+          } @else {
+            <span class="text-xs text-(--reloc-ref-color-text-muted)">Monthly</span>
+            <span class="text-lg font-bold tabular-nums text-(--reloc-ref-color-text-primary)">
+              {{ totalSpent() | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+            </span>
+          }
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Affordability Comparison (only if we have salary data) -->
-  @if (netMonthlySalary(); as netSalary) {
-    <div
-      class="rounded-lg border p-6 bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border) [box-shadow:var(--reloc-ref-shadow-card)]"
-    >
-      <h3
-        class="mb-4 text-lg font-semibold text-(--reloc-ref-color-text-primary) [font-family:var(--reloc-ref-font-display)]"
+      <!-- Allocation percentage below chart -->
+      <span
+        class="text-xs font-medium"
+        [style.color]="totalAllocatedPercent() <= 100 ? 'var(--reloc-ref-color-success)' : 'var(--reloc-ref-color-error)'"
       >
-        Affordability Check
-      </h3>
+        {{ totalAllocatedPercent() }}% allocated
+      </span>
+    </div>
 
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
-            Net Monthly Salary
-          </p>
-          <p class="text-xl font-bold text-(--reloc-ref-color-text-primary)">
-            {{ netSalary | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
-          </p>
-        </div>
-        <div class="text-center">
-          <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
-            Cost Ratio
-          </p>
-          @if (affordabilityRatio(); as ratio) {
-            <p class="text-xl text-(--reloc-ref-color-text-primary) font-bold">
-              {{ ratio | percent: '1.0-0' }}
-            </p>
-          }
-        </div>
-        <div class="text-right">
-          <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
-            Verdict
-          </p>
-          @if (affordabilityLabel(); as label) {
-            <p class="text-xl font-bold" [style.color]="label.color">
-              {{ label.text }}
-            </p>
-          }
-        </div>
-      </div>
+    <!-- Right: Category rows -->
+    <div class="w-full min-w-0 flex-1">
+      @for (cat of categories(); track cat.key) {
+        <!-- Category row -->
+        <div
+          class="group"
+          [class.cursor-pointer]="isExpandable(cat.key)"
+          (click)="toggleCategory(cat.key)"
+        >
+          <div class="flex items-center gap-3 py-2.5">
+            <!-- Color dot -->
+            <span
+              class="h-3 w-3 shrink-0 rounded-full"
+              [style.background-color]="getCategoryColor(cat.key)"
+            ></span>
 
-      <!-- Visual bar -->
-      @if (affordabilityRatio(); as ratio) {
-        <div class="mt-4">
-          <div class="h-3 w-full rounded-full bg-(--reloc-ref-color-border)">
+            <!-- Label -->
+            <span class="flex-1 text-sm text-(--reloc-ref-color-text-primary)">
+              {{ cat.label }}
+            </span>
+
+            <!-- Percentage -->
+            <span class="w-10 text-right text-sm tabular-nums text-(--reloc-ref-color-text-muted)">
+              {{ cat.percentage }}%
+            </span>
+
+            <!-- EUR amount -->
+            <span class="w-20 text-right text-sm font-medium tabular-nums text-(--reloc-ref-color-text-primary)">
+              {{ cat.total | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+            </span>
+
+            <!-- Expand chevron (only for expandable categories) -->
+            @if (isExpandable(cat.key)) {
+              <svg
+                class="h-4 w-4 shrink-0 transition-transform duration-200 text-(--reloc-ref-color-text-muted)"
+                [class.rotate-180]="expandedCategory() === cat.key"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            } @else {
+              <!-- Spacer to keep alignment -->
+              <span class="w-4 shrink-0"></span>
+            }
+          </div>
+
+          <!-- Expandable detail panel -->
+          @if (isExpandable(cat.key)) {
             <div
-              class="h-3 rounded-full transition-all"
-              [style.width.%]="ratio * 100 > 100 ? 100 : ratio * 100"
-              [style.background-color]="
-                affordabilityLabel()?.color || 'var(--reloc-ref-color-primary)'
-              "
-            ></div>
-          </div>
-          <div class="mt-1 flex justify-between text-xs text-(--reloc-ref-color-text-muted)">
-            <span>0%</span>
-            <span>40% comfortable</span>
-            <span>50% manageable</span>
-            <span>100%</span>
-          </div>
+              class="grid transition-[grid-template-rows] duration-200"
+              [class]="expandedCategory() === cat.key ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+            >
+              <div class="overflow-hidden">
+                <div class="pb-3 pl-6 pr-4 text-xs text-(--reloc-ref-color-text-muted)">
+                  @if (cat.key === 'rent') {
+                    <p>
+                      Range:
+                      {{ estimate().rentRange.min | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+                      &ndash;
+                      {{ estimate().rentRange.max | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+                      (median: {{ estimate().rentRange.median | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }})
+                    </p>
+                  }
+                  @if (cat.key === 'utilities') {
+                    <p>Includes heating, water, waste, building maintenance (Nebenkosten)</p>
+                  }
+                  @if (cat.key === 'transport') {
+                    <p>BVG AB monthly pass. ABC zone available for ~{{ 107 | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}/month.</p>
+                  }
+                  @if (cat.key === 'groceries') {
+                    <p>Budget covers mix of discount (Aldi, Lidl) and standard (Rewe, Edeka) supermarkets.</p>
+                  }
+                </div>
+              </div>
+            </div>
+          }
         </div>
+
+        <!-- Row separator (skip last) -->
+        @if (!$last) {
+          <div class="border-b border-(--reloc-ref-color-border)"></div>
+        }
       }
 
-      <p class="mt-3 text-xs text-(--reloc-ref-color-text-muted)">
-        Financial advisors recommend spending no more than 40% of net income on housing and living
-        costs.
-      </p>
+      <!-- Divider above total -->
+      <div class="mt-1 border-t-2 border-(--reloc-ref-color-border)"></div>
+
+      <!-- Total row -->
+      <div class="flex items-center gap-3 py-3">
+        <span class="h-3 w-3 shrink-0"></span>
+        <span class="flex-1 text-sm font-semibold text-(--reloc-ref-color-text-primary)">
+          Total Monthly
+        </span>
+        <span class="w-10 text-right text-sm font-semibold tabular-nums text-(--reloc-ref-color-text-muted)">
+          {{ totalAllocatedPercent() }}%
+        </span>
+        <span class="w-20 text-right text-sm font-bold tabular-nums text-(--reloc-ref-color-primary)">
+          {{ totalSpent() | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }}
+        </span>
+        <span class="w-4 shrink-0"></span>
+      </div>
+
+      <!-- Surplus / Deficit row -->
+      @if (surplus(); as surplusAmount) {
+        <div class="flex items-center gap-3 py-2">
+          <span class="h-3 w-3 shrink-0"></span>
+          @if (surplusAmount >= 0) {
+            <span class="flex-1 text-sm font-medium text-(--reloc-ref-color-success)">
+              {{ surplusAmount | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }} remaining monthly
+            </span>
+          } @else {
+            <span class="flex-1 text-sm font-medium text-(--reloc-ref-color-error)">
+              {{ -surplusAmount | currency: 'EUR' : 'symbol' : '1.0-0' : 'de' }} over budget
+            </span>
+          }
+        </div>
+      }
     </div>
-  }
+  </div>
 </div>
