@@ -111,7 +111,7 @@ relocation-calculator/
 | StepIndicatorComponent | `reloc-step-indicator` | `shared/components/` — wizard progress bar |
 | CurrencyInputComponent | `reloc-currency-input` | `shared/components/` — reusable EUR input |
 | RelocInfoBubbleComponent | `reloc-info-bubble` | `shared/components/` — info tooltip |
-| MarkdownPipe | `markdown` | `shared/pipes/` — lightweight md->HTML for AI analysis body text |
+| MarkdownPipe | `markdown` | `shared/pipes/` — lightweight md->HTML for bold and list items (- and * markers) |
 
 ### Backend API
 
@@ -135,8 +135,14 @@ relocation-calculator/
 **AI Analysis (AiAnalysisService):**
 - Optional — requires `OPENROUTER_API_KEY` env var
 - Model configurable via `OPENROUTER_MODEL` (default: `anthropic/claude-sonnet-4`)
+- 5s connect / 15s read timeout on OpenRouter RestClient — falls through to template on timeout
+- Frontend shows rules-based fallback with retry button when AI is unreachable
 - Graceful fallback to template-based analysis when key is absent or API fails
 - Config in `application.yml` under `openrouter.*`
+
+**Neighborhood Data:**
+- 12 Berlin Bezirke with commute time ranges (min/max) based on actual BVG/S-Bahn transit data
+- Deutschlandticket (EUR 63/month) referenced in transport analysis
 
 ### API Contract System
 
@@ -154,6 +160,16 @@ The integration between frontend and backend is the primary interview talking po
 2. **Error handling** — Angular interceptor (`error.interceptor.ts`) catches HTTP errors and surfaces them as typed error states, not console.error.
 3. **Loading states** — Every API call has explicit loading/success/error states visible in the UI via Signals.
 4. **Validation parity** — Frontend form validators match backend validation. If the backend rejects `grossAnnual < 0`, the frontend prevents it from being sent.
+
+### State Persistence
+
+All cross-step state is managed by `WizardService` and persisted to `localStorage`:
+- Step 1: net/gross salary, tax class
+- Step 2/3: bezirk selection, room count, budget percentages
+- AI analysis result and percentage snapshot for reanalyze detection
+- Step 4: visa type, completed checklist item IDs
+
+The service uses a single `effect()` that serializes all signals to one `localStorage` key (`reloc_wizard_state`). Components read directly from wizard service signals — no intermediate caching.
 
 ---
 
@@ -174,6 +190,7 @@ The integration between frontend and backend is the primary interview talking po
 
 - 3-tier: `--reloc-sys-*` (primitives) -> `--reloc-ref-*` (semantic) -> component usage
 - Full teal palette (50-900), neutral scale, error/success/warning
+- Feedback tint tokens (`--reloc-ref-color-{success,warning,error}-light`) with dark mode overrides via `color-mix()`
 - Dark mode support via `[data-theme='dark']` overrides
 - Mirrors Europace's `--xp-sys-*` -> `--xp-ref-*` -> `--xp-comp-*` architecture
 
@@ -186,7 +203,7 @@ The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
 1. **Salary Calculator** — Gross salary, tax class, age, children, church tax -> `POST /api/v1/salary/calculate` -> net monthly breakdown with all deductions itemized
 2. **Neighborhood Explorer** — Grid of 12 Berlin Bezirke with profiles, commute times, rent ranges, vibe -> `GET /api/v1/neighborhoods` (+ static fallback)
 3. **Cost Estimator** — Bezirk/room selection, rent estimates, budget sliders, lifestyle spending, sanity check with AI analysis -> `GET /api/v1/costs/estimate`, `POST /costs/allocate`, `POST /costs/analyze`
-4. **Visa Checklist** — Visa type selector (EU Blue Card, Freelance, Job Seeker) + interactive admin checklist (Anmeldung, Auslanderbehorde, bank, insurance) -> pure frontend, Signals-driven
+4. **Visa Checklist** — Visa type selector (EU Blue Card, Freelance, Job Seeker) + 19-item interactive admin checklist with links to official Auslanderbehorde pages, checked state persisted to localStorage -> pure frontend, Signals-driven
 
 ---
 
