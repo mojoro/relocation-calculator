@@ -71,7 +71,7 @@ class CostEstimationService {
             bezirk = Bezirk.FRIEDRICHSHAIN_KREUZBERG,
             displayName = "Friedrichshain-Kreuzberg",
             vibe = "Berlin's creative and nightlife epicenter. Diverse, vibrant, sometimes chaotic.",
-            commuteMinutes = 10,
+            commuteMinutes = 6,
             highlights = listOf(
                 "Best nightlife in Berlin (Berghain, RAW area)",
                 "Multicultural food scene (Turkish Market, Markthalle Neun)",
@@ -84,7 +84,7 @@ class CostEstimationService {
             bezirk = Bezirk.PANKOW,
             displayName = "Pankow",
             vibe = "Family-friendly with a village feel. Prenzlauer Berg is the gentrified gem within.",
-            commuteMinutes = 15,
+            commuteMinutes = 11,
             highlights = listOf(
                 "Prenzlauer Berg's caf\u00e9 culture and boutiques",
                 "Mauerpark Sunday flea market and karaoke",
@@ -97,7 +97,7 @@ class CostEstimationService {
             bezirk = Bezirk.CHARLOTTENBURG_WILMERSDORF,
             displayName = "Charlottenburg-Wilmersdorf",
             vibe = "Old West Berlin elegance. Upscale, quiet, with grand architecture.",
-            commuteMinutes = 15,
+            commuteMinutes = 17,
             highlights = listOf(
                 "Kurf\u00fcrstendamm shopping boulevard",
                 "Charlottenburg Palace and gardens",
@@ -110,7 +110,7 @@ class CostEstimationService {
             bezirk = Bezirk.SPANDAU,
             displayName = "Spandau",
             vibe = "A city within a city. Affordable, green, and feels separate from Berlin.",
-            commuteMinutes = 35,
+            commuteMinutes = 34,
             highlights = listOf(
                 "Most affordable rents in Berlin",
                 "Spandau Citadel (medieval fortress)",
@@ -123,7 +123,7 @@ class CostEstimationService {
             bezirk = Bezirk.STEGLITZ_ZEHLENDORF,
             displayName = "Steglitz-Zehlendorf",
             vibe = "Leafy, suburban, and academic. Home to Freie Universit\u00e4t.",
-            commuteMinutes = 25,
+            commuteMinutes = 33,
             highlights = listOf(
                 "Botanical Garden Berlin",
                 "Krumme Lanke and Schlachtensee lakes",
@@ -136,7 +136,7 @@ class CostEstimationService {
             bezirk = Bezirk.TEMPELHOF_SCHOENEBERG,
             displayName = "Tempelhof-Sch\u00f6neberg",
             vibe = "Diverse and welcoming. Historic LGBTQ+ neighborhood with great parks.",
-            commuteMinutes = 15,
+            commuteMinutes = 25,
             highlights = listOf(
                 "Tempelhofer Feld (former airport, now massive park)",
                 "Sch\u00f6neberg's vibrant LGBTQ+ scene",
@@ -149,7 +149,7 @@ class CostEstimationService {
             bezirk = Bezirk.NEUKOELLN,
             displayName = "Neuk\u00f6lln",
             vibe = "Rapidly gentrifying but still gritty. Art galleries meet d\u00f6ner shops.",
-            commuteMinutes = 15,
+            commuteMinutes = 11,
             highlights = listOf(
                 "Thriving art and music scene",
                 "Incredible food diversity",
@@ -162,7 +162,7 @@ class CostEstimationService {
             bezirk = Bezirk.TREPTOW_KOEPENICK,
             displayName = "Treptow-K\u00f6penick",
             vibe = "Berlin's green lung. Lakes, forests, and a small-town feel.",
-            commuteMinutes = 25,
+            commuteMinutes = 22,
             highlights = listOf(
                 "M\u00fcggelsee (Berlin's largest lake)",
                 "Treptower Park with Soviet war memorial",
@@ -175,7 +175,7 @@ class CostEstimationService {
             bezirk = Bezirk.MARZAHN_HELLERSDORF,
             displayName = "Marzahn-Hellersdorf",
             vibe = "East Berlin Plattenbau district being reinvented. Surprisingly green.",
-            commuteMinutes = 35,
+            commuteMinutes = 27,
             highlights = listOf(
                 "Gardens of the World (G\u00e4rten der Welt)",
                 "Lowest rents in Berlin",
@@ -188,7 +188,7 @@ class CostEstimationService {
             bezirk = Bezirk.LICHTENBERG,
             displayName = "Lichtenberg",
             vibe = "Up-and-coming East Berlin. Vietnamese community hub with great food.",
-            commuteMinutes = 20,
+            commuteMinutes = 12,
             highlights = listOf(
                 "Dong Xuan Center (Vietnamese market)",
                 "Tierpark Berlin (Europe's largest zoo by area)",
@@ -201,7 +201,7 @@ class CostEstimationService {
             bezirk = Bezirk.REINICKENDORF,
             displayName = "Reinickendorf",
             vibe = "Quiet northern district. Lakes, forests, and old Berlin charm.",
-            commuteMinutes = 30,
+            commuteMinutes = 22,
             highlights = listOf(
                 "Tegeler See (Tegel Lake)",
                 "Former Tegel Airport area being redeveloped",
