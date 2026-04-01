@@ -102,6 +102,9 @@
   --reloc-ref-color-error: var(--reloc-sys-color-error-500);
   --reloc-ref-color-success: var(--reloc-sys-color-success-500);
   --reloc-ref-color-warning: var(--reloc-sys-color-warning-500);
+  --reloc-ref-color-success-light: #f0fdf4;
+  --reloc-ref-color-warning-light: #fffbeb;
+  --reloc-ref-color-error-light: #fef2f2;
 
   /* Typography */
   --reloc-ref-font-display: var(--reloc-sys-font-family-display);
@@ -145,6 +148,9 @@
   --reloc-ref-color-error: var(--reloc-sys-color-error-500);
   --reloc-ref-color-success: var(--reloc-sys-color-success-500);
   --reloc-ref-color-warning: var(--reloc-sys-color-warning-500);
+  --reloc-ref-color-success-light: color-mix(in srgb, var(--reloc-sys-color-success-500) 10%, var(--reloc-ref-color-bg-card));
+  --reloc-ref-color-warning-light: color-mix(in srgb, var(--reloc-sys-color-warning-500) 10%, var(--reloc-ref-color-bg-card));
+  --reloc-ref-color-error-light: color-mix(in srgb, var(--reloc-sys-color-error-500) 10%, var(--reloc-ref-color-bg-card));
 
   /* Shadows — stronger alpha to compensate for dark-on-dark */
   --reloc-ref-shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
