@@ -97,7 +97,7 @@ export class StepIndicatorComponent {
     if (idx > this._maxVisited) {
       this._maxVisited = idx;
       try {
-        sessionStorage.setItem('reloc_max_step', String(this._maxVisited));
+        localStorage.setItem('reloc_max_step', String(this._maxVisited));
       } catch {
         /* ignore */
       }
@@ -107,7 +107,7 @@ export class StepIndicatorComponent {
 
   constructor() {
     try {
-      const saved = sessionStorage.getItem('reloc_max_step');
+      const saved = localStorage.getItem('reloc_max_step');
       if (saved) this._maxVisited = parseInt(saved, 10) || 0;
     } catch {
       /* ignore */

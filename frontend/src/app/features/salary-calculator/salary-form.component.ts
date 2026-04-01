@@ -71,7 +71,7 @@ export class SalaryFormComponent implements OnInit {
     // Restore saved form state before subscribing (avoids double-fire)
     let hasRestored = false;
     try {
-      const saved = sessionStorage.getItem('reloc_salary_form');
+      const saved = localStorage.getItem('reloc_salary_form');
       if (saved) {
         const values = JSON.parse(saved);
         this.salaryForm.patchValue(values, { emitEvent: false });
@@ -115,10 +115,13 @@ export class SalaryFormComponent implements OnInit {
       .subscribe((response) => {
         this.result.set(response);
         try {
+          const formValue = this.salaryForm.getRawValue();
           this.wizardService.netMonthlySalary.set(response.netMonthly);
-          sessionStorage.setItem(
+          this.wizardService.grossAnnualSalary.set(formValue.grossAnnual);
+          this.wizardService.taxClass.set(formValue.taxClass);
+          localStorage.setItem(
             'reloc_salary_form',
-            JSON.stringify(this.salaryForm.getRawValue()),
+            JSON.stringify(formValue),
           );
         } catch {
           /* ignore */
@@ -126,7 +129,7 @@ export class SalaryFormComponent implements OnInit {
         this.isCalculating.set(false);
       });
 
-    // Trigger calculation if form was restored from sessionStorage
+    // Trigger calculation if form was restored from localStorage
     if (
       hasRestored &&
       this.salaryForm.valid &&
