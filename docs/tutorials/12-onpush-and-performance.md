@@ -1,6 +1,6 @@
 # Tutorial 12 — OnPush Change Detection & Performance
 
-> **Goal:** Understand Angular's change detection system — what it does, why Zone.js exists, how `OnPush` reduces unnecessary work, and why `OnPush` + Signals is Angular's recommended performance strategy. By the end, you'll be able to explain change detection in an interview and identify performance bottlenecks.
+> **Goal:** Understand Angular's change detection system — what it does, why Zone.js exists, how `OnPush` reduces unnecessary work, and why `OnPush` + Signals is Angular's recommended performance strategy. By the end, you'll be able to explain change detection clearly and identify performance bottlenecks.
 
 > **Prerequisites:** You've read [[tutorials/05-signals-and-state|Tutorial 05: Signals and State]] (signals, computed, effect) and [[tutorials/01-angular-scaffold|Tutorial 01: Angular Scaffold]] (standalone components, Zone.js polyfill).
 
@@ -12,7 +12,7 @@ When a user clicks a button, types in an input, or receives an HTTP response, th
 
 ### Default strategy: check everything
 
-With the default strategy, Angular checks *every* component after *every* event. A click in `SalaryFormComponent` triggers checks on `AppComponent`, `StepIndicatorComponent`, `SalaryBreakdownComponent` — even though nothing changed in those components. In a small app, this is imperceptible. In a large app like the Rechner with complex forms and 88 validators, it becomes the performance bottleneck.
+With the default strategy, Angular checks *every* component after *every* event. A click in `SalaryFormComponent` triggers checks on `AppComponent`, `StepIndicatorComponent`, `SalaryBreakdownComponent` — even though nothing changed in those components. In a small app, this is imperceptible. In a large production application with complex forms and dozens of validators, it becomes the performance bottleneck.
 
 Each check evaluates every template expression — `{{ result().netMonthly }}`, `[style]="getStepStyle(i)"`, `@if (isCalculating())` — compares the result to the previously rendered value, and updates the DOM if it changed. Functions called in templates re-execute on *every* check cycle, even when inputs haven't changed.
 
@@ -127,11 +127,11 @@ Reads `currentPath` as a signal input, derives `currentIndex` via `computed()`. 
 
 ---
 
-## Europace Context
+## Why Production Angular Apps Use OnPush
 
-The Rechner uses OnPush on all feature components. With 88 validators across complex mortgage forms, default change detection would cause visible performance issues — every keystroke would re-evaluate every binding in every component. OnPush constrains the blast radius.
+OnPush is the standard strategy in production Angular codebases. With dozens of validators across complex forms, default change detection would cause visible performance issues — every keystroke would re-evaluate every binding in every component. OnPush constrains the blast radius.
 
-This is especially important because the Rechner runs as a white-label widget embedded in partner bank websites. It must coexist with the bank's JavaScript without causing janky rendering. OnPush ensures the widget's change detection doesn't slow down the host page.
+This is especially important for applications that run as embedded widgets or in micro-frontend architectures. The widget must coexist with host page JavaScript without causing janky rendering. OnPush ensures the component's change detection doesn't slow down the host page.
 
 ---
 
@@ -227,17 +227,19 @@ Don't add OnPush to an existing component that mutates objects. Migrate to signa
 
 ---
 
-## Interview Talking Points
+## What This Demonstrates
 
-- **On the strategy:** "Every component uses `OnPush`. Angular only checks a component when a signal it reads changes, an input reference changes, or a DOM event fires within it. In a large tree, this skips the vast majority of components on each cycle."
+Key takeaways from the OnPush + Signals architecture:
 
-- **On OnPush + Signals:** "Signals provide fine-grained notification — Angular knows which value changed. OnPush provides component-level skipping. Together, Angular gets reactivity comparable to Vue or Solid, within its component architecture."
+- **On the strategy:** Every component uses `OnPush`. Angular only checks a component when a signal it reads changes, an input reference changes, or a DOM event fires within it. In a large tree, this skips the vast majority of components on each cycle.
 
-- **On Zone.js:** "Zone.js monkey-patches browser APIs to detect events — a blunt instrument where every event triggers a full check. Angular is moving toward signal-based change detection where Zone.js becomes optional. Our components are already structured for that future."
+- **On OnPush + Signals:** Signals provide fine-grained notification — Angular knows which value changed. OnPush provides component-level skipping. Together, Angular gets reactivity comparable to Vue or Solid, within its component architecture.
 
-- **On Europace:** "The Rechner uses OnPush on all feature components. With 88 validators and complex forms, default detection would re-evaluate every binding on every keystroke. OnPush constrains the blast radius to affected components only."
+- **On Zone.js:** Zone.js monkey-patches browser APIs to detect events — a blunt instrument where every event triggers a full check. Angular is moving toward signal-based change detection where Zone.js becomes optional. Our components are already structured for that future.
 
-- **On pitfalls:** "The main OnPush trap is object mutation — reference equality means changed properties are invisible. Signal inputs solve this. For templates, computed signals replace function calls that re-execute every cycle."
+- **On production patterns:** Production Angular applications use OnPush on all feature components. With complex forms and many validators, default detection would re-evaluate every binding on every keystroke. OnPush constrains the blast radius to affected components only.
+
+- **On pitfalls:** The main OnPush trap is object mutation — reference equality means changed properties are invisible. Signal inputs solve this. For templates, computed signals replace function calls that re-execute every cycle.
 
 ---
 

@@ -1,6 +1,6 @@
 # Tutorial 05 — Signals and State
 
-> **Goal:** Understand Angular Signals — the framework's fine-grained reactivity primitive — and how we use them to manage state in the salary calculator. By the end, you'll be able to explain signals vs BehaviorSubject vs NgRx, read and write signal-based components, and talk confidently about reactive state in Angular interviews.
+> **Goal:** Understand Angular Signals — the framework's fine-grained reactivity primitive — and how we use them to manage state in the salary calculator. By the end, you'll be able to explain signals vs BehaviorSubject vs NgRx, read and write signal-based components, and talk confidently about reactive state in modern Angular.
 
 > **Prerequisites:** You understand React's `useState` or Vue's `ref()`. You've read [[tutorials/01-angular-scaffold|Tutorial 01: Angular Scaffold]] and are comfortable with standalone components and [[dependency-injection|DI]]. Familiarity with [[tutorials/03-kotlin-spring-boot|Tutorial 03: Kotlin + Spring Boot]] helps for the HTTP examples but isn't required.
 
@@ -213,7 +213,7 @@ NgRx is a Redux-inspired state management library for Angular. It introduces act
 
 For our relocation calculator, NgRx is overkill. Each wizard step has its own self-contained state. The salary calculator doesn't need to share its state with the cost estimator in real time. Signals (plus a service with signals, if needed for cross-component sharing) are the sweet spot for this level of complexity.
 
-**Interview talking point:** "We chose signals over NgRx because our state is mostly local to each feature. NgRx adds significant boilerplate — actions, reducers, selectors — that only pays off when you have complex cross-feature state interactions. Signals give us fine-grained reactivity with minimal ceremony."
+**Key takeaway:** We chose signals over NgRx because our state is mostly local to each feature. NgRx adds significant boilerplate — actions, reducers, selectors — that only pays off when you have complex cross-feature state interactions. Signals give us fine-grained reactivity with minimal ceremony.
 
 ---
 
@@ -429,13 +429,13 @@ And the parent passes data to it in the template:
 
 The `[result]` binding connects the parent's `result()` signal value to the child's `result` input signal. When the parent's signal updates, Angular propagates the new value to the child's input signal, which triggers the child's computed signals to recalculate, which updates the child's template. The entire chain is automatic.
 
-**Interview talking point:** "Signal inputs unify Angular's input system with its reactivity system. Instead of using `ngOnChanges` to react to input changes, you use `computed()` to derive values from signal inputs — the same pattern you use for any other signal. This makes the reactivity model consistent and composable."
+**Key takeaway:** Signal inputs unify Angular's input system with its reactivity system. Instead of using `ngOnChanges` to react to input changes, you use `computed()` to derive values from signal inputs — the same pattern you use for any other signal. This makes the reactivity model consistent and composable.
 
 ---
 
-## Europace Context
+## Why Signals Are the Modern Angular State Pattern
 
-Understanding where the Angular ecosystem is headed matters for Europace interviews. Here's the big picture.
+Signals are not just a new API — they represent the direction Angular is heading. Understanding this matters for working on any production Angular codebase.
 
 Our relocation calculator uses:
 - **3 writable signals** — `result`, `isCalculating`, `error`
@@ -443,7 +443,7 @@ Our relocation calculator uses:
 - **1 signal input** — `result` in `SalaryBreakdownComponent`
 - **0 effects** — we don't need them (and that's a good sign)
 
-A production Europace Rechner (calculator) with more features would scale this linearly — perhaps 20 writable signals across all components, 15-20 computed signals, a handful of signal inputs, and maybe 1-2 effects for analytics or localStorage persistence. The architecture stays flat and readable. There's no action/reducer/selector ceremony, no subscription management, no memory leak risk from forgotten unsubscriptions.
+A larger production application with more features would scale this linearly — perhaps 20 writable signals across all components, 15-20 computed signals, a handful of signal inputs, and maybe 1-2 effects for analytics or localStorage persistence. The architecture stays flat and readable. There's no action/reducer/selector ceremony, no subscription management, no memory leak risk from forgotten unsubscriptions.
 
 This is the direction Angular is going. The Angular team has been explicit:
 
@@ -452,7 +452,7 @@ This is the direction Angular is going. The Angular team has been explicit:
 3. **RxJS remains important** for async operations — HttpClient, WebSockets, complex event composition
 4. **NgRx is adopting signals** — NgRx 17+ added `selectSignal()` and signal-based stores, recognizing that signals are the primitive going forward
 
-When an interviewer asks about state management in Angular, the modern answer is: "Signals for component state, RxJS for async data flow, and NgRx only if the application's shared state complexity justifies the overhead."
+The modern answer for state management in Angular is: "Signals for component state, RxJS for async data flow, and NgRx only if the application's shared state complexity justifies the overhead."
 
 ---
 
@@ -614,19 +614,19 @@ Notice what disappeared: no `BehaviorSubject`, no `.asObservable()`, no `.getVal
 
 ---
 
-## Interview Talking Points
+## What This Demonstrates
 
-Keep these in your back pocket for Angular-focused interviews:
+Key takeaways from the signal architecture in this project:
 
-- **On what signals are:** "Signals are Angular's fine-grained reactivity primitive. A signal always holds a current value, tracks its consumers automatically, and notifies them when it changes. Think of it as a reactive variable — like React's `useState` but without the hook rules and call-order constraints."
+- **On what signals are:** Signals are Angular's fine-grained reactivity primitive. A signal always holds a current value, tracks its consumers automatically, and notifies them when it changes. Think of it as a reactive variable — like React's `useState` but without the hook rules and call-order constraints.
 
-- **On the three primitives:** "Angular's signal system has three building blocks: `signal()` for writable state, `computed()` for derived state, and `effect()` for side effects. In practice, you'll use `signal` and `computed` constantly and `effect` rarely — if you find yourself reaching for `effect`, check whether `computed` can do the job first."
+- **On the three primitives:** Angular's signal system has three building blocks: `signal()` for writable state, `computed()` for derived state, and `effect()` for side effects. In practice, you'll use `signal` and `computed` constantly and `effect` rarely — if you find yourself reaching for `effect`, check whether `computed` can do the job first.
 
-- **On signals vs RxJS:** "Signals and RxJS solve different problems. Signals are for synchronous reactive state — the current value of a form field, a loading flag, a derived computation. RxJS is for asynchronous event streams — HTTP responses, WebSocket messages, debounced user input. In our project, the data pipeline uses RxJS operators, and the component state uses signals. `toSignal()` bridges the two when needed."
+- **On signals vs RxJS:** Signals and RxJS solve different problems. Signals are for synchronous reactive state — the current value of a form field, a loading flag, a derived computation. RxJS is for asynchronous event streams — HTTP responses, WebSocket messages, debounced user input. In our project, the data pipeline uses RxJS operators, and the component state uses signals. `toSignal()` bridges the two when needed.
 
-- **On comparison to React/Vue:** "Angular signals are closest to Vue's `ref()` and `computed()`. Unlike React's `useState`, signals don't depend on hook call order, can be created anywhere (not just in components), and track dependencies automatically without a manual dependency array. Compared to Vue, the main API difference is reading values with `signal()` instead of `.value`."
+- **On comparison to React/Vue:** Angular signals are closest to Vue's `ref()` and `computed()`. Unlike React's `useState`, signals don't depend on hook call order, can be created anywhere (not just in components), and track dependencies automatically without a manual dependency array. Compared to Vue, the main API difference is reading values with `signal()` instead of `.value`.
 
-- **On the future of Angular:** "Signals are the foundation for Angular's next-generation rendering model. The Angular team is building signal-based change detection that will make Zone.js optional, reducing bundle size and improving performance. Components that use signals today are already positioned for that future."
+- **On the future of Angular:** Signals are the foundation for Angular's next-generation rendering model. The Angular team is building signal-based change detection that will make Zone.js optional, reducing bundle size and improving performance. Components that use signals today are already positioned for that future.
 
 ---
 

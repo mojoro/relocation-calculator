@@ -18,24 +18,24 @@
 5. [Best Practices](#5-best-practices)
 6. [Jargon Glossary](#6-jargon-glossary)
 7. [Tutorial Index (Learning Path)](#7-tutorial-index-learning-path)
-8. [Interview Preparation](#8-interview-preparation)
+8. [What This Project Demonstrates](#8-what-this-project-demonstrates)
 
 ---
 
 ## 1. Why This Project Exists
 
-This is a **portfolio piece for a Europace AG interview**. Europace builds Germany's largest platform for mortgage and building finance — processing over EUR 100 billion in transactions annually. Their product teams build white-label mortgage calculators ("Rechner") using **Angular** on the frontend and **Java/Kotlin** microservices on the backend.
+This is **project #1 in the 10-in-10 challenge** — 10 projects in 10 weeks, each built with a different tech stack, blogged at [johnmoorman.com](https://johnmoorman.com). The goal: stop reading tutorials and start building real things.
 
-The role John is interviewing for sits on the **#passt product team**, which builds a mortgage affordability calculator. Martin (the PM) specifically said they want someone who *understands the backend well and can potentially own the frontend-backend integration*.
+For this project, John wanted hands-on experience with **Angular** and **Kotlin/Spring Boot** — the stack used by many enterprise teams in Germany. Rather than building a todo app, he chose a domain he actually knows: relocating to Berlin. The Steuerklassen, Sozialversicherung deductions, and Anmeldung procedures in this app come from lived experience, not a textbook.
 
-This project demonstrates exactly that:
+The project follows patterns found in production Angular codebases — [[standalone-components]], [[reactive-forms]] with Validators, [[signals]], [[onpush|OnPush change detection]], and a [[design-tokens]] architecture inspired by enterprise token systems. Specifically:
 
-- **Angular proficiency** using the same patterns found in Europace's Rechner source code — [[standalone-components]], [[reactive-forms]] with Validators, [[signals]], [[onpush|OnPush change detection]], and the [[design-tokens]] architecture
+- **Angular proficiency** using the same patterns found in real-world Angular applications — standalone components, reactive forms, signals, OnPush, and a three-tier design token system
 - **Kotlin/Spring Boot backend competence** — a real tax calculation API, not a mock
 - **Clean integration layer** — typed contracts mirrored between TypeScript and Kotlin, error interceptors, explicit loading/error/success states
-- **Authentic domain knowledge** — John actually relocated to Berlin. The Steuerklassen, Sozialversicherung deductions, and Anmeldung procedures in this app come from lived experience, not a textbook
+- **Authentic domain knowledge** — John actually relocated to Berlin, so this topic is genuine
 
-See [[europace-patterns]] for a detailed analysis of how each pattern in this project maps to Europace's production code.
+See [[europace-patterns]] for reference material on the enterprise patterns that inspired this project's architecture.
 
 ---
 
@@ -220,11 +220,11 @@ The `@Valid` annotation on the controller parameter triggers Bean Validation. If
 
 This is where the [[german-tax-system]] domain knowledge lives. The service:
 
-1. Calculates taxable income by applying the **Grundfreibetrag** (EUR 12,096 tax-free allowance) and tax-class-specific allowances
-2. Applies the **four-zone progressive income tax formula** — 0% up to EUR 12,096, then 14%-24%, then 24%-42%, then 42% flat, then 45% ("Reichensteuer") above EUR 277,826
+1. Calculates taxable income by applying the **Grundfreibetrag** (EUR 12,348 tax-free allowance) and tax-class-specific allowances
+2. Applies the **four-zone progressive income tax formula** — 0% up to EUR 12,348, then 14%-24%, then 24%-42%, then 42% flat, then 45% ("Reichensteuer") above EUR 277,826
 3. Calculates **Solidaritaetszuschlag** (5.5% of income tax, only above EUR 18,130 threshold)
 4. Calculates **social insurance**: health (8.15%), pension (9.3%), unemployment (1.3%), nursing care (1.7% + 0.6% surcharge if childless), each capped at their respective contribution ceilings
-5. Optionally calculates **Kirchensteuer** (church tax — 8% of income tax in Berlin)
+5. Optionally calculates **Kirchensteuer** (church tax — 9% of income tax in Berlin)
 
 **12. Response serialized to JSON and sent back**
 
@@ -279,16 +279,16 @@ Every technology in this project was chosen deliberately. This table explains wh
 
 | Technology | Why We Use It | Alternative Considered | Why Not the Alternative |
 |---|---|---|---|
-| [[angular]] 21 | Europace builds their Rechner products in Angular. Full framework with routing, forms, DI, HTTP built in. Demonstrates competence in their exact stack. | React | Library, not framework — you choose your own router (React Router? TanStack Router?), state manager (Redux? Zustand? Jotai?), form library (React Hook Form? Formik?). More flexibility, but more decisions and less consistency across a large team. |
-| [[kotlin]] 2.x | Europace is migrating from Java to Kotlin. Modern JVM language with null safety, data classes, extension functions, coroutines. Less boilerplate than Java. | Java | Verbose — a simple data class requires 40+ lines with getters, setters, equals, hashCode. No built-in null safety. Kotlin compiles to the same bytecode and interops perfectly. |
-| [[spring-boot]] 3.4 | Industry standard for JVM backends. Auto-configuration eliminates boilerplate. Massive ecosystem (security, data, cloud). Every Europace backend engineer knows Spring. | Ktor | Kotlin-native and lighter, but much smaller ecosystem, less tooling, less community support. Interviewers at a Spring shop won't be impressed by Ktor. |
-| [[reactive-forms]] | Europace's Rechner uses 88 validators and 7 FormGroups. Complex wizard forms need programmatic control — conditional validation, cross-field rules, dynamic form structure. | Template-driven forms | Fine for a login form. Can't handle "show field B only if field A > 50000" or "validate field C against the value of field D." No programmatic access to form state. |
-| [[signals]] | Angular's future direction. Fine-grained reactivity without RxJS complexity for synchronous state. Europace's Rechner already uses 20 `signal()` and 4 `computed()` instances. | NgRx (Redux for Angular) | Overkill for an app this size. NgRx adds actions, reducers, selectors, effects — a full Redux architecture. Signals handle our state needs with zero boilerplate. |
+| [[angular]] 21 | The framework of choice for enterprise teams across Germany. Full framework with routing, forms, DI, HTTP built in. Gaining real experience with Angular was a primary goal of this project. | React | Library, not framework — you choose your own router (React Router? TanStack Router?), state manager (Redux? Zustand? Jotai?), form library (React Hook Form? Formik?). More flexibility, but more decisions and less consistency across a large team. |
+| [[kotlin]] 2.x | Many enterprise teams are migrating from Java to Kotlin. Modern JVM language with null safety, data classes, extension functions, coroutines. Less boilerplate than Java. | Java | Verbose — a simple data class requires 40+ lines with getters, setters, equals, hashCode. No built-in null safety. Kotlin compiles to the same bytecode and interops perfectly. |
+| [[spring-boot]] 3.4 | Industry standard for JVM backends. Auto-configuration eliminates boilerplate. Massive ecosystem (security, data, cloud). The default choice for enterprise Kotlin/Java teams. | Ktor | Kotlin-native and lighter, but much smaller ecosystem, less tooling, less community support. Spring is the industry standard for a reason. |
+| [[reactive-forms]] | Production Angular apps use reactive forms extensively for complex wizard flows. Complex wizard forms need programmatic control — conditional validation, cross-field rules, dynamic form structure. | Template-driven forms | Fine for a login form. Can't handle "show field B only if field A > 50000" or "validate field C against the value of field D." No programmatic access to form state. |
+| [[signals]] | Angular's future direction. Fine-grained reactivity without RxJS complexity for synchronous state. Production Angular codebases are increasingly adopting signals over BehaviorSubjects and NgRx. | NgRx (Redux for Angular) | Overkill for an app this size. NgRx adds actions, reducers, selectors, effects — a full Redux architecture. Signals handle our state needs with zero boilerplate. |
 | [[rxjs]] | The right tool for async operations: HTTP requests, debouncing, cancellation via `switchMap`, retry logic. Angular's `HttpClient` returns Observables natively. | Promises / async-await | Can't cancel an in-flight request. Can't debounce. Can't automatically switch to the latest request when a new one arrives. RxJS operators solve these in one line. |
-| [[design-tokens]] | Three-tier token system (`--reloc-sys-*` / `--reloc-ref-*` / `--reloc-comp-*`) mirrors Europace's `--xp-sys-*` / `--xp-ref-*` / `--xp-comp-*` architecture. Concrete talking point about design systems. | Tailwind classes only | No semantic layer. `bg-teal-700` scattered across 50 components means 50 places to update if the brand color changes. The "47 shades of blue" problem. Tokens give you `--reloc-ref-color-primary` and you change it once. |
-| [[tailwind]] CSS 4.x | Utility-first CSS for rapid styling. Used alongside the token system for layout, spacing, responsive design. Europace's Rechner uses this same dual approach. | CSS Modules / SCSS only | Slower development. You write `.salary-form-header { display: flex; gap: 1rem; }` instead of `class="flex gap-4"`. Tailwind is more opinionated but faster for prototyping and consistent spacing. |
+| [[design-tokens]] | Three-tier token system (`--reloc-sys-*` / `--reloc-ref-*` / `--reloc-comp-*`) inspired by enterprise token architectures like Material Design 3. Demonstrates understanding of scalable design systems. | Tailwind classes only | No semantic layer. `bg-teal-700` scattered across 50 components means 50 places to update if the brand color changes. The "47 shades of blue" problem. Tokens give you `--reloc-ref-color-primary` and you change it once. |
+| [[tailwind]] CSS 4.x | Utility-first CSS for rapid styling. Used alongside the token system for layout, spacing, responsive design. Many production Angular codebases use this same dual approach. | CSS Modules / SCSS only | Slower development. You write `.salary-form-header { display: flex; gap: 1rem; }` instead of `class="flex gap-4"`. Tailwind is more opinionated but faster for prototyping and consistent spacing. |
 | [[docker]] | Reproducible dev environment. Backend runs on JVM 21 — Docker ensures every developer has the same JDK, same Gradle, same Spring Boot version regardless of their host OS. | Direct install (JDK + Gradle on host) | "Works on my machine" problem. Different JDK versions, different Gradle caches, different OS-level dependencies. Docker eliminates all of this. |
-| [[onpush|OnPush]] change detection | Europace uses it on all feature components. Prevents Angular from re-checking the entire component tree on every browser event. Critical for apps with many components and frequent user input. | Default change detection | Checks every component on every event — mouse move, keystroke, timer tick. Wasteful in a form-heavy app where most components haven't changed. OnPush + Signals is the performance sweet spot. |
+| [[onpush|OnPush]] change detection | Best practice in production Angular apps — used on all feature components. Prevents Angular from re-checking the entire component tree on every browser event. Critical for apps with many components and frequent user input. | Default change detection | Checks every component on every event — mouse move, keystroke, timer tick. Wasteful in a form-heavy app where most components haven't changed. OnPush + Signals is the performance sweet spot. |
 | [[lazy-loading]] | Each wizard step loads only when navigated to. The salary calculator bundle doesn't include neighborhood explorer code. Faster initial load. | Eager loading (all routes in main bundle) | One large bundle. User downloads the visa checklist JavaScript even if they only came for the salary calculator. Lazy loading splits the app into smaller chunks. |
 
 ---
@@ -320,13 +320,13 @@ Every technical term used in this project, from A to Z. Each entry either explai
 | **Beitragsbemessungsgrenze** | Beitragsbemessungsgrenze | Contribution assessment ceiling — the income cap above which social insurance contributions stop increasing |
 | **Bezirk** | Bezirk | Berlin district/borough (e.g., Kreuzberg, Mitte, Neukoelln) — the city has 12 Bezirke |
 | **Einkommensteuer** | Einkommensteuer | Income tax — Germany's progressive income tax with four rate zones |
-| **Grundfreibetrag** | Grundfreibetrag | Tax-free allowance — EUR 12,096 in 2025. Income below this amount is not taxed. |
-| **Kirchensteuer** | Kirchensteuer | Church tax — 8% of income tax in Berlin (9% in Bavaria). Opt-out requires formal Kirchenaustritt. |
+| **Grundfreibetrag** | Grundfreibetrag | Tax-free allowance — EUR 12,348 in 2025. Income below this amount is not taxed. |
+| **Kirchensteuer** | Kirchensteuer | Church tax — 9% of income tax in Berlin (8% in Bavaria and Baden-Wuerttemberg). Opt-out requires formal Kirchenaustritt. |
 | **Krankenversicherung** | Krankenversicherung | Health insurance — mandatory in Germany. Employee share is ~8.15% of gross (up to the ceiling). |
 | **Lohnsteuer** | Lohnsteuer | Wage tax — the income tax withheld by the employer each month |
 | **Nebenkosten** | Nebenkosten | Additional rental costs (heating, water, trash, building maintenance) — typically EUR 2-4/sqm/month |
 | **Pflegeversicherung** | Pflegeversicherung | Nursing care insurance — 1.7% base rate + 0.6% surcharge if childless over 23 |
-| **Rechner** | Rechner | Calculator — the German word Europace uses for their product (Baufinanzierungsrechner = mortgage calculator) |
+| **Rechner** | Rechner | Calculator — a common German term for financial calculation tools (Baufinanzierungsrechner = mortgage calculator) |
 | **Reichensteuer** | Reichensteuer | "Rich tax" — the 45% top marginal rate on income above EUR 277,826 |
 | **Rentenversicherung** | Rentenversicherung | Pension insurance — employee share is 9.3% of gross (up to the ceiling) |
 | **Solidaritaetszuschlag** | Solidaritaetszuschlag | Solidarity surcharge — 5.5% of income tax, originally for German reunification. Only applies above EUR 18,130 income tax threshold since 2021. |
@@ -382,9 +382,9 @@ Tutorials are ordered for progressive learning. Each one builds on earlier conce
 | # | Tutorial | What You'll Learn | Prerequisites |
 |---|---------|-------------------|---------------|
 | 01 | [[tutorials/01-angular-scaffold]] | Angular fundamentals: standalone components, project structure, `app.config.ts` providers, the `reloc-*` selector convention, feature-based folder structure, [[dependency-injection]] | None — start here if you're new to Angular |
-| 02 | [[tutorials/02-design-tokens]] | CSS custom properties, the three-tier token architecture (`--reloc-sys-*` / `--reloc-ref-*` / `--reloc-comp-*`), how Europace's `--xp-*` system works, [[tailwind]] integration | 01 (need to understand where styles live in Angular) |
+| 02 | [[tutorials/02-design-tokens]] | CSS custom properties, the three-tier token architecture (`--reloc-sys-*` / `--reloc-ref-*` / `--reloc-comp-*`), enterprise token system patterns, [[tailwind]] integration | 01 (need to understand where styles live in Angular) |
 | 03 | [[tutorials/03-kotlin-spring-boot]] | Kotlin for TypeScript developers, Spring Boot project structure, `@RestController`, `@Service`, [[data-classes]], Gradle build system, JVM basics | None — can start here independently of the Angular tutorials |
-| 04 | [[tutorials/04-reactive-forms]] | `FormGroup`, `FormControl`, `Validators`, `valueChanges` Observable, template-driven vs reactive forms, the Rechner's 88-validator pattern, auto-calculating forms | 01 |
+| 04 | [[tutorials/04-reactive-forms]] | `FormGroup`, `FormControl`, `Validators`, `valueChanges` Observable, template-driven vs reactive forms, enterprise-scale form patterns, auto-calculating forms | 01 |
 | 05 | [[tutorials/05-signals-and-state]] | `signal()`, `computed()`, `effect()`, `input.required()`, signals vs BehaviorSubject vs NgRx, `toSignal()` bridge, the spreadsheet mental model | 01, 04 |
 | 06 | [[tutorials/06-http-integration]] | `HttpClient` vs fetch, `Observable` vs `Promise`, services pattern, `switchMap` for cancellation, `errorInterceptor`, typed [[api-contracts]], end-to-end request flow | 03, 04, 05 |
 | 07 | [[tutorials/07-spring-services]] | Tax calculation domain logic in depth, [[dependency-injection]] in Spring, `@Service` lifecycle, testing services, the four-zone progressive tax formula | 03 |
@@ -402,74 +402,65 @@ Tutorials are ordered for progressive learning. Each one builds on earlier conce
 
 **"I want to understand the full stack":** 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08
 
-**"I just need to prep for the interview":** Read section 7 below, then skim 01, 03, 06 for the patterns that map to Europace.
+**"I just want the highlights":** Read section 8 below, then skim 01, 03, 06 for the key patterns.
 
 ---
 
-## 8. Interview Preparation
+## 8. What This Project Demonstrates
 
-This section organizes the project's technical decisions into interview-ready talking points. Each topic includes what you should emphasize, questions to expect, and how to frame answers using concrete examples from this project.
+This section organizes the project's technical decisions into key takeaways. Each topic highlights what the implementation demonstrates and why the choices matter.
 
-### Angular Talking Points
+### Angular Patterns
 
 **Standalone Components**
-> "Every component in the project is standalone — zero NgModules. Each component declares its own imports, which makes the dependency graph explicit and enables lazy loading at the component level, not just the module level. This matches the pattern in Europace's Rechner, which also uses standalone components."
+> Every component in the project is standalone — zero NgModules. Each component declares its own imports, which makes the dependency graph explicit and enables lazy loading at the component level, not just the module level. This is the standard pattern in production Angular codebases.
 
-*Expect:* "Why standalone over NgModules?" — NgModules were Angular's organizational unit since v2, but they added indirection. A component's dependencies were declared in a separate file (the module), not in the component itself. Standalone components make the dependency graph local and explicit. Angular 19+ made standalone the default.
+*Key takeaway:* NgModules were Angular's organizational unit since v2, but they added indirection. A component's dependencies were declared in a separate file (the module), not in the component itself. Standalone components make the dependency graph local and explicit. Angular 19+ made standalone the default.
 
 **Reactive Forms**
-> "The salary calculator uses a typed FormGroup with five controls and three validators on the gross salary field. The form's `valueChanges` Observable feeds into a debounced, switchMapped HTTP pipeline — so the calculation auto-updates as the user types, with stale request cancellation built in. Europace's Rechner uses 88 validators and 7 FormGroups following the same pattern."
+> The salary calculator uses a typed FormGroup with five controls and three validators on the gross salary field. The form's `valueChanges` Observable feeds into a debounced, switchMapped HTTP pipeline — so the calculation auto-updates as the user types, with stale request cancellation built in. This is the same pattern used in enterprise Angular applications with complex multi-step forms.
 
-*Expect:* "Why reactive forms over template-driven?" — Template-driven forms define structure in HTML and infer the form model. This breaks down when you need conditional validation ("validate field B only if field A > X"), cross-field validation, or programmatic form manipulation. Reactive forms define everything in TypeScript, giving full programmatic control.
+*Key takeaway:* Template-driven forms define structure in HTML and infer the form model. This breaks down when you need conditional validation ("validate field B only if field A > X"), cross-field validation, or programmatic form manipulation. Reactive forms define everything in TypeScript, giving full programmatic control.
 
 **Signals**
-> "UI state is managed with signals — `result`, `isCalculating`, and `error` are all signals that drive the template. Derived state uses `computed()` — the deduction percentage recalculates automatically when the result changes. This is Angular's recommended approach going forward, and it pairs naturally with OnPush change detection."
+> UI state is managed with signals — `result`, `isCalculating`, and `error` are all signals that drive the template. Derived state uses `computed()` — the deduction percentage recalculates automatically when the result changes. This is Angular's recommended approach going forward, and it pairs naturally with OnPush change detection.
 
-*Expect:* "When would you use RxJS instead of signals?" — Signals are for synchronous, stateful values that drive templates. RxJS is for asynchronous operations: HTTP requests, WebSocket streams, debouncing, cancellation, retry logic. In this project, the HTTP pipeline uses RxJS (`debounceTime`, `switchMap`, `catchError`), and the result is stored in a signal. Best of both worlds.
+*Key takeaway:* Signals are for synchronous, stateful values that drive templates. RxJS is for asynchronous operations: HTTP requests, WebSocket streams, debouncing, cancellation, retry logic. In this project, the HTTP pipeline uses RxJS (`debounceTime`, `switchMap`, `catchError`), and the result is stored in a signal. Best of both worlds.
 
 **Design Tokens**
-> "The CSS uses a three-tier token system: `--reloc-sys-*` for raw primitives, `--reloc-ref-*` for semantic references, and `--reloc-comp-*` for component-specific overrides. This directly mirrors Europace's `--xp-sys-*` / `--xp-ref-*` / `--xp-comp-*` architecture. The semantic layer means 'primary color' is defined once and referenced everywhere — no hunting through 50 files to change the brand color."
+> The CSS uses a three-tier token system: `--reloc-sys-*` for raw primitives, `--reloc-ref-*` for semantic references, and `--reloc-comp-*` for component-specific overrides. This is inspired by enterprise token architectures that follow the Material Design 3 pattern. The semantic layer means "primary color" is defined once and referenced everywhere — no hunting through 50 files to change the brand color.
 
-*Expect:* "How do tokens work with Tailwind?" — Tailwind handles layout utilities (`flex`, `gap-4`, `p-6`), while tokens handle brand-level decisions (colors, radii, shadows, typography). Tailwind can reference custom properties via `var()`, so the two systems complement rather than compete.
+*Key takeaway:* Tailwind handles layout utilities (`flex`, `gap-4`, `p-6`), while tokens handle brand-level decisions (colors, radii, shadows, typography). Tailwind can reference custom properties via `var()`, so the two systems complement rather than compete.
 
-### Kotlin / Spring Boot Talking Points
+### Kotlin / Spring Boot Patterns
 
 **Kotlin Data Classes**
-> "The API contracts use Kotlin data classes that mirror TypeScript interfaces field-for-field. `SalaryRequest` in TypeScript and `SalaryRequest.kt` in Kotlin have identical fields and types. Jackson handles the serialization automatically. If either side changes, the contract mismatch surfaces immediately."
+> The API contracts use Kotlin data classes that mirror TypeScript interfaces field-for-field. `SalaryRequest` in TypeScript and `SalaryRequest.kt` in Kotlin have identical fields and types. Jackson handles the serialization automatically. If either side changes, the contract mismatch surfaces immediately.
 
-*Expect:* "How do you keep the contracts in sync?" — Today it's manual mirroring with a `shared/api-contracts/` directory that has both `.ts` and `.kt` files. The shared directory makes it visible that both must be updated together. At scale, you'd generate one from the other (OpenAPI spec, protobuf, etc.).
+*Key takeaway:* Today it's manual mirroring with a `shared/api-contracts/` directory that has both `.ts` and `.kt` files. The shared directory makes it visible that both must be updated together. At scale, you'd generate one from the other (OpenAPI spec, protobuf, etc.).
 
 **German Tax Domain Knowledge**
-> "The `TaxCalculationService` implements Germany's actual 2025 progressive tax formula — four zones from 0% to 45%, social insurance with contribution ceilings, solidarity surcharge with phase-in threshold, and Kirchensteuer at Berlin's 8% rate. I went through this myself when I relocated to Berlin, so the numbers are from real experience, not a textbook."
+> The `TaxCalculationService` implements Germany's actual progressive tax formula — four zones from 0% to 45%, social insurance with contribution ceilings, solidarity surcharge with phase-in threshold, and Kirchensteuer at Berlin's 9% rate. This comes from real experience relocating to Berlin, not a textbook.
 
-*Expect:* "Walk me through the tax calculation." — Start with Grundfreibetrag (EUR 12,096 tax-free), explain the four progressive zones, mention Steuerklassen (e.g., Class III gets double Grundfreibetrag for married higher earner), social insurance capped at Beitragsbemessungsgrenze (EUR 66,150 for health, EUR 96,600 for pension), then Soli at 5.5% above threshold.
+*Key takeaway:* Start with Grundfreibetrag (EUR 12,348 tax-free), the four progressive zones, Steuerklassen (e.g., Class III gets double Grundfreibetrag for married higher earner), social insurance capped at Beitragsbemessungsgrenze (EUR 66,150 for health, EUR 96,600 for pension), then Soli at 5.5% above threshold.
 
 **Spring Boot Architecture**
-> "The backend follows standard layered architecture: controller receives HTTP and validates, service contains business logic, model defines data shapes. The controller never calculates anything — it delegates to `TaxCalculationService`. This separation means we could swap the HTTP layer for a CLI or message queue without touching the business logic."
+> The backend follows standard layered architecture: controller receives HTTP and validates, service contains business logic, model defines data shapes. The controller never calculates anything — it delegates to `TaxCalculationService`. This separation means you could swap the HTTP layer for a CLI or message queue without touching the business logic.
 
-*Expect:* "How does dependency injection work in Spring?" — Spring creates singleton beans for `@Service` and `@RestController` classes. When `SalaryController` declares `private val taxService: TaxCalculationService` in its constructor, Spring automatically injects the service instance. No manual wiring. Same concept as Angular's `inject()` but at the JVM level.
+*Key takeaway:* Spring creates singleton beans for `@Service` and `@RestController` classes. When `SalaryController` declares `private val taxService: TaxCalculationService` in its constructor, Spring automatically injects the service instance. No manual wiring. Same concept as Angular's `inject()` but at the JVM level.
 
-### Integration Talking Points
+### Integration Patterns
 
-**This is the differentiator. Martin said they're hiring for frontend-backend integration.**
+**This is the most important part of the project — the clean frontend-backend integration layer.**
 
 **Typed Contracts**
-> "The `shared/api-contracts/` directory is the single source of truth. Both TypeScript interfaces and Kotlin data classes live there side by side. When I add a field to the response, I update both files in the same commit. The Angular service's generic type parameter `http.post<SalaryResponse>(...)` ensures the compiler catches type mismatches at build time, not at runtime."
+> The `shared/api-contracts/` directory is the single source of truth. Both TypeScript interfaces and Kotlin data classes live there side by side. When you add a field to the response, you update both files in the same commit. The Angular service's generic type parameter `http.post<SalaryResponse>(...)` ensures the compiler catches type mismatches at build time, not at runtime.
 
 **Error Handling Pipeline**
-> "Errors flow through three layers. The global `errorInterceptor` catches all HTTP errors and transforms them into typed `ApiError` objects with status, message, and timestamp. The component's `catchError` in the RxJS pipeline sets the error signal. The template reads the error signal and displays a user-friendly message. A 0 status means the backend is unreachable. A 400 means bad input. A 500 means something broke server-side. Each gets a different message."
+> Errors flow through three layers. The global `errorInterceptor` catches all HTTP errors and transforms them into typed `ApiError` objects with status, message, and timestamp. The component's `catchError` in the RxJS pipeline sets the error signal. The template reads the error signal and displays a user-friendly message. A 0 status means the backend is unreachable. A 400 means bad input. A 500 means something broke server-side. Each gets a different message.
 
 **Loading States**
-> "Every API call has explicit loading, success, and error states — all as signals. `isCalculating()` drives the spinner, `result()` drives the breakdown display, `error()` drives the error message. There is no ambiguous state where the user doesn't know what's happening. The template shows exactly one of: empty state, loading spinner, result, or error."
-
-### Questions You Should Ask the Interviewer
-
-These demonstrate technical depth and genuine interest:
-
-1. "The Rechner uses `--xp-sys-*` tokens that look like they bridge into Material Design 3. Are you moving toward MD3 system tokens, or is the three-tier system staying custom?"
-2. "I noticed the Rechner uses both Signals (20 instances) and RxJS (133 pipe calls). Is there a team convention for when to use which, or is it still evolving?"
-3. "How do you handle API contract evolution between the Angular frontend and the Java/Kotlin backends? OpenAPI generation, shared schemas, or manual mirroring?"
-4. "The #passt team's calculator — is it a single Angular app or a micro-frontend architecture with multiple teams contributing?"
+> Every API call has explicit loading, success, and error states — all as signals. `isCalculating()` drives the spinner, `result()` drives the breakdown display, `error()` drives the error message. There is no ambiguous state where the user doesn't know what's happening. The template shows exactly one of: empty state, loading spinner, result, or error.
 
 ---
 

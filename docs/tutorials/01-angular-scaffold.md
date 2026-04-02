@@ -1,6 +1,6 @@
 # Tutorial 01 — Angular Scaffold
 
-> **Goal:** Understand the Angular project structure we've built, why each piece exists, and how they fit together. By the end, you'll be able to explain standalone components, lazy loading, and Angular's dependency injection system in an interview setting.
+> **Goal:** Understand the Angular project structure we've built, why each piece exists, and how they fit together. By the end, you'll be able to explain standalone components, lazy loading, and Angular's dependency injection system with confidence.
 
 ---
 
@@ -23,7 +23,7 @@ Angular is also *opinionated*. There's generally "one Angular way" to do things.
 
 **The LEGO analogy:** If React is a box of individual LEGO bricks where you design your own creation from scratch, Angular is a LEGO Technic kit — more structure, clearer instructions, less guesswork, and parts that are specifically designed to fit together. Both approaches build amazing things, but the Technic kit is faster when you're building with a team of ten.
 
-**Why this matters for Europace:** Companies like Europace (mortgage and finance platform), Deutsche Bank, and Google itself use Angular specifically because of this consistency. When you have dozens of developers working across multiple product teams, the opinionated structure pays for itself. Europace's Rechner (calculator) products — the same kind of domain our project lives in — are built with [[angular|Angular]].
+**Why this matters in enterprise settings:** Companies like Deutsche Bank, Google, and many fintech platforms across Germany use Angular specifically because of this consistency. When you have dozens of developers working across multiple product teams, the opinionated structure pays for itself. Financial calculator products — the same kind of domain our project lives in — are commonly built with [[angular|Angular]].
 
 ---
 
@@ -86,11 +86,11 @@ Notice: `standalone: true` and `imports: [RouterOutlet]`. This component needs t
 
 As of Angular 17+, standalone is the default — the CLI generates standalone components, and `standalone: true` is assumed if you don't specify it. In Angular 21 (what we're using), you could even omit the `standalone: true` line since it's the default, but we keep it explicit for clarity.
 
-### Why Europace uses standalone
+### Why production codebases use standalone
 
-Europace's Rechner codebase was originally module-based (it's been around for years), but their newer codebases and modernization efforts use [[standalone-components|standalone components]]. This is the direction the entire Angular ecosystem is moving — modules aren't deprecated, but they're no longer the recommended starting point.
+Many production Angular codebases were originally module-based, but newer projects and modernization efforts use [[standalone-components|standalone components]]. This is the direction the entire Angular ecosystem is moving — modules aren't deprecated, but they're no longer the recommended starting point.
 
-**Interview talking point:** "Standalone components reduce boilerplate and make dependency graphs explicit at the component level rather than hidden inside modules. You can look at a single component file and immediately understand everything it depends on, which makes code review faster and refactoring safer."
+**What this demonstrates:** Standalone components reduce boilerplate and make dependency graphs explicit at the component level rather than hidden inside modules. You can look at a single component file and immediately understand everything it depends on, which makes code review faster and refactoring safer.
 
 ---
 
@@ -325,7 +325,7 @@ This is especially important for:
 - **Wizard-style apps** like ours — users start on Step 1 and may not complete all four steps in one session
 - **Bundle budget compliance** — remember the 500kB warning threshold in `angular.json`? Lazy loading is how we stay under it as the app grows
 
-**Interview talking point:** "Lazy loading is critical for wizard-style apps — users shouldn't pay the cost of steps they haven't reached yet. Each step in our wizard is a separate chunk, so the initial load only includes the framework, router, and the first step."
+**What this demonstrates:** Lazy loading is critical for wizard-style apps — users shouldn't pay the cost of steps they haven't reached yet. Each step in our wizard is a separate chunk, so the initial load only includes the framework, router, and the first step.
 
 ---
 
@@ -353,7 +353,7 @@ That `changeDetection: ChangeDetectionStrategy.OnPush` line is a performance opt
 4. [[signals|Signals]] that the component reads change their value
 5. Change detection is explicitly triggered via `ChangeDetectorRef.markForCheck()`
 
-Every feature component in our project uses OnPush. This is a best practice for production Angular apps and something Europace enforces in their codebases.
+Every feature component in our project uses OnPush. This is a best practice enforced in production Angular codebases.
 
 We'll cover this in depth in [[tutorials/12-onpush-and-performance|Tutorial 12: OnPush and Performance]], including how it interacts with [[signals|Angular Signals]] (the new reactive primitive that's gradually replacing RxJS for component state). For now, just know that it's there and understand the basic idea: opt out of automatic checking, opt in to explicit change tracking.
 
@@ -398,19 +398,17 @@ Save the file and watch the header color change immediately (the dev server supp
 
 ---
 
-## Interview Talking Points
+## Key Takeaways
 
-Keep these in your back pocket for Europace interviews:
+- **On Angular's philosophy:** Angular's opinionated structure is a feature for large teams — everyone knows where to find things. There's no debate about routing libraries or state management approaches because the framework provides a single, well-documented answer for each concern.
 
-- **On Angular's philosophy:** "Angular's opinionated structure is actually a feature for large teams — everyone knows where to find things. There's no debate about routing libraries or state management approaches because the framework provides a single, well-documented answer for each concern."
+- **On standalone components:** Standalone components eliminate NgModule ceremony while keeping explicit dependency graphs. Every component declares its own imports, so you can look at a single file and know exactly what it depends on. This makes code review faster and refactoring safer.
 
-- **On standalone components:** "Standalone components eliminate NgModule ceremony while keeping explicit dependency graphs. Every component declares its own imports, so you can look at a single file and know exactly what it depends on. This makes code review faster and refactoring safer."
+- **On lazy loading:** Lazy loading is critical for wizard-style apps — users shouldn't pay the cost of steps they haven't reached yet. In our project, each wizard step is a separate chunk, and the initial load only includes the framework shell and whichever step the user lands on.
 
-- **On lazy loading:** "Lazy loading is critical for wizard-style apps — users shouldn't pay the cost of steps they haven't reached yet. In our project, each wizard step is a separate chunk, and the initial load only includes the framework shell and whichever step the user lands on."
+- **On OnPush:** We use OnPush change detection on every component. This opts out of Angular's default "check everything" strategy and instead tells the framework to only re-check a component when its inputs change or an event fires within it. Combined with signals, this gives us fine-grained reactivity with minimal overhead.
 
-- **On OnPush:** "We use OnPush change detection on every component. This opts out of Angular's default 'check everything' strategy and instead tells the framework to only re-check a component when its inputs change or an event fires within it. Combined with signals, this gives us fine-grained reactivity with minimal overhead."
-
-- **On TypeScript strictness:** "We run with `strict: true` and `strictTemplates: true`, which means the Angular compiler type-checks our HTML templates at build time. A typo in a template binding is a compile error, not a runtime surprise."
+- **On TypeScript strictness:** We run with `strict: true` and `strictTemplates: true`, which means the Angular compiler type-checks our HTML templates at build time. A typo in a template binding is a compile error, not a runtime surprise.
 
 ---
 

@@ -1,6 +1,6 @@
 # Tutorial 06 — HTTP Integration
 
-> **Goal:** Understand how the Angular frontend talks to the Kotlin backend over HTTP. By the end, you'll be able to trace a request from a form keystroke through the Observable pipeline, across the network, and back into the UI — and explain every step in an interview.
+> **Goal:** Understand how the Angular frontend talks to the Kotlin backend over HTTP. By the end, you'll be able to trace a request from a form keystroke through the Observable pipeline, across the network, and back into the UI — and explain every step clearly.
 
 > **Prerequisites:** You know `fetch` or `axios`. You have read [[tutorials/01-angular-scaffold]] (especially [[dependency-injection]] and `provideHttpClient()`). You do not need prior RxJS experience beyond what this tutorial teaches.
 
@@ -337,7 +337,7 @@ Same field names. Same structure. Kotlin's `Double?` (nullable) maps to TypeScri
 
 If a backend developer adds a new field `socialSecurityTotal` to `SalaryResponse.kt` but forgets to update the TypeScript interface, the Angular app won't break at runtime — it'll just silently ignore the extra field. But the *inverse* is worse: if the frontend starts reading `socialSecurityTotal` from the response without the backend providing it, TypeScript won't catch this at build time because HTTP responses are trusted (`any` at the boundary).
 
-The discipline is manual but effective: **when you change a Kotlin data class, you change the TypeScript interface in the same PR.** Same names, same types, same commit. This is a convention, not a compiler guarantee — but it's a convention worth talking about in interviews because it shows you think about the full stack, not just your layer.
+The discipline is manual but effective: **when you change a Kotlin data class, you change the TypeScript interface in the same PR.** Same names, same types, same commit. This is a convention, not a compiler guarantee — but it's a convention worth maintaining because it shows you think about the full stack, not just your layer.
 
 ### Tracing a field end-to-end
 
@@ -601,19 +601,19 @@ All of these should work correctly because of our Observable pipeline design and
 
 ---
 
-## Interview Talking Points
+## Key Takeaway
 
-Keep these in your back pocket for Europace interviews:
+The integration pattern in this project is the most important architectural decision. Here is what it demonstrates:
 
-- **On the service pattern:** "We encapsulate all API logic in injectable services — our `SalaryCalculationService` is ten lines of code. Components never touch `HttpClient` directly. This makes the API layer independently testable, reusable across features, and trivial to mock in component tests."
+- **On the service pattern:** All API logic lives in injectable services — our `SalaryCalculationService` is ten lines of code. Components never touch `HttpClient` directly. This makes the API layer independently testable, reusable across features, and trivial to mock in component tests.
 
-- **On the Observable pipeline:** "Form changes flow through a reactive pipeline: `debounceTime` prevents excessive requests, `filter` skips invalid states, and `switchMap` cancels in-flight requests when new input arrives. This gives us automatic request deduplication and cancellation with zero manual bookkeeping."
+- **On the Observable pipeline:** Form changes flow through a reactive pipeline: `debounceTime` prevents excessive requests, `filter` skips invalid states, and `switchMap` cancels in-flight requests when new input arrives. This gives us automatic request deduplication and cancellation with zero manual bookkeeping.
 
-- **On typed contracts:** "Our TypeScript interfaces mirror the Kotlin data classes field-for-field. When someone adds a field to the backend response, they update the TypeScript interface in the same PR. It's a manual convention, not a compiler guarantee, but it means you can trace any field — like `solidaritySurcharge` — from the Kotlin service through Spring serialization, across the network, into the Angular signal, and out to the template."
+- **On typed contracts:** Our TypeScript interfaces mirror the Kotlin data classes field-for-field. When someone adds a field to the backend response, they update the TypeScript interface in the same PR. It's a manual convention, not a compiler guarantee, but it means you can trace any field — like `solidaritySurcharge` — from the Kotlin service through Spring serialization, across the network, into the Angular signal, and out to the template.
 
-- **On interceptors:** "We use functional HTTP interceptors for cross-cutting concerns. Our error interceptor transforms raw `HttpErrorResponse` objects into typed `ApiError` objects with human-readable messages. Every API call in the app gets consistent error handling without any per-service code."
+- **On interceptors:** We use functional HTTP interceptors for cross-cutting concerns. Our error interceptor transforms raw `HttpErrorResponse` objects into typed `ApiError` objects with human-readable messages. Every API call in the app gets consistent error handling without any per-service code.
 
-- **On state management:** "The component uses three signals — `isCalculating`, `result`, and `error` — as a simple but complete state machine. The Observable pipeline drives all transitions, and the template uses `@if` blocks to render exactly one state at a time. No stale data, no impossible states."
+- **On state management:** The component uses three signals — `isCalculating`, `result`, and `error` — as a simple but complete state machine. The Observable pipeline drives all transitions, and the template uses `@if` blocks to render exactly one state at a time. No stale data, no impossible states.
 
 ---
 

@@ -1,6 +1,6 @@
 # Tutorial 07 — Spring Services & German Tax Logic
 
-> **Goal:** Understand the Spring service layer pattern and the German tax domain logic that powers the salary calculator. By the end, you'll be able to trace a salary calculation from HTTP request through the four-zone progressive tax formula and back, explain Steuerklassen and Sozialversicherung in an interview, and identify the Kotlin features that make the service code concise.
+> **Goal:** Understand the Spring service layer pattern and the German tax domain logic that powers the salary calculator. By the end, you'll be able to trace a salary calculation from HTTP request through the four-zone progressive tax formula and back, explain Steuerklassen and Sozialversicherung clearly, and identify the Kotlin features that make the service code concise.
 
 > **Prerequisites:** You've read [[tutorials/03-kotlin-spring-boot|Tutorial 03: Kotlin + Spring Boot]] (project structure, data classes, controllers). You know what an HTTP POST request is. You do not need prior knowledge of German taxes — this tutorial explains everything from scratch.
 
@@ -77,10 +77,10 @@ The service receives a `SalaryRequest` (already validated by `@Valid` on the con
 ```kotlin
 private fun calculateTaxableIncome(grossAnnual: Double, taxClass: TaxClass): Double {
     val allowance = when (taxClass) {
-        TaxClass.I   -> GRUNDFREIBETRAG.toDouble()         // 12,096
-        TaxClass.II  -> GRUNDFREIBETRAG + 4_260.0          // 16,356
-        TaxClass.III -> GRUNDFREIBETRAG * 2.0              // 24,192
-        TaxClass.IV  -> GRUNDFREIBETRAG.toDouble()         // 12,096
+        TaxClass.I   -> GRUNDFREIBETRAG.toDouble()         // 12,348
+        TaxClass.II  -> GRUNDFREIBETRAG + 4_260.0          // 16,608
+        TaxClass.III -> GRUNDFREIBETRAG * 2.0              // 24,696
+        TaxClass.IV  -> GRUNDFREIBETRAG.toDouble()         // 12,348
         TaxClass.V   -> 0.0                                // 0
         TaxClass.VI  -> 0.0                                // 0
     }
@@ -90,7 +90,7 @@ private fun calculateTaxableIncome(grossAnnual: Double, taxClass: TaxClass): Dou
 
 **Kotlin feature: `when` expression.** Kotlin's `when` is a pattern-matching expression (not a statement). It returns a value, so you can assign the result directly to `val allowance`. The compiler enforces exhaustiveness — if you add a new `TaxClass` entry and forget to handle it in the `when`, the code won't compile. This is far safer than Java's `switch`, which falls through silently.
 
-For our Tax Class I user with 60,000 EUR gross: `60000 - 12096 = 47,904 EUR` taxable income.
+For our Tax Class I user with 60,000 EUR gross: `60000 - 12348 = 47,652 EUR` taxable income.
 
 ### Step 3: The four-zone progressive income tax
 
@@ -98,7 +98,7 @@ This is the heart of the German tax system. Unlike a flat tax (where everyone pa
 
 ```kotlin
 private fun calculateProgressiveTax(taxableIncome: Double): Double {
-    // Zone 0: Tax-free (0 - 12,096 EUR) -> 0%
+    // Zone 0: Tax-free (0 - 12,348 EUR) -> 0%
     if (taxableIncome <= GRUNDFREIBETRAG) return 0.0
 
     // Zone 1: First progression (12,097 - 17,443 EUR) -> 14% to 24%
@@ -123,7 +123,7 @@ private fun calculateProgressiveTax(taxableIncome: Double): Double {
 }
 ```
 
-For our user with 47,904 EUR taxable income, we fall into **Zone 2** (24%-42% progressive). The formula `(181.19 * z + 2_397.0) * z + 966.53` is a quadratic approximation of the smooth progressive curve. The variable `z` normalizes the income into the zone's range by dividing by 10,000.
+For our user with 47,652 EUR taxable income, we fall into **Zone 2** (24%-42% progressive). The formula `(181.19 * z + 2_397.0) * z + 966.53` is a quadratic approximation of the smooth progressive curve. The variable `z` normalizes the income into the zone's range by dividing by 10,000.
 
 The result: approximately 9,562 EUR annual income tax, or about 797 EUR per month.
 
@@ -174,11 +174,11 @@ private fun calculateSoli(annualIncomeTax: Double): Double {
 
 The Solidaritaetszuschlag (Soli) is 5.5% of your income tax, but only if your annual income tax exceeds 18,130 EUR. For our user with ~9,562 EUR annual income tax, no Soli is due. Most employees earning under ~75,000 EUR pay zero Soli.
 
-Church tax is optional — 8% of income tax in Berlin (and most German states), 9% in Bavaria and Baden-Wuerttemberg:
+Church tax is optional — 9% of income tax in Berlin, Bavaria, and Baden-Wuerttemberg (8% in some other German states):
 
 ```kotlin
 val monthlyChurchTax = if (request.churchTax) {
-    (annualIncomeTax * CHURCH_TAX_RATE) / 12.0   // 8% of income tax
+    (annualIncomeTax * CHURCH_TAX_RATE) / 12.0   // 9% of income tax
 } else null
 ```
 
@@ -216,7 +216,7 @@ All tax constants live in a `companion object`:
 class TaxCalculationService {
 
     companion object {
-        const val GRUNDFREIBETRAG = 12_096
+        const val GRUNDFREIBETRAG = 12_348
         const val ZONE_1_START = 12_097
         const val HEALTH_INSURANCE_RATE = 0.0815
         // ...
@@ -228,13 +228,13 @@ class TaxCalculationService {
 
 A `companion object` in Kotlin is roughly equivalent to `static` members in Java or a module-level `const` in TypeScript. The constants belong to the class itself, not to any particular instance. You access them as `TaxCalculationService.GRUNDFREIBETRAG` from outside the class or just `GRUNDFREIBETRAG` from inside.
 
-`const val` means the value is a compile-time constant — the compiler inlines it wherever it's used. This is only allowed for primitives (`Int`, `Double`, `String`, etc.), not for objects. The `_` separators in `12_096` are Kotlin's numeric separators — purely cosmetic, like commas in "12,096" — making large numbers readable.
+`const val` means the value is a compile-time constant — the compiler inlines it wherever it's used. This is only allowed for primitives (`Int`, `Double`, `String`, etc.), not for objects. The `_` separators in `12_348` are Kotlin's numeric separators — purely cosmetic, like commas in "12,348" — making large numbers readable.
 
 ---
 
 ## German Tax System Explained
 
-This section is pure domain knowledge. Understanding it makes the code above self-evident and gives you interview ammunition.
+This section is pure domain knowledge. Understanding it makes the code above self-evident.
 
 ### Steuerklassen (Tax Classes I-VI)
 
@@ -242,10 +242,10 @@ Every employee in Germany is assigned a tax class based on their personal situat
 
 | Class | Who Gets It | Grundfreibetrag | Notes |
 |---|---|---|---|
-| I | Single, divorced, widowed | 12,096 EUR | The default |
-| II | Single parents (Alleinerziehend) | 12,096 + 4,260 EUR | Extra allowance for raising kids alone |
-| III | Married, higher earner | 12,096 x 2 EUR | Partner takes Class V |
-| IV | Married, similar income | 12,096 EUR | Both partners use IV |
+| I | Single, divorced, widowed | 12,348 EUR | The default |
+| II | Single parents (Alleinerziehend) | 12,348 + 4,260 EUR | Extra allowance for raising kids alone |
+| III | Married, higher earner | 12,348 x 2 EUR | Partner takes Class V |
+| IV | Married, similar income | 12,348 EUR | Both partners use IV |
 | V | Married, lower earner | 0 EUR | No allowance — partner gets double |
 | VI | Secondary employment | 0 EUR | Second job, no allowances |
 
@@ -413,17 +413,17 @@ Compare rent ranges across districts. Notice how the response structure matches 
 
 ---
 
-## Interview Talking Points
+## Key Takeaway
 
-Keep these in your back pocket:
+What this project demonstrates about backend service design:
 
-- **On Spring services:** "Business logic lives in `@Service` classes, never in controllers. Our `TaxCalculationService` is a pure function — it takes a request, computes the result, and returns it. The controller is a thin HTTP adapter. This makes the tax calculation testable without an HTTP server and reusable if we add a batch endpoint or GraphQL."
+- **On Spring services:** Business logic lives in `@Service` classes, never in controllers. Our `TaxCalculationService` is a pure function — it takes a request, computes the result, and returns it. The controller is a thin HTTP adapter. This makes the tax calculation testable without an HTTP server and reusable if we add a batch endpoint or GraphQL.
 
-- **On domain modeling:** "The German tax calculation uses the actual 2025 BMF progressive formula — four zones with polynomial coefficients, not simplified flat brackets. It handles Steuerklassen I through VI, Ehegattensplitting for Class III, all four social insurance contributions with their ceilings, and the Solidaritaetszuschlag threshold. I chose this domain because I actually went through this when I relocated to Berlin."
+- **On real domain logic:** The German tax calculation uses the actual 2026 BMF progressive formula — four zones with polynomial coefficients, not simplified flat brackets. It handles Steuerklassen I through VI, Ehegattensplitting for Class III, all four social insurance contributions with their ceilings, and the Solidaritaetszuschlag threshold. This domain was chosen because John actually went through the Berlin relocation process — the Steuerklasse and Sozialversicherung logic is based on real experience.
 
-- **On Kotlin features:** "Kotlin's `when` expression with exhaustive enum matching means the compiler catches any unhandled tax class. `companion object` constants with numeric separators keep the tax parameters readable. Named arguments on the response constructor make it self-documenting. Nullable types like `Double?` for church tax distinguish 'not applicable' from 'zero' — which maps cleanly to TypeScript's `number | null`."
+- **On Kotlin features:** Kotlin's `when` expression with exhaustive enum matching means the compiler catches any unhandled tax class. `companion object` constants with numeric separators keep the tax parameters readable. Named arguments on the response constructor make it self-documenting. Nullable types like `Double?` for church tax distinguish 'not applicable' from 'zero' — which maps cleanly to TypeScript's `number | null`.
 
-- **On validation:** "We use Jakarta Bean Validation on Kotlin data classes with `@field:` annotations, triggered by `@Valid` on the controller. Every frontend validator has a backend counterpart — `Validators.min(0)` maps to `@Min(0)`. The frontend validates for UX; the backend validates for security. Neither trusts the other."
+- **On validation:** We use Jakarta Bean Validation on Kotlin data classes with `@field:` annotations, triggered by `@Valid` on the controller. Every frontend validator has a backend counterpart — `Validators.min(0)` maps to `@Min(0)`. The frontend validates for UX; the backend validates for security. Neither trusts the other.
 
 ---
 

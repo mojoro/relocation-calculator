@@ -264,7 +264,7 @@ combineLatest([
 
 The `startWith` operator is needed because `valueChanges` only emits on *change* — it doesn't emit the initial value. Without `startWith`, `combineLatest` would wait forever if the user only changes one control (because the other never emits).
 
-**Why not a single FormGroup?** You *could* put both controls in one `FormGroup` and use `formGroup.valueChanges` like the salary calculator. Both approaches work. `combineLatest` is more explicit about which inputs matter and is a useful pattern to know for interview discussions — it comes up whenever you need to react to changes from multiple independent sources.
+**Why not a single FormGroup?** You *could* put both controls in one `FormGroup` and use `formGroup.valueChanges` like the salary calculator. Both approaches work. `combineLatest` is more explicit about which inputs matter and is a useful pattern to know — it comes up whenever you need to react to changes from multiple independent sources.
 
 ### GET request with query parameters
 
@@ -326,15 +326,17 @@ If you haven't already, add `sessionStorage.setItem()` to the salary calculator'
 
 ---
 
-## Interview Talking Points
+## What This Demonstrates
 
-- **On GET vs POST:** "Cost estimation is a GET because it's a pure read — same parameters always return the same data. The URL is bookmarkable and cacheable. Salary calculation is POST because it processes a complex request body. Choosing the right HTTP verb isn't just convention — it determines whether browsers and CDNs can cache the response, whether users can bookmark and share the URL, and whether the operation is safe to retry on network failure."
+Architectural takeaways from the cost estimation feature:
 
-- **On component composition:** "We split cost estimation into a smart component (handles API calls and state) and a presentational component (renders the data). The presentational `CostBreakdownComponent` has four signal inputs and zero injected services. It's trivially testable — just pass in data and assert the output. This is the same container/presentational pattern used throughout Europace's Rechner."
+- **On GET vs POST:** Cost estimation is a GET because it's a pure read — same parameters always return the same data. The URL is bookmarkable and cacheable. Salary calculation is POST because it processes a complex request body. Choosing the right HTTP verb isn't just convention — it determines whether browsers and CDNs can cache the response, whether users can bookmark and share the URL, and whether the operation is safe to retry on network failure.
 
-- **On cross-step data flow:** "The wizard uses `sessionStorage` to pass the net salary from Step 1 to Step 2's affordability check. It's simpler than a shared signal service for unidirectional data flow, survives page refreshes, and requires zero additional architecture. For bidirectional or complex cross-feature state, we'd use an injectable service with signals — but that's overkill for 'Step 1 feeds Step 2.'"
+- **On component composition:** We split cost estimation into a smart component (handles API calls and state) and a presentational component (renders the data). The presentational `CostBreakdownComponent` has four signal inputs and zero injected services. It's trivially testable — just pass in data and assert the output. This container/presentational pattern is a staple of production Angular codebases — it enforces separation of concerns and makes each piece independently testable.
 
-- **On affordability calculation:** "The cost ratio is a chain of computed signals — `affordabilityRatio` derives from `netMonthlySalary` and `currentEstimate`, then `affordabilityLabel` derives from `affordabilityRatio`. Change either source signal and the entire chain recalculates lazily. The template reads the final computed values, so the UI always reflects the current state."
+- **On cross-step data flow:** The wizard uses `sessionStorage` to pass the net salary from Step 1 to Step 2's affordability check. It's simpler than a shared signal service for unidirectional data flow, survives page refreshes, and requires zero additional architecture. For bidirectional or complex cross-feature state, we'd use an injectable service with signals — but that's overkill for 'Step 1 feeds Step 2.'
+
+- **On affordability calculation:** The cost ratio is a chain of computed signals — `affordabilityRatio` derives from `netMonthlySalary` and `currentEstimate`, then `affordabilityLabel` derives from `affordabilityRatio`. Change either source signal and the entire chain recalculates lazily. The template reads the final computed values, so the UI always reflects the current state.
 
 ---
 

@@ -1,6 +1,6 @@
 # Tutorial 04 — Reactive Forms
 
-> **Goal:** Understand Angular's reactive forms system — `FormGroup`, `FormControl`, `Validators`, and the RxJS pipeline that turns form changes into HTTP requests. By the end, you'll be able to build type-safe, auto-calculating forms and explain the exact pattern Europace uses across their 7 FormGroups and 88 validators in the Rechner app.
+> **Goal:** Understand Angular's reactive forms system — `FormGroup`, `FormControl`, `Validators`, and the RxJS pipeline that turns form changes into HTTP requests. By the end, you'll be able to build type-safe, auto-calculating forms and understand the patterns used in enterprise Angular applications with complex multi-step wizards.
 
 > **Prerequisites:** You've read [[01-angular-scaffold|Tutorial 01]] (standalone components, dependency injection, signals) and [[03-kotlin-spring-boot|Tutorial 03]] (backend validation with `@Valid`). You know HTML forms. You don't need prior experience with Angular forms or RxJS.
 
@@ -40,16 +40,16 @@ The form model is an object you create, inspect, and manipulate in code. Validat
 
 Think of it this way: **template-driven forms are like a WYSIWYG editor** — you see what you get, it's quick to set up, but when you need precision, you're fighting the tool. **Reactive forms are like writing code in a text editor** — more setup, but you have total control, and complex behavior is straightforward rather than hacky.
 
-### Why Europace uses reactive forms
+### Why production apps use reactive forms
 
-Europace's Rechner is a multi-step mortgage calculator — a wizard with 7 `FormGroups`, 88 validators, conditional fields that appear based on prior answers, cross-field validation (loan amount can't exceed property value), and auto-calculation on every change. Template-driven forms would be a nightmare for this. Reactive forms give you:
+Enterprise Angular applications — multi-step mortgage calculators, insurance quote wizards, financial planning tools — routinely have many `FormGroups`, dozens of validators, conditional fields that appear based on prior answers, cross-field validation, and auto-calculation on every change. Template-driven forms would be a nightmare for this. Reactive forms give you:
 
 - **Programmatic control** — add/remove validators, enable/disable fields, reset subsets of the form
 - **Type safety** — `FormControl<TaxClass>` prevents assigning a number to a tax class field
 - **Testability** — unit test form logic without rendering a template
 - **RxJS integration** — `valueChanges` is an Observable, so you can debounce, filter, and switchMap directly
 
-Our salary form is one FormGroup with five controls. It demonstrates every pattern you'd see in the Rechner, just at smaller scale.
+Our salary form is one FormGroup with five controls. It demonstrates every pattern you'd see in a production enterprise form, just at smaller scale.
 
 ---
 
@@ -145,7 +145,7 @@ Angular provides the common ones:
 | `Validators.pattern(regex)` | String matches regex | `'pattern'` |
 | `Validators.email` | Valid email format | `'email'` |
 
-Our form uses `required`, `min`, and `max`. That's enough for a salary calculator. Europace's Rechner, with its 88 validators, uses all of these plus dozens of custom validators for domain rules like "loan term must be between 5 and 30 years" or "repayment rate plus interest rate must not exceed 100%."
+Our form uses `required`, `min`, and `max`. That's enough for a salary calculator. Large enterprise forms use all of these plus dozens of custom validators for domain rules like "loan term must be between 5 and 30 years" or "repayment rate plus interest rate must not exceed 100%."
 
 ### How validators return errors
 
@@ -224,7 +224,7 @@ This isn't accidental — it's a pattern called **validation parity**. The front
 fun calculateNetSalary(@Valid @RequestBody request: SalaryRequest): ResponseEntity<SalaryResponse>
 ```
 
-In an interview, being able to explain both sides and *why both exist* is a strong signal that you understand production systems.
+Being able to explain both sides and *why both exist* demonstrates understanding of production systems.
 
 ---
 
@@ -307,7 +307,7 @@ Automatically unsubscribe when the component is destroyed. This prevents memory 
 
 ### Why this pattern matters
 
-This entire pipeline — debounce, validate, switch, catch — is a production pattern. Europace's Rechner does this exact thing: every form change triggers a recalculation of the mortgage offer. The debounce prevents API abuse, the filter prevents invalid requests, the switchMap prevents race conditions, and the catchError prevents cascading failures. If you can explain this pipeline step by step in an interview, you demonstrate real understanding of reactive programming, not just "I've used RxJS."
+This entire pipeline — debounce, validate, switch, catch — is a production pattern. Enterprise financial calculators do this exact thing: every form change triggers a recalculation. The debounce prevents API abuse, the filter prevents invalid requests, the switchMap prevents race conditions, and the catchError prevents cascading failures. Understanding this pipeline step by step demonstrates real knowledge of reactive programming, not just "I've used RxJS."
 
 ---
 
@@ -356,9 +356,9 @@ childCount: formValue.hasChildren ? formValue.childCount : 0,
 
 This ensures the backend never receives a non-zero child count when `hasChildren` is false, even if there's a race condition between the reset subscription and the HTTP subscription. Defensive programming.
 
-### Europace's version at scale
+### This pattern at scale
 
-In the Rechner, conditional fields are everywhere. Selecting "existing property" vs "new construction" shows completely different form sections. Choosing a fixed interest rate period reveals a dropdown for the term length. The pattern is the same as ours — listen to the controlling field's `valueChanges`, reset or disable dependent fields — but multiplied across 7 form groups.
+In enterprise wizard-style forms, conditional fields are everywhere. Selecting "existing property" vs "new construction" shows completely different form sections. Choosing a fixed interest rate period reveals a dropdown for the term length. The pattern is the same as ours — listen to the controlling field's `valueChanges`, reset or disable dependent fields — but multiplied across many form groups.
 
 ---
 
@@ -428,7 +428,7 @@ this.salaryForm.valueChanges
 
 `takeUntilDestroyed` is the modern Angular way (v16+). It requires injecting `DestroyRef` and passing it to the operator. The older patterns — `Subject` + `takeUntil` in `ngOnDestroy`, or implementing `OnDestroy` to call `unsubscribe()` — still work but are more boilerplate.
 
-For Europace's codebase with dozens of form subscriptions per wizard step, forgetting to unsubscribe would cause real performance degradation over time.
+In a production codebase with dozens of form subscriptions per wizard step, forgetting to unsubscribe would cause real performance degradation over time.
 
 ### 5. Using `.value` when you need `.getRawValue()`
 
@@ -491,29 +491,29 @@ Try it with different form states: empty, partially filled, invalid values. Noti
 
 ---
 
-## Interview Talking Points
+## Key Takeaways
 
-Use these as ready-to-go responses when asked about forms, validation, or frontend architecture.
+Core principles demonstrated in this tutorial:
 
 ### On reactive forms vs template-driven
 
-> "We used reactive forms because the salary calculator auto-recalculates on every change — we pipe `valueChanges` through `debounceTime`, `filter` for validity, and `switchMap` into the HTTP call. That pattern would be awkward with template-driven forms because you'd need to manually wire up `ngModelChange` handlers and manage the async logic yourself. Reactive forms give you the Observable out of the box."
+We used reactive forms because the salary calculator auto-recalculates on every change — we pipe `valueChanges` through `debounceTime`, `filter` for validity, and `switchMap` into the HTTP call. That pattern would be awkward with template-driven forms because you'd need to manually wire up `ngModelChange` handlers and manage the async logic yourself. Reactive forms give you the Observable out of the box.
 
 ### On validation parity
 
-> "Every validator on the frontend has a corresponding Jakarta Bean Validation annotation on the backend. The frontend validates for instant feedback — the user sees 'Salary is required' without a round trip. The backend validates as the safety net — it catches anything sent directly to the API. Neither side trusts the other, which is the right approach for production."
+Every validator on the frontend has a corresponding Jakarta Bean Validation annotation on the backend. The frontend validates for instant feedback — the user sees "Salary is required" without a round trip. The backend validates as the safety net — it catches anything sent directly to the API. Neither side trusts the other, which is the right approach for production.
 
 ### On `switchMap` and race conditions
 
-> "We use `switchMap` specifically because it cancels in-flight requests. If the user changes the tax class while a calculation is pending, `switchMap` aborts the stale request and starts a fresh one. Without it, a slower first request could resolve after a faster second request and overwrite the correct result. Europace's Rechner has the same pattern — every form change triggers a mortgage recalculation, and `switchMap` guarantees the displayed result always matches the current form state."
+We use `switchMap` specifically because it cancels in-flight requests. If the user changes the tax class while a calculation is pending, `switchMap` aborts the stale request and starts a fresh one. Without it, a slower first request could resolve after a faster second request and overwrite the correct result. This is the standard pattern in enterprise financial calculators — every form change triggers a recalculation, and `switchMap` guarantees the displayed result always matches the current form state.
 
 ### On `takeUntilDestroyed` and memory management
 
-> "Every subscription to `valueChanges` uses `takeUntilDestroyed` so it auto-cleans when the component is destroyed. In a wizard like Europace's Rechner, where the user navigates through multiple form steps, orphaned subscriptions would accumulate and cause memory leaks. `takeUntilDestroyed` is the Angular v16+ pattern — cleaner than the old `Subject` + `takeUntil` in `ngOnDestroy` approach."
+Every subscription to `valueChanges` uses `takeUntilDestroyed` so it auto-cleans when the component is destroyed. In a multi-step wizard where the user navigates through multiple form steps, orphaned subscriptions would accumulate and cause memory leaks. `takeUntilDestroyed` is the Angular v16+ pattern — cleaner than the old `Subject` + `takeUntil` in `ngOnDestroy` approach.
 
 ### On typed forms
 
-> "Angular v14+ supports strictly typed reactive forms. Our `FormControl<TaxClass>` with `nonNullable: true` means the compiler knows the value is always a `TaxClass` literal, never null. This catches a whole class of bugs at compile time — if you accidentally pass the tax class to a function expecting a number, TypeScript stops you. The 88 validators in Europace's Rechner benefit enormously from this — refactoring a form field's type propagates type errors to every place that reads it."
+Angular v14+ supports strictly typed reactive forms. Our `FormControl<TaxClass>` with `nonNullable: true` means the compiler knows the value is always a `TaxClass` literal, never null. This catches a whole class of bugs at compile time — if you accidentally pass the tax class to a function expecting a number, TypeScript stops you. Large enterprise forms with many validators benefit enormously from this — refactoring a form field's type propagates type errors to every place that reads it.
 
 ---
 

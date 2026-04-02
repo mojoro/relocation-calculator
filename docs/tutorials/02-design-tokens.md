@@ -10,7 +10,7 @@ Design tokens are the smallest, most atomic pieces of a design system. A single 
 
 The idea is simple: instead of scattering raw values like `#0f766e` and `16px` across hundreds of CSS rules and component templates, you give each value a name and put the definition in a single file. Every part of the UI that needs "the primary brand color" references the same token. Change it once, and the entire application updates.
 
-The term "design token" was coined by Salesforce when they built the Lightning Design System in 2014. Since then, the concept has been adopted by Google (Material Design), IBM (Carbon), Adobe (Spectrum), GitHub (Primer), and — relevant to this project — Europace.
+The term "design token" was coined by Salesforce when they built the Lightning Design System in 2014. Since then, the concept has been adopted by Google (Material Design), IBM (Carbon), Adobe (Spectrum), GitHub (Primer), and many enterprise platforms across the industry.
 
 **The restaurant analogy.** Tokens are like a restaurant's recipe card system. Instead of every chef mixing their own shade of "red sauce," there is one recipe card that says exactly how much tomato, garlic, and basil to use. Every dish that calls for red sauce follows the same recipe. If the head chef decides to add a pinch of chili, they update one card and every dish changes. Without the recipe card system, you get 47 slightly different red sauces and no way to fix them all at once.
 
@@ -290,23 +290,21 @@ If your application does not have many variant-heavy components, you may never n
 
 ---
 
-## How Europace Does It
+## Inspiration from Enterprise Token Systems
 
-This three-tier architecture is not something we invented. It mirrors the exact system that Europace uses in their Rechner (mortgage calculator) product.
+This three-tier architecture is not something we invented. It follows the same pattern used by enterprise Angular applications and is aligned with **Material Design 3's token architecture**, which Google published as part of their design system specification. MD3 formalizes the idea that tokens should flow from source (system) through reference to component level.
 
-Europace's tokens use the `--xp-*` prefix (short for "Europace"):
+For example, enterprise platforms often use a project-specific prefix (like `--xp-*`) with the same three tiers:
 
-| Our Token | Europace Equivalent |
+| Our Token | Enterprise Equivalent |
 |-----------|-------------------|
 | `--reloc-sys-color-teal-700` | `--xp-sys-color-*` |
 | `--reloc-ref-color-primary` | `--xp-ref-color-*` |
 | `--reloc-comp-button-bg` | `--xp-comp-*` |
 
-The `--xp-sys-*` to `--xp-ref-*` to `--xp-comp-*` progression follows the same three-tier pattern we use. This is not a coincidence — both systems are aligned with **Material Design 3's token architecture**, which Google published as part of their design system specification. MD3 formalizes the idea that tokens should flow from source (system) through reference to component level.
+The `--xp-sys-*` to `--xp-ref-*` to `--xp-comp-*` progression follows the same three-tier pattern we use. Our `reloc` prefix stands for "Relocation." The convention of using a short project-specific prefix prevents token collisions when multiple design systems coexist on the same page — which happens more often than you might think in micro-frontend architectures.
 
-The `xp` prefix stands for "Europace." Our `reloc` prefix stands for "Relocation." The convention of using a short project-specific prefix prevents token collisions when multiple design systems coexist on the same page — which happens more often than you might think in micro-frontend architectures.
-
-**Interview talking point:** "I studied the Rechner's token architecture. They use a three-tier system aligned with MD3 — system primitives, semantic references, and component overrides. I replicated the same `--xp-sys/ref/comp` pattern with a `--reloc-` prefix to demonstrate familiarity with their design system approach."
+**What this demonstrates:** The three-tier token architecture (system primitives, semantic references, component overrides) is an industry-standard pattern used by Google, Salesforce, IBM, and enterprise Angular teams. Building it from scratch proves understanding of scalable design systems, not just utility-class CSS.
 
 ---
 
@@ -401,11 +399,11 @@ Done. Every component that references `--reloc-ref-color-primary` now uses indig
 
 This is not over-engineering for the sake of it. Enterprise design systems need this level of indirection because:
 
-- **Multiple products** share the same design system but may need different brand colors (white-labeling). Europace's Rechner is literally a white-label product — different banks embed it with their own brand colors.
+- **Multiple products** share the same design system but may need different brand colors (white-labeling). Enterprise financial calculators are often white-label products — different banks embed them with their own brand colors.
 - **Theming** (dark mode, high contrast, seasonal themes) becomes a matter of swapping token values rather than maintaining parallel stylesheets.
 - **Design-engineering collaboration** improves when designers can say "update primary to this new hex" and engineers know exactly which token to change.
 
-This is why Europace, Google, Salesforce, and IBM all use token architectures. It scales in ways that raw utility classes cannot.
+This is why Google, Salesforce, IBM, and enterprise Angular teams all use token architectures. It scales in ways that raw utility classes cannot.
 
 ---
 
@@ -495,17 +493,17 @@ If you catch yourself writing a raw hex code or pixel value in a component's CSS
 
 ---
 
-## Interview Talking Points
+## Key Takeaways
 
-These are specific things you can say in a technical interview to demonstrate understanding of design token architecture:
+These are the core principles to take away from the design token architecture:
 
-- **"Design tokens create a contract between design and engineering.** Designers update token values in the design tool (Figma, Sketch), those values flow into the CSS token file, and the UI updates everywhere. The token names are the shared vocabulary between the two disciplines."
+- **Design tokens create a contract between design and engineering.** Designers update token values in the design tool (Figma, Sketch), those values flow into the CSS token file, and the UI updates everywhere. The token names are the shared vocabulary between the two disciplines.
 
-- **"The three-tier system prevents the '47 shades of blue' problem** — where slightly different colors creep into the codebase over time because developers eyedrop colors from mockups or guess at hex values. With tokens, there is exactly one definition for each semantic color, and everyone references it."
+- **The three-tier system prevents the "47 shades of blue" problem** — where slightly different colors creep into the codebase over time because developers eyedrop colors from mockups or guess at hex values. With tokens, there is exactly one definition for each semantic color, and everyone references it.
 
-- **"This pattern scales to theming and white-labeling.** Dark mode is implemented by swapping the reference tier — `--reloc-ref-color-bg-body` changes from `neutral-50` to `neutral-900`, `--reloc-ref-color-text-primary` changes from `neutral-900` to `neutral-50`. The system primitives stay the same. White-label products (like Europace's Rechner, which different banks embed with their own branding) work the same way — swap the brand tokens, keep everything else."
+- **This pattern scales to theming and white-labeling.** Dark mode is implemented by swapping the reference tier — `--reloc-ref-color-bg-body` changes from `neutral-50` to `neutral-900`, `--reloc-ref-color-text-primary` changes from `neutral-900` to `neutral-50`. The system primitives stay the same. White-label products work the same way — swap the brand tokens, keep everything else.
 
-- **"Material Design 3 formalized this architecture.** Google's MD3 spec defines system tokens, reference tokens, and component tokens as distinct layers. Europace's `--xp-*` system follows this, and so does our `--reloc-*` system. It is an industry-standard pattern, not something custom."
+- **Material Design 3 formalized this architecture.** Google's MD3 spec defines system tokens, reference tokens, and component tokens as distinct layers. Enterprise Angular token systems follow this, and so does our `--reloc-*` system. It is an industry-standard pattern, not something custom.
 
 ---
 
@@ -514,6 +512,6 @@ These are specific things you can say in a technical interview to demonstrate un
 - [[css-custom-properties]] — deep dive on CSS custom properties
 - [[design-tokens]] — the concept page
 - [[tailwind]] — Tailwind CSS integration
-- [[europace-patterns]] — how Europace structures their codebase
+- [[europace-patterns]] — enterprise Angular patterns that inspired this project
 - [[tutorials/01-angular-scaffold]] — previous tutorial
 - [[tutorials/03-kotlin-spring-boot]] — next tutorial

@@ -1,6 +1,6 @@
 # Tutorial 09 — Wizard Navigation & Router Architecture
 
-> **Goal:** Understand how the Angular Router powers the multi-step wizard, how `toSignal` bridges router events into the reactive signal world, how the step indicator component tracks progress, and how shared components like `CurrencyInputComponent` integrate with the forms system. By the end, you'll be able to explain the wizard architecture and Angular routing patterns confidently in interviews.
+> **Goal:** Understand how the Angular Router powers the multi-step wizard, how `toSignal` bridges router events into the reactive signal world, how the step indicator component tracks progress, and how shared components like `CurrencyInputComponent` integrate with the forms system. By the end, you'll be able to explain the wizard architecture and Angular routing patterns confidently.
 
 > **Prerequisites:** You've read [[tutorials/01-angular-scaffold|Tutorial 01: Angular Scaffold]] (standalone components, lazy loading) and [[tutorials/05-signals-and-state|Tutorial 05: Signals]] (signals, computed, toSignal). Basic familiarity with URL-based routing from any framework (React Router, Vue Router, etc.) is helpful.
 
@@ -90,7 +90,7 @@ Open `frontend/src/app/app.ts` (the root component):
 
 `<router-outlet />` is the placeholder where routed components render. The header and step indicator live *outside* the outlet — they persist across all routes. When the user navigates from `/salary` to `/costs`, only the content inside `<router-outlet>` changes. The header and step indicator stay in the DOM, updating their state via signals.
 
-This is the **shell pattern** — a persistent layout (header, navigation, footer) with a dynamic content area. It mirrors how Europace's Rechner works: the wizard header with step indicators stays fixed while the form content changes at each step.
+This is the **shell pattern** — a persistent layout (header, navigation, footer) with a dynamic content area. This is a common pattern in production Angular applications: the wizard header with step indicators stays fixed while the form content changes at each step.
 
 ---
 
@@ -317,7 +317,7 @@ export const costStepGuard: CanActivateFn = () => {
 { path: 'costs', loadComponent: () => ..., canActivate: [costStepGuard] }
 ```
 
-**Interview note:** Knowing what guards *are* and when to use them is valuable even without implementing them. If asked "How would you prevent users from skipping steps?", describe functional guards with `CanActivateFn`, check prerequisite data, and redirect to the appropriate step.
+**Note:** Knowing what guards *are* and when to use them is valuable even without implementing them. If the question comes up "How would you prevent users from skipping steps?", the answer is functional guards with `CanActivateFn` — check prerequisite data and redirect to the appropriate step.
 
 ---
 
@@ -334,9 +334,9 @@ Every component in our project uses the `reloc-` prefix:
 - `reloc-step-indicator`
 - `reloc-currency-input`
 
-This mirrors Europace's convention of using `baufi-passt-*` for their Rechner application's components. The reasons:
+This follows a common Angular convention where each application uses a unique prefix. The reasons:
 
-1. **Avoid conflicts.** In a large application or micro-frontend architecture, multiple teams might create a "currency input" or "step indicator." Prefixes prevent collisions. `reloc-currency-input` can coexist with `baufi-currency-input` or `material-input`.
+1. **Avoid conflicts.** In a large application or micro-frontend architecture, multiple teams might create a "currency input" or "step indicator." Prefixes prevent collisions. `reloc-currency-input` can coexist with `acme-currency-input` or `material-input`.
 
 2. **Instant identification.** When you see `<reloc-step-indicator>` in a template, you immediately know it's a project component, not a third-party library element, an HTML native element, or a browser custom element.
 
@@ -344,11 +344,9 @@ This mirrors Europace's convention of using `baufi-passt-*` for their Rechner ap
 
 4. **Web Components compatibility.** Custom HTML elements require a hyphen in their name (spec requirement to avoid conflicts with future HTML elements). The prefix guarantees the hyphen.
 
-### Europace's pattern
+### How this works in practice
 
-Europace uses `baufi-passt-*` for the Rechner ("baufi" = Baufinanzierung = mortgage financing, "passt" = the product name #passt). Other Europace products would use different prefixes. In a micro-frontend setup where multiple products coexist on the same page, this namespacing prevents one team's `<step-indicator>` from colliding with another's.
-
-Being able to reference this convention in an interview — "I used `reloc-*` to mirror your `baufi-passt-*` convention" — demonstrates that you've studied their codebase and understand the reasoning.
+Production Angular codebases use application-specific prefixes for the same reasons. In a micro-frontend setup where multiple products coexist on the same page, this namespacing prevents one team's `<step-indicator>` from colliding with another's. Each product gets its own prefix, and the Angular CLI enforces it via `angular.json` and `@angular-eslint`.
 
 ---
 
@@ -391,17 +389,19 @@ Add it to the `costs` route's `canActivate` array. Test: navigate directly to `/
 
 ---
 
-## Interview Talking Points
+## What This Demonstrates
 
-- **On the router architecture:** "Our wizard uses Angular's router with lazy-loaded components — each step is a separate bundle loaded on demand. The root component provides the persistent shell: header, step indicator, and `<router-outlet>`. Navigation events are converted to a signal with `toSignal`, which feeds into the step indicator's computed state. The URL is the single source of truth for which step the user is on."
+Key takeaways from the wizard navigation architecture:
 
-- **On `toSignal`:** "We use `toSignal` to bridge the router's Observable-based event stream into the signal world. The step indicator receives the current path as a signal input, computes the current index, and derives the visual state for each step — completed, active, or upcoming. The entire chain from `router.events` to template rendering is reactive and declarative."
+- **On the router architecture:** Our wizard uses Angular's router with lazy-loaded components — each step is a separate bundle loaded on demand. The root component provides the persistent shell: header, step indicator, and `<router-outlet>`. Navigation events are converted to a signal with `toSignal`, which feeds into the step indicator's computed state. The URL is the single source of truth for which step the user is on.
 
-- **On shared components:** "Reusable components like `CurrencyInputComponent` live in `shared/` and implement `ControlValueAccessor` so they integrate transparently with reactive forms. You use them with `formControlName` just like a native `<input>` — validators, `valueChanges`, touched state all work. The `StepIndicatorComponent` is also shared, receiving its configuration as signal inputs so it's generic and feature-agnostic."
+- **On `toSignal`:** We use `toSignal` to bridge the router's Observable-based event stream into the signal world. The step indicator receives the current path as a signal input, computes the current index, and derives the visual state for each step — completed, active, or upcoming. The entire chain from `router.events` to template rendering is reactive and declarative.
 
-- **On the `reloc-*` convention:** "Every component selector uses the `reloc-` prefix, mirroring Europace's `baufi-passt-*` convention. This prevents naming collisions in large apps or micro-frontend architectures, provides instant identification of project components in templates, and satisfies the web components spec requirement for hyphenated custom element names."
+- **On shared components:** Reusable components like `CurrencyInputComponent` live in `shared/` and implement `ControlValueAccessor` so they integrate transparently with reactive forms. You use them with `formControlName` just like a native `<input>` — validators, `valueChanges`, touched state all work. The `StepIndicatorComponent` is also shared, receiving its configuration as signal inputs so it's generic and feature-agnostic.
 
-- **On route guards:** "While our demo allows free navigation between steps, a production wizard would use `CanActivateFn` guards to enforce step completion — checking `sessionStorage` for prerequisite data and redirecting if missing. The pattern is simple: a functional guard that returns `true` or a `UrlTree` redirect."
+- **On the `reloc-*` convention:** Every component selector uses the `reloc-` prefix. This prevents naming collisions in large apps or micro-frontend architectures, provides instant identification of project components in templates, and satisfies the web components spec requirement for hyphenated custom element names.
+
+- **On route guards:** While our project allows free navigation between steps, a production wizard would use `CanActivateFn` guards to enforce step completion — checking `sessionStorage` for prerequisite data and redirecting if missing. The pattern is simple: a functional guard that returns `true` or a `UrlTree` redirect.
 
 ---
 
