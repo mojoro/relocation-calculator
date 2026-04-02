@@ -1,4 +1,4 @@
-# CLAUDE.md — Berlin Relocation Cost Planner
+# CLAUDE.md — Berlin Relocation Planner
 
 ## Operating Mode
 
@@ -23,15 +23,13 @@
 
 ## Project Purpose
 
-**Portfolio piece for Europace AG interview.** John Moorman is interviewing for a frontend engineer role on the #passt product team. The product is a white-label mortgage financing calculator (Rechner) built in Angular with a Java/Kotlin microservices backend. Martin (PM) specifically said they want someone who **understands the backend well and can potentially own the frontend-backend integration.**
+**Part of John Moorman's 10-in-10 challenge** (10 projects in 10 weeks, blogged at johnmoorman.com). Built as a portfolio piece demonstrating Angular + Kotlin/Spring Boot full-stack competence. The architecture deliberately mirrors enterprise patterns: contract-first API development, signal-based state, and a three-tier design token system.
 
-This project must demonstrate:
-1. Angular proficiency using the same patterns Europace uses (verified via source code analysis)
-2. Kotlin/Spring Boot backend competence — at least one real API service
-3. Clean integration layer between frontend and backend (typed contracts, error handling, loading states)
-4. Domain authority — John actually relocated to Berlin, so this topic is authentic
-
-**Ship deadline: Before engineering team interview (date TBD, likely this week or next).**
+This project demonstrates:
+1. Angular proficiency (standalone components, Signals, reactive forms, OnPush, lazy routes)
+2. Kotlin/Spring Boot backend with real domain logic (2026 German tax algorithm)
+3. Clean integration layer between frontend and backend (typed contracts via OpenAPI codegen, error handling, loading states)
+4. Domain authority — John actually relocated to Berlin, so the tax, neighborhood, and visa content is authentic
 
 ---
 
@@ -134,7 +132,7 @@ relocation-calculator/
 
 **AI Analysis (AiAnalysisService):**
 - Optional — requires `OPENROUTER_API_KEY` env var
-- Model configurable via `OPENROUTER_MODEL` (default: `anthropic/claude-sonnet-4`)
+- Model configurable via `OPENROUTER_MODEL` (default: `anthropic/claude-sonnet-4`, production uses `anthropic/claude-3.5-haiku`)
 - 5s connect / 15s read timeout on OpenRouter RestClient — falls through to template on timeout
 - Frontend shows rules-based fallback with retry button when AI is unreachable
 - Graceful fallback to template-based analysis when key is absent or API fails
@@ -152,9 +150,7 @@ Contract-first development via OpenAPI:
 - Frontend: `npm run generate:api` -> generates TypeScript types to `core/api/generated-types.ts`
 - Both consume the same spec — type mismatches are caught at generation time
 
-### Integration Layer (THE KEY DIFFERENTIATOR)
-
-The integration between frontend and backend is the primary interview talking point:
+### Integration Layer
 
 1. **Typed API contracts** — OpenAPI spec in `shared/api-contracts/` generates both TypeScript types and Kotlin models. No manual mirroring.
 2. **Error handling** — Angular interceptor (`error.interceptor.ts`) catches HTTP errors and surfaces them as typed error states, not console.error.
@@ -192,13 +188,13 @@ The service uses a single `effect()` that serializes all signals to one `localSt
 - Full teal palette (50-900), neutral scale, error/success/warning
 - Feedback tint tokens (`--reloc-ref-color-{success,warning,error}-light`) with dark mode overrides via `color-mix()`
 - Dark mode support via `[data-theme='dark']` overrides
-- Mirrors Europace's `--xp-sys-*` -> `--xp-ref-*` -> `--xp-comp-*` architecture
+- Tailwind 4 arbitrary property syntax bridges tokens into utilities: `bg-(--reloc-ref-color-primary-surface)`
 
 ---
 
 ## Wizard Flow
 
-The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
+The app is a 4-step wizard:
 
 1. **Salary Calculator** — Gross salary, tax class, age, children, church tax -> `POST /api/v1/salary/calculate` -> net monthly breakdown with all deductions itemized
 2. **Neighborhood Explorer** — Grid of 12 Berlin Bezirke with profiles, commute times, rent ranges, vibe -> `GET /api/v1/neighborhoods` (+ static fallback)
@@ -209,11 +205,12 @@ The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
 
 ## Deployment
 
-- **Frontend:** Vercel — auto-deploys on push to main, SPA routing via `vercel.json`
-- **Backend:** Railway — Docker-based, watches `backend/**` and `shared/**`
+- **Frontend:** Vercel (`https://relocation-calculator.vercel.app`) — auto-deploys on push to main, SPA routing via `vercel.json`
+- **Backend:** Railway (`https://relocation-calculator-production.up.railway.app`) — Docker-based, watches `backend/**` and `shared/**`
 - **Local dev:** `docker-compose up` or individual `ng serve` + `gradle bootRun`
 - Dev: `http://localhost:4200` (frontend), `http://localhost:8080` (backend)
 - Prod: Railway URL configured in `frontend/src/environments/environment.prod.ts`
+- **Blog post:** `https://johnmoorman.com/blog/relocation-calculator`
 
 ---
 
@@ -233,7 +230,7 @@ The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
 - [x] Loading/error states on all API calls
 - [x] Deployed frontend URL
 - [x] Deployed backend URL
-- [ ] README with architecture explanation
+- [x] README with architecture explanation
 
 ---
 
@@ -241,22 +238,11 @@ The app is a 4-step wizard (mirrors the Rechner's multi-step flow):
 
 - No auth system
 - No database (all calculation is stateless)
-- No SSR (static deploy is fine, mirrors Rechner's S3+CloudFront)
+- No SSR (static SPA deploy is fine)
 - No complex CI/CD (GitHub Actions is fine but not required for v1)
 - No testing framework setup beyond maybe one example test
 - No CMS integration in v1 (Sanity is a stretch goal only)
 - No i18n (German-only content is fine, English UI is fine)
-
----
-
-## Interview Talking Points This Project Enables
-
-When discussing this project with Europace's engineering team, John should be able to say:
-
-1. "I studied the Rechner's source — standalone components, reactive forms with Validators, Signals, OnPush, and the `--xp-*` token system bridging into MD3. I matched those patterns in my project."
-2. "The Kotlin backend is simple but the integration is deliberate — typed contracts mirrored between TypeScript and Kotlin, an error interceptor, and explicit loading states on every API call."
-3. "I chose German tax calculation as the domain because I actually went through this process when I relocated to Berlin. The Steuerklasse and Sozialversicherung logic is real."
-4. "The multi-step wizard structure parallels the Rechner's flow — progressive data collection with real-time calculation at each step."
 
 ---
 
@@ -276,7 +262,7 @@ When discussing this project with Europace's engineering team, John should be ab
 
 ## Potential Enhancements
 
-- Root `README.md` with architecture explanation (currently missing)
 - Sanity CMS integration for neighborhood data
 - Example unit tests for tax calculation service and salary form
 - i18n support (German UI option)
+- Screenshot images for README (`/images/` directory referenced but not yet added)
