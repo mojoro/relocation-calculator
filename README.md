@@ -6,8 +6,6 @@ I built this as part of my [10-in-10 challenge](https://johnmoorman.com) (10 pro
 
 **[Live App](https://relocation-calculator.vercel.app)** · **[Blog Post](https://johnmoorman.com/blog/relocation-calculator)**
 
-![The salary calculator showing a full tax breakdown for a EUR 60,000 salary](/images/salary-calculator.png)
-
 ## What It Does
 
 **Salary Calculator.** Enter your gross annual salary, tax class, age, church tax preference, and number of children. The backend runs the 2026 German Lohnsteuer algorithm and returns a complete breakdown with every deduction explained. For a EUR 60,000 gross salary, the calculator is accurate to within EUR 0.04/month compared to the [official BMF calculator](https://bmf-steuerrechner.de/). The source was the BMF's own XML specification of the algorithm.
