@@ -11,22 +11,22 @@
   <div
     class="mb-6 flex items-end justify-between rounded-md p-4 bg-(--reloc-ref-color-primary-light)"
   >
-    <div>
+    <div class="min-w-0">
       <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
         Gross Monthly
       </p>
-      <p class="text-2xl font-bold text-(--reloc-ref-color-text-primary)">
+      <p class="text-xl sm:text-2xl font-bold text-(--reloc-ref-color-text-primary)">
         {{ result().grossMonthly | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </p>
     </div>
-    <div class="px-4">
+    <div class="px-2 sm:px-4 shrink-0">
       <span class="text-lg text-(--reloc-ref-color-text-muted)">&rarr;</span>
     </div>
-    <div class="text-right">
+    <div class="min-w-0 text-right">
       <p class="text-xs uppercase tracking-wide text-(--reloc-ref-color-text-secondary)">
         Net Monthly
       </p>
-      <p class="text-2xl font-bold text-(--reloc-ref-color-primary)">
+      <p class="text-xl sm:text-2xl font-bold text-(--reloc-ref-color-primary)">
         {{ result().netMonthly | currency: 'EUR' : 'symbol' : '1.2-2' : 'de' }}
       </p>
     </div>
