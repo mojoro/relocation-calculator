@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal, ElementRef, 
   selector: 'reloc-info-bubble',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'relative inline-flex items-center' },
+  host: { class: 'inline-flex items-center align-middle' },
   template: `
     <button
       type="button"
@@ -17,11 +17,13 @@ import { ChangeDetectionStrategy, Component, input, output, signal, ElementRef, 
     @if (isOpen()) {
       <div
         (click)="$event.stopPropagation()"
-        class="absolute z-50 w-56 rounded-md border p-2.5
+        class="fixed z-50 w-56 rounded-md border p-2.5
                text-xs leading-relaxed shadow-md
                bg-(--reloc-ref-color-bg-card) border-(--reloc-ref-color-border)
                text-(--reloc-ref-color-text-secondary)"
-        [class]="positionClass()"
+        [style.top.px]="tooltipTop()"
+        [style.left]="'50%'"
+        [style.transform]="'translateX(-50%)'"
       >
         <ng-content />
       </div>
@@ -33,14 +35,9 @@ export class InfoBubbleComponent {
   readonly isOpen = input(false);
   readonly toggle = output();
 
-  positionClass(): string {
+  tooltipTop(): number {
     const rect = this.el.nativeElement.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    // If the bubble would clip the right edge, position to the left instead
-    if (rect.right + 230 > viewportWidth) {
-      return 'right-0 top-6';
-    }
-    return 'left-0 top-6';
+    return rect.bottom + 6;
   }
 
   onToggle(event: MouseEvent): void {
