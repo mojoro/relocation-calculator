@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { CostEstimate, NeighborhoodProfile, Bezirk } from '../models/cost.model';
 import {
   BudgetAllocationRequest,
@@ -14,6 +15,7 @@ import {
   getNeighborhoodProfile,
 } from '../calculators/cost-estimator';
 import { allocateBudget as calcAllocate } from '../calculators/budget-allocator';
+import { analyzeFromTemplate } from '../calculators/budget-analyzer';
 
 @Injectable({ providedIn: 'root' })
 export class CostEstimationService {
@@ -36,6 +38,8 @@ export class CostEstimationService {
   }
 
   analyzeBudget(context: AnalysisContext): Observable<BudgetAnalysis> {
-    return this.http.post<BudgetAnalysis>('/api/analyze', context);
+    return this.http.post<BudgetAnalysis>('/api/analyze', context).pipe(
+      catchError(() => of(analyzeFromTemplate(context))),
+    );
   }
 }
