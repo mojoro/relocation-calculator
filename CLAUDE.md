@@ -2,6 +2,8 @@
 
 ## Operating Mode
 
+**Important — backend is archived.** As of 2026-05-05 the Kotlin/Spring backend has been ported into the Angular frontend and moved under `attic/backend/`. Do not spin it up, build it, or run `./gradlew`. All calculation logic now lives in `frontend/src/app/core/calculators/` (tax, cost, budget allocator, budget analyzer). The only server-side code is `api/analyze.ts`, a Vercel serverless function for OpenRouter-powered AI analysis. See `attic/README.md` for context.
+
 **You are a senior engineering manager, not a line developer.** Your context window is your most precious resource. Protect it ruthlessly.
 
 ### Agent Orchestration Rules
@@ -23,12 +25,12 @@
 
 ## Project Purpose
 
-**Part of John Moorman's 10-in-10 challenge** (10 projects in 10 weeks, blogged at johnmoorman.com). Built as a portfolio piece demonstrating Angular + Kotlin/Spring Boot full-stack competence. The architecture deliberately mirrors enterprise patterns: contract-first API development, signal-based state, and a three-tier design token system.
+**Part of John Moorman's 10-in-10 challenge** (10 projects in 10 weeks, blogged at johnmoorman.com). Originally built as an Angular + Kotlin/Spring Boot portfolio piece; the Kotlin backend was ported into the frontend on 2026-05-05 to consolidate hosting on Vercel. The Kotlin source is preserved under `attic/backend/` for portfolio reference. The architecture still mirrors enterprise patterns: contract-first response shapes via OpenAPI codegen, signal-based state, and a three-tier design token system.
 
 This project demonstrates:
 1. Angular proficiency (standalone components, Signals, reactive forms, OnPush, lazy routes)
-2. Kotlin/Spring Boot backend with real domain logic (2026 German tax algorithm)
-3. Clean integration layer between frontend and backend (typed contracts via OpenAPI codegen, error handling, loading states)
+2. Real domain logic in TypeScript (2026 German tax algorithm), with parity tests against the original Kotlin implementation in `attic/`
+3. Contract-first development via OpenAPI -> `openapi-typescript` codegen, error handling, loading states
 4. Domain authority — John actually relocated to Berlin, so the tax, neighborhood, and visa content is authentic
 
 ---
@@ -39,11 +41,14 @@ This project demonstrates:
 
 ```
 relocation-calculator/
-├── frontend/                  # Angular 21.2 application
+├── frontend/                  # Angular 21.2 application (the entire app)
 │   ├── src/
 │   │   ├── app/
-│   │   │   ├── core/          # Services, models, interceptors, generated API types
-│   │   │   ├── shared/        # Reusable components (currency-input, step-indicator) and pipes
+│   │   │   ├── core/
+│   │   │   │   ├── calculators/          # Ported Kotlin logic — tax, cost, budget allocator, budget analyzer, Bezirk data
+│   │   │   │   ├── api/generated-types.ts # openapi-typescript output
+│   │   │   │   └── ...                   # Services, models, interceptors
+│   │   │   ├── shared/                   # Reusable components (currency-input, step-indicator) and pipes
 │   │   │   ├── features/
 │   │   │   │   ├── salary-calculator/    # Step 1: Gross->net salary with tax breakdown
 │   │   │   │   ├── neighborhood-explorer/ # Step 2: 12 Berlin Bezirke profiles
@@ -55,38 +60,22 @@ relocation-calculator/
 │   │   ├── styles/
 │   │   │   └── tokens.css     # 3-tier design token system (--reloc-sys-*, --reloc-ref-*)
 │   │   └── environments/
-│   │       ├── environment.ts            # Dev: localhost:8080
-│   │       └── environment.prod.ts       # Prod: Railway URL
+│   │       ├── environment.ts
+│   │       └── environment.prod.ts
 │   ├── angular.json
 │   ├── .postcssrc.json        # Tailwind 4.2 via PostCSS
-│   ├── Dockerfile             # Node 22 -> Nginx multi-stage
-│   ├── nginx.conf             # SPA routing + API proxy
 │   └── tsconfig.json
-├── backend/                   # Kotlin 2.1.10 + Spring Boot 3.4.4
-│   ├── src/main/kotlin/com/johnmoorman/relocation/
-│   │   ├── RelocationApplication.kt
-│   │   ├── controller/
-│   │   │   ├── SalaryController.kt       # POST /salary/calculate
-│   │   │   ├── CostController.kt         # GET /costs/estimate, /neighborhoods
-│   │   │   └── BudgetController.kt       # POST /costs/allocate, /costs/analyze
-│   │   ├── service/
-│   │   │   ├── TaxCalculationService.kt  # 2026 German Lohnsteuer algorithm
-│   │   │   ├── CostEstimationService.kt  # Berlin Bezirk rent data + profiles
-│   │   │   ├── BudgetService.kt          # Allocation enrichment + template analysis
-│   │   │   └── AiAnalysisService.kt      # OpenRouter-powered narrative (optional)
-│   │   ├── model/
-│   │   │   └── BezirkExtensions.kt       # Enum helpers (generated models in build/)
-│   │   └── config/
-│   │       ├── CorsConfig.kt
-│   │       └── GlobalExceptionHandler.kt
-│   ├── build.gradle.kts       # OpenAPI code generation + Spring Boot
-│   └── Dockerfile             # Gradle 8.13 JDK 21 -> Alpine JRE multi-stage
+├── api/
+│   └── analyze.ts             # Vercel serverless function — OpenRouter proxy
 ├── shared/
 │   └── api-contracts/
-│       └── openapi.yaml       # Single source of truth for all API contracts
-├── docker-compose.yml         # Local dev: backend:8080 + frontend:4200
-├── vercel.json                # Frontend deployment config
-├── railway.toml               # Backend deployment config
+│       └── openapi.yaml       # Still authoritative for response shapes via openapi-typescript
+├── attic/                     # Archived Kotlin/Spring backend, docker-compose, railway.toml
+│   ├── README.md
+│   ├── backend/
+│   ├── docker-compose.yml
+│   └── railway.toml
+├── vercel.json
 └── CLAUDE.md
 ```
 
@@ -111,17 +100,18 @@ relocation-calculator/
 | RelocInfoBubbleComponent | `reloc-info-bubble` | `shared/components/` — info tooltip |
 | MarkdownPipe | `markdown` | `shared/pipes/` — lightweight md->HTML for bold and list items (- and * markers) |
 
-### Backend API
+### In-Frontend Calculators (formerly Backend API)
 
-**Endpoints:**
-- `POST /api/v1/salary/calculate` — SalaryRequest -> SalaryResponse (full tax breakdown)
-- `GET /api/v1/costs/estimate?bezirk=...&rooms=...` -> CostEstimate
-- `GET /api/v1/neighborhoods` -> NeighborhoodProfile[]
-- `GET /api/v1/neighborhoods/{bezirk}` -> NeighborhoodProfile
-- `POST /api/v1/costs/allocate` -> BudgetAllocation (enriched percentages with EUR totals)
-- `POST /api/v1/costs/analyze` -> BudgetAnalysis (7-section narrative, AI or template)
+The Kotlin backend was archived under `attic/backend/` on 2026-05-05. The endpoints below used to be live HTTP routes; they are now in-process function calls in `frontend/src/app/core/calculators/`. Response shapes are still defined by `shared/api-contracts/openapi.yaml` and are consumed via `openapi-typescript` codegen.
 
-**Tax Calculation (TaxCalculationService):**
+**Former endpoints, now in-process:**
+- `POST /api/v1/salary/calculate` -> `tax-calculator.ts` (SalaryRequest -> SalaryResponse with full tax breakdown)
+- `GET /api/v1/costs/estimate?bezirk=...&rooms=...` -> `cost-estimator.ts` (CostEstimate)
+- `GET /api/v1/neighborhoods[/{bezirk}]` -> `bezirk-data.ts` (NeighborhoodProfile[])
+- `POST /api/v1/costs/allocate` -> `budget-allocator.ts` (BudgetAllocation)
+- `POST /api/v1/costs/analyze` -> `budget-analyzer.ts` for the template path; the AI path now goes to the Vercel function `api/analyze.ts`
+
+**Tax Calculation (`tax-calculator.ts`):**
 - 5-zone progressive income tax (Grundfreibetrag 12,348 EUR -> 45% Reichensteuer)
 - Vorsorgepauschale deduction
 - Social insurance: health, pension, unemployment, nursing care
@@ -129,33 +119,32 @@ relocation-calculator/
 - Church tax (Berlin: 9% of income tax)
 - Ehegattensplitting for tax class III
 - Childless nursing care surcharge
+- Parity-tested against the archived Kotlin `TaxCalculationService` (`__tests__/fixtures.ts`)
 
-**AI Analysis (AiAnalysisService):**
-- Optional — requires `OPENROUTER_API_KEY` env var
+**AI Analysis (`api/analyze.ts` Vercel function):**
+- Optional — requires `OPENROUTER_API_KEY` env var on Vercel
 - Model configurable via `OPENROUTER_MODEL` (default: `anthropic/claude-sonnet-4`, production uses `anthropic/claude-3.5-haiku`)
-- 5s connect / 15s read timeout on OpenRouter RestClient — falls through to template on timeout
-- Frontend shows rules-based fallback with retry button when AI is unreachable
-- Graceful fallback to template-based analysis when key is absent or API fails
-- Config in `application.yml` under `openrouter.*`
+- Function-level timeout falls through to the in-frontend template engine
+- Frontend shows the template fallback with a retry button when AI is unreachable
 
-**Neighborhood Data:**
+**Neighborhood Data (`bezirk-data.ts`):**
 - 12 Berlin Bezirke with commute time ranges (min/max) based on actual BVG/S-Bahn transit data
 - Deutschlandticket (EUR 63/month) referenced in transport analysis
 
 ### API Contract System
 
-Contract-first development via OpenAPI:
+Contract-first via OpenAPI is preserved even though there's no longer a separate backend:
 - Single source of truth: `shared/api-contracts/openapi.yaml`
-- Backend: Gradle `openApiGenerate` task -> generates Kotlin models to `build/generated/openapi/`
-- Frontend: `npm run generate:api` -> generates TypeScript types to `core/api/generated-types.ts`
-- Both consume the same spec — type mismatches are caught at generation time
+- Frontend: `npm run prebuild` -> `openapi-typescript` -> `core/api/generated-types.ts`
+- The in-frontend calculators conform to these generated types, so the response shapes the original Kotlin API exposed are still documented and enforced at compile time.
+- The archived Gradle `openApiGenerate` task lives under `attic/backend/build.gradle.kts` for reference.
 
 ### Integration Layer
 
-1. **Typed API contracts** — OpenAPI spec in `shared/api-contracts/` generates both TypeScript types and Kotlin models. No manual mirroring.
-2. **Error handling** — Angular interceptor (`error.interceptor.ts`) catches HTTP errors and surfaces them as typed error states, not console.error.
-3. **Loading states** — Every API call has explicit loading/success/error states visible in the UI via Signals.
-4. **Validation parity** — Frontend form validators match backend validation. If the backend rejects `grossAnnual < 0`, the frontend prevents it from being sent.
+1. **Typed contracts** — OpenAPI spec in `shared/api-contracts/` generates TypeScript types that the in-frontend calculators conform to.
+2. **Error handling** — Angular interceptor (`error.interceptor.ts`) catches HTTP errors from the AI analyze function and surfaces them as typed error states, not console.error.
+3. **Loading states** — Calculator calls and the `api/analyze.ts` fetch each have explicit loading/success/error states visible in the UI via Signals.
+4. **Validation parity** — Form validators match the constraints the original Kotlin API enforced (e.g. `grossAnnual >= 0`).
 
 ### State Persistence
 
@@ -194,22 +183,21 @@ The service uses a single `effect()` that serializes all signals to one `localSt
 
 ## Wizard Flow
 
-The app is a 4-step wizard:
+The app is a 4-step wizard. All calculation runs in-frontend; only AI analysis touches the network (Vercel serverless function).
 
-1. **Salary Calculator** — Gross salary, tax class, age, children, church tax -> `POST /api/v1/salary/calculate` -> net monthly breakdown with all deductions itemized
-2. **Neighborhood Explorer** — Grid of 12 Berlin Bezirke with profiles, commute times, rent ranges, vibe -> `GET /api/v1/neighborhoods` (+ static fallback)
-3. **Cost Estimator** — Bezirk/room selection, rent estimates, budget sliders, lifestyle spending, sanity check with AI analysis -> `GET /api/v1/costs/estimate`, `POST /costs/allocate`, `POST /costs/analyze`
+1. **Salary Calculator** — Gross salary, tax class, age, children, church tax -> `tax-calculator.ts` -> net monthly breakdown with all deductions itemized
+2. **Neighborhood Explorer** — Grid of 12 Berlin Bezirke with profiles, commute times, rent ranges, vibe -> `bezirk-data.ts`
+3. **Cost Estimator** — Bezirk/room selection, rent estimates, budget sliders, lifestyle spending, sanity check with AI analysis -> `cost-estimator.ts`, `budget-allocator.ts`, `budget-analyzer.ts` (template) + `api/analyze.ts` (AI)
 4. **Visa Checklist** — Visa type selector (EU Blue Card, Freelance, Job Seeker) + 19-item interactive admin checklist with links to official Auslanderbehorde pages, checked state persisted to localStorage -> pure frontend, Signals-driven
 
 ---
 
 ## Deployment
 
-- **Frontend:** Vercel (`https://relocation-calculator.vercel.app`) — auto-deploys on push to main, SPA routing via `vercel.json`
-- **Backend:** Railway (`https://relocation-calculator-production.up.railway.app`) — Docker-based, watches `backend/**` and `shared/**`
-- **Local dev:** `docker-compose up` or individual `ng serve` + `gradle bootRun`
-- Dev: `http://localhost:4200` (frontend), `http://localhost:8080` (backend)
-- Prod: Railway URL configured in `frontend/src/environments/environment.prod.ts`
+- **Vercel only** (`https://relocation-calculator.vercel.app`) — auto-deploys on push to main. Vercel builds the Angular SPA and the `api/analyze.ts` serverless function in one project. SPA routing via `vercel.json`.
+- **Railway is gone.** The backend is archived under `attic/backend/`; the deprecated Railway URL `https://relocation-calculator-production.up.railway.app` is no longer live.
+- **Local dev:** `cd frontend && ng serve`. Use `vercel dev` from the repo root if you need to exercise the AI analyze function locally (set `OPENROUTER_API_KEY` in `.env.local`).
+- Dev: `http://localhost:4200` (frontend)
 - **Blog post:** `https://johnmoorman.com/blog/relocation-calculator`
 
 ---

@@ -2,6 +2,9 @@
   "installCommand": "cd frontend && npm install",
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist/frontend/browser",
+  "functions": {
+    "api/analyze.ts": { "maxDuration": 20 }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
