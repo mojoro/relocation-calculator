@@ -20,6 +20,7 @@ export function allocateBudget(req: BudgetAllocationRequest): BudgetAllocation {
   const estimate = estimateCosts(req.bezirk, req.rooms);
 
   const categories: BudgetCategory[] = req.categories.map((input) => {
+    // Math.fround mirrors Kotlin's `.toFloat()` on this field (openapi format: float)
     const total = Math.fround(roundTwo(net * input.percentage / 100));
     const pieGroup = PIE_GROUPS[input.key] ?? 'other';
 
