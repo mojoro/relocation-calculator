@@ -109,7 +109,31 @@ function parseAnalysis(content: string): { sections: { key: string; heading: str
     sentiment: SENTIMENTS.has(s.sentiment) ? s.sentiment : 'neutral',
   }));
 
-  return valid.length >= 7 ? { sections: valid } : null;
+  const byKey = new Map<string, { key: string; heading: string; body: string; sentiment: string }>();
+  for (const s of valid) if (!byKey.has(s.key)) byKey.set(s.key, s);
+  if (byKey.size !== SECTION_KEYS.size) return null;
+  return { sections: Array.from(byKey.values()) };
+}
+
+function isValidContext(x: unknown): x is AnalysisContext {
+  if (!x || typeof x !== 'object') return false;
+  const o = x as Record<string, unknown>;
+  const num = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
+  if (!num(o['netMonthlySalary']) || !num(o['grossAnnualSalary']) || !num(o['rooms'])) return false;
+  if (typeof o['taxClass'] !== 'string' || typeof o['bezirk'] !== 'string') return false;
+  if (typeof o['neighborhoodVibe'] !== 'string') return false;
+  const rr = o['rentRange'];
+  if (!rr || typeof rr !== 'object') return false;
+  const r = rr as Record<string, unknown>;
+  if (!num(r['min']) || !num(r['max']) || !num(r['median'])) return false;
+  if (!Array.isArray(o['categories']) || o['categories'].length > 50) return false;
+  for (const c of o['categories'] as unknown[]) {
+    if (!c || typeof c !== 'object') return false;
+    const cat = c as Record<string, unknown>;
+    if (typeof cat['key'] !== 'string' || typeof cat['label'] !== 'string') return false;
+    if (!num(cat['percentage']) || !num(cat['total'])) return false;
+  }
+  return true;
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -123,9 +147,13 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response(JSON.stringify({ error: 'AI unavailable' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
   }
 
-  let ctx: AnalysisContext;
-  try { ctx = (await req.json()) as AnalysisContext; }
+  let raw: unknown;
+  try { raw = await req.json(); }
   catch { return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } }); }
+  if (!isValidContext(raw)) {
+    return new Response(JSON.stringify({ error: 'Invalid request shape' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+  const ctx: AnalysisContext = raw;
 
   try {
     const upstream = await fetch('https://openrouter.ai/api/v1/chat/completions', {
