@@ -149,6 +149,10 @@ function calculateZvE(grossAnnual: number, vorsorgepauschale: number, taxClass: 
     case 'VI':
       allowances = 0.0;
       break;
+    default: {
+      const _exhaustive: never = taxClass;
+      throw new Error(`Unhandled tax class: ${_exhaustive}`);
+    }
   }
 
   return Math.max(base - allowances, 0.0);
