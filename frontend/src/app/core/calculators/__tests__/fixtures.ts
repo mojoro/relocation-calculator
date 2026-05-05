@@ -2,6 +2,7 @@ import type { SalaryResponse } from '../../models/salary.model';
 import type { CostEstimate, NeighborhoodProfile } from '../../models/cost.model';
 import type { BudgetAllocation } from '../../models/budget.model';
 
+// Request: { grossAnnual: 75_000, taxClass: 'I', churchTax: false, hasChildren: false, childCount: 0, respondentAge: 32 }
 export const SALARY_SINGLE: SalaryResponse = {
   grossMonthly: 6250.0,
   netMonthly: 3811.46,
@@ -38,6 +39,7 @@ export const SALARY_SINGLE: SalaryResponse = {
   },
 };
 
+// Request: { grossAnnual: 120_000, taxClass: 'III', churchTax: true, hasChildren: true, childCount: 2, respondentAge: 40 }
 export const SALARY_MARRIED: SalaryResponse = {
   grossMonthly: 10000.0,
   netMonthly: 6443.46,
@@ -74,6 +76,7 @@ export const SALARY_MARRIED: SalaryResponse = {
   },
 };
 
+// Request: { grossAnnual: 12_000, taxClass: 'I', churchTax: false, hasChildren: false, childCount: 0, respondentAge: 24 }
 export const SALARY_LOW: SalaryResponse = {
   grossMonthly: 1000.0,
   netMonthly: 791.5,
