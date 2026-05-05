@@ -6,9 +6,10 @@ const roundTwo = (v: number) => Math.round(v * 100) / 100;
 export function estimateCosts(bezirk: Bezirk, rooms: number): CostEstimate {
   const profile = PROFILES.get(bezirk);
   if (!profile) throw new Error(`Unknown Bezirk: ${bezirk}`);
-  const perSqm = RENT_PER_SQM.get(bezirk)!;
+  const perSqm = RENT_PER_SQM.get(bezirk);
+  if (!perSqm) throw new Error(`Missing rent data for Bezirk: ${bezirk}`);
   const clampedRooms = Math.min(5, Math.max(1, rooms));
-  const sqm = AVG_SQM_BY_ROOMS[clampedRooms] ?? 55;
+  const sqm = AVG_SQM_BY_ROOMS[clampedRooms];
 
   const rentRange: RentRange = {
     min: roundTwo(perSqm.min * sqm),
