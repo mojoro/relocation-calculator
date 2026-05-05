@@ -17,6 +17,6 @@ export const TAX_2026 = {
   sap: 36,
   efa: 4_260,
   soliRate: 0.055,
-  soliThreshold: 20_350,
+  soliThreshold: 20_350, // annual income TAX threshold (not income); Soli = 0 if tax <= this
   churchTaxRate: 0.09,
 } as const;
