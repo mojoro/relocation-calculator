@@ -1,39 +1,45 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { CostEstimate, NeighborhoodProfile } from '../models/cost.model';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { CostEstimate, NeighborhoodProfile, Bezirk } from '../models/cost.model';
 import {
   BudgetAllocationRequest,
   BudgetAllocation,
   AnalysisContext,
   BudgetAnalysis,
 } from '../models/budget.model';
-import { environment } from '../../../environments/environment';
+import {
+  estimateCosts as calcEstimate,
+  getAllProfiles,
+  getNeighborhoodProfile,
+} from '../calculators/cost-estimator';
+import { allocateBudget as calcAllocate } from '../calculators/budget-allocator';
+import { analyzeFromTemplate } from '../calculators/budget-analyzer';
 
 @Injectable({ providedIn: 'root' })
 export class CostEstimationService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiBaseUrl;
 
   estimateCosts(bezirk: string, rooms: number): Observable<CostEstimate> {
-    return this.http.get<CostEstimate>(`${this.baseUrl}/costs/estimate`, {
-      params: { bezirk, rooms: rooms.toString() },
-    });
+    return of(calcEstimate(bezirk as Bezirk, rooms));
   }
 
   getAllNeighborhoods(): Observable<NeighborhoodProfile[]> {
-    return this.http.get<NeighborhoodProfile[]>(`${this.baseUrl}/neighborhoods`);
+    return of(getAllProfiles());
   }
 
   getNeighborhood(bezirk: string): Observable<NeighborhoodProfile> {
-    return this.http.get<NeighborhoodProfile>(`${this.baseUrl}/neighborhoods/${bezirk}`);
+    return of(getNeighborhoodProfile(bezirk as Bezirk));
   }
 
   allocateBudget(request: BudgetAllocationRequest): Observable<BudgetAllocation> {
-    return this.http.post<BudgetAllocation>(`${this.baseUrl}/costs/allocate`, request);
+    return of(calcAllocate(request));
   }
 
   analyzeBudget(context: AnalysisContext): Observable<BudgetAnalysis> {
-    return this.http.post<BudgetAnalysis>(`${this.baseUrl}/costs/analyze`, context);
+    return this.http.post<BudgetAnalysis>('/api/analyze', context).pipe(
+      catchError(() => of(analyzeFromTemplate(context))),
+    );
   }
 }

@@ -1,0 +1,22 @@
+export const TAX_2026 = {
+  grundfreibetrag: 12_348,
+  zoneBEnd: 17_799,
+  zoneCEnd: 69_878,
+  zoneDEnd: 277_825,
+  healthRate: 0.0815,
+  healthVorsorgepauschaleRate: 0.0785,
+  pensionRate: 0.093,
+  unemploymentRate: 0.013,
+  nursingBaseRate: 0.018,
+  nursingChildlessSurcharge: 0.003,
+  childlessExemptionAge: 23,
+  healthCeilingAnnual: 69_750,
+  pensionCeilingAnnual: 101_400,
+  vorsorgepauschaleCap: 1_900,
+  anp: 1_230,
+  sap: 36,
+  efa: 4_260,
+  soliRate: 0.055,
+  soliThreshold: 20_350, // annual income TAX threshold (not income); Soli = 0 if tax <= this
+  churchTaxRate: 0.09,
+} as const;
